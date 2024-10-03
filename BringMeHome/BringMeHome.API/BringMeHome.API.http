@@ -1,0 +1,6 @@
+@BringMeHome.API_HostAddress = http://localhost:5115
+
+GET {{BringMeHome.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
