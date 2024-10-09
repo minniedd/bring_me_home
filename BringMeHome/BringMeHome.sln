@@ -5,6 +5,10 @@ VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BringMeHome.API", "BringMeHome.API\BringMeHome.API.csproj", "{866B6C06-4602-4987-AD1F-B6C52A749DFD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BringMeHome.Models", "BringMeHome.Models\BringMeHome.Models.csproj", "{53558172-7055-4018-B6F1-0AB7B73FE1B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BringMeHome.Services", "BringMeHome.Services\BringMeHome.Services.csproj", "{A8FF46A9-F6C0-4F8D-8B4B-7F9610FB0775}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{866B6C06-4602-4987-AD1F-B6C52A749DFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{866B6C06-4602-4987-AD1F-B6C52A749DFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{866B6C06-4602-4987-AD1F-B6C52A749DFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53558172-7055-4018-B6F1-0AB7B73FE1B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53558172-7055-4018-B6F1-0AB7B73FE1B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53558172-7055-4018-B6F1-0AB7B73FE1B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53558172-7055-4018-B6F1-0AB7B73FE1B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8FF46A9-F6C0-4F8D-8B4B-7F9610FB0775}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8FF46A9-F6C0-4F8D-8B4B-7F9610FB0775}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8FF46A9-F6C0-4F8D-8B4B-7F9610FB0775}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8FF46A9-F6C0-4F8D-8B4B-7F9610FB0775}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
