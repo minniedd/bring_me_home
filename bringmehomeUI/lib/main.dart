@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:learning_app/screens/animal_list_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,7 +31,8 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromRGBO(251, 5, 103, 1)),
+        colorScheme:
+            ColorScheme.fromSeed(seedColor: Color.fromRGBO(251, 5, 103, 1)),
         useMaterial3: true,
       ),
       home: ExampleWidget(),
@@ -44,65 +46,84 @@ class ExampleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-  appBar: AppBar(
-    centerTitle: true,
-    title: Text(
-      'LOGIN',
-      style: GoogleFonts.poppins(
-        fontWeight: FontWeight.bold,
-        fontSize:20 // Add your desired font weight here
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          'LOGIN',
+          style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              fontSize: 20 // Add your desired font weight here
+              ),
+        ),
       ),
-    ),
-  ),
-    body: Center(
-      child: Center(child: Container(
-        constraints: BoxConstraints(maxHeight: 670,minHeight: 670),
-          child: Column(
-            children: [
-              Image.asset('assets/cat.png'),
-
-              Padding(padding: const EdgeInsets.only(top: 25,bottom: 25),
-                child: Text('BRING ME HOME!', 
-                       style: GoogleFonts.poppins(fontWeight:FontWeight.w700,fontSize:30),),),
-
-              Padding(
-          padding: const EdgeInsets.only(left:60, right: 10,bottom: 15),
-          child: TextFormField(
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'username',
+      body: Center(
+        child: Center(
+          child: Container(
+            constraints: BoxConstraints(maxHeight: 670, minHeight: 670),
+            child: Column(
+              children: [
+                Image.asset('assets/cat.png'),
+                Padding(
+                  padding: const EdgeInsets.only(top: 25, bottom: 25),
+                  child: Text(
+                    'BRING ME HOME!',
+                    style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w700, fontSize: 30),
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 60, right: 10, bottom: 15),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      border: UnderlineInputBorder(),
+                      labelText: 'username',
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 60, right: 10),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                        border: UnderlineInputBorder(), labelText: 'password'),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20, left: 180),
+                  child: Container(
+                    width: 130,
+                    height: 50,
+                    child: ElevatedButton(
+                      child: Text('LOGIN'),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor:
+                            Colors.white, //change background color of button
+                        backgroundColor: Color.fromRGBO(
+                            176, 139, 215, 1), //change text color of button
+                        elevation: 0,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const AnimalListScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: Text(
+                      'Not signed up yet? Make an account',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w700),
+                    ))
+              ],
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(left:60, right: 10),
-          child: TextFormField(
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'password'
-            ),
-          ),
-        ),
-
-        Padding(padding: const EdgeInsets.only(top:20,left: 180),
-        child:Container(
-          width: 130,
-          height: 50,
-          child: ElevatedButton(
-            child: Text('LOGIN'),
-            style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white,//change background color of button
-              backgroundColor: Color.fromRGBO(176, 139, 215, 1),//change text color of button
-              elevation: 0,
-            ),
-          onPressed: (){},),),
-        ),
-        Padding(padding: const EdgeInsets.only(top:20),
-          child:Text('Not signed up yet? Make an account',style: GoogleFonts.poppins(fontWeight:FontWeight.w700),))
-            ],
-          ),
-      ),),
-    ),);
+      ),
+    );
   }
 }
 
