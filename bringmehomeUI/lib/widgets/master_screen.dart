@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:learning_app/screens/animal_list_screen.dart';
+import 'package:learning_app/screens/donation_screen.dart';
+import 'package:learning_app/screens/favourites_screen.dart';
+import 'package:learning_app/screens/reviews_list_screen.dart';
 
 class MasterScreenWidget extends StatefulWidget {
   Widget? child;
@@ -13,6 +16,30 @@ class MasterScreenWidget extends StatefulWidget {
 }
 
 class _MasterScreenWidgetState extends State<MasterScreenWidget> {
+  void _navigateToScreen(int index) {
+    switch (index) {
+      case 0:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const AnimalListScreen()),
+        );
+        break;
+      case 1:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const FavouritesScreen()),
+        );
+        break;
+      case 2:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const DonationScreen()),
+        );
+        break;
+      case 3:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const ReviewsListScreen()),
+        );
+        break;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,6 +51,7 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        onTap: _navigateToScreen,
         backgroundColor: Colors.deepPurple.shade300,
         type: BottomNavigationBarType.fixed,
         fixedColor: Colors.white,
@@ -32,6 +60,7 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
+            
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
