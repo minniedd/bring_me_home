@@ -72,16 +72,19 @@ class SignUpScreen extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                MyButton(
-                  buttonText: "sign up",
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AnimalListScreen(),
-                      ),
-                    );
-                  },
+                Padding(
+                  padding: const EdgeInsets.only(right: 100,left: 100),
+                  child: MyButton(
+                    buttonText: "sign up",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AnimalListScreen(),
+                        ),
+                      );
+                    },
+                  ),
                 ),
                 const SizedBox(
                   height: 30,

@@ -52,16 +52,19 @@ class LoginScreen extends StatelessWidget {
                 const SizedBox(
                   height: 45,
                 ),
-                MyButton(
-                  buttonText: "login",
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AnimalListScreen(),
-                      ),
-                    );
-                  },
+                Padding(
+                  padding: const EdgeInsets.only(right: 100,left: 100),
+                  child: MyButton(
+                    buttonText: "login",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AnimalListScreen(),
+                        ),
+                      );
+                    },
+                  ),
                 ),
                 const SizedBox(
                   height: 50,

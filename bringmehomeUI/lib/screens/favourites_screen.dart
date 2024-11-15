@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:learning_app/components/animal_window.dart';
+import 'package:learning_app/screens/animal_screen.dart';
 import 'package:learning_app/screens/donation_screen.dart';
 import 'package:learning_app/widgets/master_screen.dart';
 
@@ -25,7 +26,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                   animalAge: '5',
                   shelterCity: 'Sarajevo',
                   onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => DonationScreen()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AnimalScreen()));
                   },
                 )
               ],
