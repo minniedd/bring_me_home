@@ -3,13 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:learning_app/screens/animal_list_screen.dart';
 import 'package:learning_app/screens/donation_screen.dart';
 import 'package:learning_app/screens/favourites_screen.dart';
+import 'package:learning_app/screens/history_application.dart';
 import 'package:learning_app/screens/reviews_list_screen.dart';
 
 class MasterScreenWidget extends StatefulWidget {
   Widget? child;
   String? titleText;
 
-  MasterScreenWidget({this.child, this.titleText ,Key? key}) : super(key: key);
+  MasterScreenWidget({this.child, this.titleText, Key? key}) : super(key: key);
 
   @override
   State<MasterScreenWidget> createState() => _MasterScreenWidgetState();
@@ -38,8 +39,14 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
           MaterialPageRoute(builder: (context) => const ReviewsListScreen()),
         );
         break;
+      case 4:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const HistoryApplicationScreen())
+        );
+        break;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,7 +67,6 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
-            
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
@@ -70,7 +76,14 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
             icon: Icon(Icons.attach_money),
             label: 'Donacije',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Recenzije'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.star), 
+            label: 'Recenzije'
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history), 
+            label: 'Historija'
+          ),
         ],
       ),
       body: widget.child!,

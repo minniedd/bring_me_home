@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:learning_app/components/my_button.dart';
 import 'package:learning_app/components/my_dialog.dart';
+import 'package:learning_app/screens/application.dart';
 import 'package:like_button/like_button.dart';
 
 import '../components/small_contrainer.dart';
@@ -147,7 +148,14 @@ class AnimalScreen extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 20),
-                    child: MyButton(onTap: (){}, buttonText: 'Usvoji'),
+                    child: MyButton(onTap: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ApplicationScreen(),
+                        ),
+                      );
+                    }, buttonText: 'Usvoji'),
                   )
                 ],
               ),
