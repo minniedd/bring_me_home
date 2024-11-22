@@ -1,3 +1,5 @@
+import 'package:bringmehome_admin/screens/applications_screen.dart';
+import 'package:bringmehome_admin/screens/available_animals_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -56,16 +58,56 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
           ),
         ),
         ListTile(
-          leading: Icon(Icons.home),
-          title: Text('Home'),
+          leading: Icon(Icons.pets),
+          title: Text('DOSTUPNE ŽIVOTINJE'),
+          onTap: () {
+            
+            Navigator.of(context).push(MaterialPageRoute(builder: (context)=> const AvailableAnimalsScreen()));
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.paste_sharp),
+          title: Text('ZAHTJEVI'),
+          onTap: () {
+            
+            Navigator.pop(context); Navigator.of(context).push(MaterialPageRoute(builder: (context)=> const ApplicationsScreen()));
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.add_box_rounded),
+          title: Text('DODAJ OGLAS'),
           onTap: () {
             
             Navigator.pop(context);
           },
         ),
         ListTile(
-          leading: Icon(Icons.settings),
-          title: Text('Settings'),
+          leading: Icon(Icons.person_2_sharp),
+          title: Text('ZAPOSLENICI'),
+          onTap: () {
+            
+            Navigator.pop(context);
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.person_3_outlined),
+          title: Text('KORISNICI'),
+          onTap: () {
+            
+            Navigator.pop(context);
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.auto_graph_outlined),
+          title: Text('IZVJEŠTAJI'),
+          onTap: () {
+            
+            Navigator.pop(context);
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.star_rate_rounded),
+          title: Text('RECENZIJE'),
           onTap: () {
             
             Navigator.pop(context);
