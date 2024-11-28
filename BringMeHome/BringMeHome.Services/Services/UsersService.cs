@@ -89,5 +89,24 @@ namespace BringMeHome.Services.Services
             byte[] inArray = algorithm.ComputeHash(dst);
             return Convert.ToBase64String(inArray);
         }
+
+        public Users Login(string username, string password)
+        {
+            var entity = _context.Users.Include(x=>x.UserRoles).ThenInclude(y=>y.Role).FirstOrDefault(x=>x.Username == username);
+
+            if(entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity), "User doesn't exist.");
+            }
+
+            var hash = GenerateHash(entity.PasswordSalt, password);
+
+            if (hash != entity.PasswordHash)
+            {
+                throw new UnauthorizedAccessException("Invalid password.");
+            }
+
+            return _mapper.Map<Users>(entity);
+        }
     }
 }

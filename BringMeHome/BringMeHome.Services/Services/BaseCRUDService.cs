@@ -1,13 +1,7 @@
-﻿using BringMeHome.Models.Requests;
-using BringMeHome.Models.SearchObjects;
+﻿using BringMeHome.Models.SearchObjects;
 using BringMeHome.Services.Database;
-using BringMeHome.Services.Interfaces;
 using MapsterMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace BringMeHome.Services.Services
 {

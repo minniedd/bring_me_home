@@ -1,13 +1,14 @@
 ﻿using BringMeHome.Models.Model;
 using BringMeHome.Models.SearchObjects;
 using BringMeHome.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BringMeHome.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BaseController<TModel, TSearch> : ControllerBase where TSearch : BaseSearchObject
     {
         protected IService<TModel, TSearch> _service;
