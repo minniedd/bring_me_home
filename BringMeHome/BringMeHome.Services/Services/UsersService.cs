@@ -90,20 +90,18 @@ namespace BringMeHome.Services.Services
             return Convert.ToBase64String(inArray);
         }
 
-        public Users Login(string username, string password)
+        public async Task<Users> Login(string username, string password)
         {
-            var entity = _context.Users.Include(x=>x.UserRoles).ThenInclude(y=>y.Role).FirstOrDefault(x=>x.Username == username);
+            var entity = await _context.Users.Include("UserRoles.Role").FirstOrDefaultAsync(x => x.Username == username);
 
-            if(entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity), "User doesn't exist.");
-            }
+            if (entity == null)
+                return null;
 
             var hash = GenerateHash(entity.PasswordSalt, password);
 
             if (hash != entity.PasswordHash)
             {
-                throw new UnauthorizedAccessException("Invalid password.");
+                return null;
             }
 
             return _mapper.Map<Users>(entity);

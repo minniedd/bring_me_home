@@ -8,7 +8,6 @@ namespace BringMeHome.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class BaseController<TModel, TSearch> : ControllerBase where TSearch : BaseSearchObject
     {
         protected IService<TModel, TSearch> _service;
@@ -18,12 +17,14 @@ namespace BringMeHome.API.Controllers
             _service = service;
         }
 
+        [Authorize]
         [HttpGet]
         public virtual PageResult<TModel> GetList([FromQuery] TSearch searchObject)
         {
             return _service.GetPaged(searchObject);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public virtual TModel GetById(int id)
         {

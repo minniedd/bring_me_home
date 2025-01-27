@@ -1,5 +1,6 @@
 ﻿using BringMeHome.Models.SearchObjects;
 using BringMeHome.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,12 +17,14 @@ namespace BringMeHome.API.Controllers
             _service = service;
         }
 
+        [Authorize]
         [HttpPost]
         public virtual TModel Insert(TInsert request)
         {
             return _service.Insert(request);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public virtual TModel Update(int id, TUpdate request)
         {

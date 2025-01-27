@@ -12,6 +12,6 @@ namespace BringMeHome.Services.Interfaces
 {
     public interface IUsersService:IBaseCRUDService<Users,UsersSearchObject,UserInsertRequest,UserUpdateRequest>
     {
-        Users Login(string username, string password);
+        public Task<Users> Login(string username, string password);
     }
 }

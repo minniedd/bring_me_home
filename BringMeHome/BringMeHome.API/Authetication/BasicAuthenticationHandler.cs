@@ -33,12 +33,13 @@ namespace BringMeHome.API.Authentification
             var username = credentials[0];
             var password = credentials[1];
 
-            var user = _userService.Login(username, password);
+            var user = await _userService.Login(username, password);
 
-            if (user == null) 
+            if (user == null)
             {
-                return AuthenticateResult.Fail("Authentification Failed");
-            } else
+                return AuthenticateResult.Fail("Auth failed");
+            }
+            else
             {
                 var claims = new List<Claim>()
                 {
@@ -46,12 +47,16 @@ namespace BringMeHome.API.Authentification
                     new Claim(ClaimTypes.NameIdentifier, user.Username)
                 };
 
+                foreach (var role in user.UserRoles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role.Role.Name));
+                }
+
                 var identity = new ClaimsIdentity(claims, Scheme.Name);
 
                 var principal = new ClaimsPrincipal(identity);
 
-                var ticket = new AuthenticationTicket(principal,Scheme.Name);
-
+                var ticket = new AuthenticationTicket(principal, Scheme.Name);
                 return AuthenticateResult.Success(ticket);
             }
         }
