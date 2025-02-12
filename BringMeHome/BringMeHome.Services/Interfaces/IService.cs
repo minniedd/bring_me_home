@@ -8,10 +8,9 @@ using System.Threading.Tasks;
 
 namespace BringMeHome.Services.Interfaces
 {
-    public interface IService<TModel, TSearch> where TSearch : BaseSearchObject
+    public interface IService<T, TSearch> where TSearch : class
     {
-        public PageResult<TModel> GetPaged(TSearch search);
-
-        public TModel GetById(int id);
+        Task<PageResult<T>> Get(TSearch search = null);
+        Task<T> GetById(int id);
     }
 }

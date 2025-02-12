@@ -14,7 +14,7 @@ namespace BringMeHome.API.Authentification
     {
         IUsersService _userService;
 
-        public BasicAuthenticationHandler(IUsersService userService,IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
+        public BasicAuthenticationHandler(IUsersService userService, IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
         {
             _userService = userService;
         }
@@ -26,39 +26,36 @@ namespace BringMeHome.API.Authentification
                 return AuthenticateResult.Fail("Missing header");
             }
 
-            var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
-            var credentialsBytes = Convert.FromBase64String(authHeader.Parameter);
+            var autHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
+            var credentialsBytes = Convert.FromBase64String(autHeader.Parameter);
             var credentials = Encoding.UTF8.GetString(credentialsBytes).Split(':');
 
-            var username = credentials[0];
+            var email = credentials[0];
             var password = credentials[1];
-
-            var user = await _userService.Login(username, password);
+            var user = await _userService.Login(email, password);
 
             if (user == null)
             {
-                return AuthenticateResult.Fail("Auth failed");
+                return AuthenticateResult.Fail("Email or Password was null");
             }
-            else
+
+            var claim = new List<Claim>()
+    {
+        new Claim(ClaimTypes.Email, user.UserEmail),
+        new Claim(ClaimTypes.NameIdentifier, user.Username)
+    };
+
+            foreach (var role in user.UserRoles)
             {
-                var claims = new List<Claim>()
-                {
-                    new Claim(ClaimTypes.Name, user.FirstName),
-                    new Claim(ClaimTypes.NameIdentifier, user.Username)
-                };
-
-                foreach (var role in user.UserRoles)
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, role.Role.Name));
-                }
-
-                var identity = new ClaimsIdentity(claims, Scheme.Name);
-
-                var principal = new ClaimsPrincipal(identity);
-
-                var ticket = new AuthenticationTicket(principal, Scheme.Name);
-                return AuthenticateResult.Success(ticket);
+                claim.Add(new Claim(ClaimTypes.Role, role.Role.Name));
             }
+
+            var identity = new ClaimsIdentity(claim, Scheme.Name);
+            var principal = new ClaimsPrincipal(identity);
+
+            var ticket = new AuthenticationTicket(principal, Scheme.Name);
+            return AuthenticateResult.Success(ticket);
         }
+
     }
 }

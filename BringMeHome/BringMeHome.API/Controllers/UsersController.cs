@@ -3,30 +3,25 @@ using BringMeHome.Models.Requests;
 using BringMeHome.Models.SearchObjects;
 using BringMeHome.Services.Database;
 using BringMeHome.Services.Interfaces;
+using BringMeHome.Services.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BringMeHome.API.Controllers
 {
     [ApiController]
-    [Route("Users")]
-    public class UsersController : BaseCRUDController<Users,UsersSearchObject,UserInsertRequest,UserUpdateRequest>
+    [Route("[controller]")]
+    public class UserController : BaseCRUDController<Users, UsersSearchObject, UserInsertRequest, UserUpdateRequest>
     {
 
-        public UsersController(IUsersService service) : base(service)
+        public UserController(ILogger<BaseController<Users, UsersSearchObject>> logger, IUsersService service)
+            : base(logger, service)
         {
-        }
-        //[AllowAnonymous]
-        [HttpPost("login")]
-        public async Task<Users> Login(string username, string password)
-        {
-            return await (_service as IUsersService).Login(username, password);
         }
 
-        //[AllowAnonymous]
-        public override PageResult<Users> GetList([FromQuery] UsersSearchObject searchObject)
+        public override Task<Users> Insert([FromBody] UserInsertRequest insert)
         {
-            return base.GetList(searchObject);
+            return base.Insert(insert);
         }
     }
 }

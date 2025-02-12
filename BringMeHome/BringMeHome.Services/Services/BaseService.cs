@@ -12,10 +12,10 @@ using System.Threading.Tasks;
 
 namespace BringMeHome.Services.Services
 {
-    public abstract class BaseService<TModel, TSearch, TDbEntity> : IService<TModel, TSearch> where TSearch : BaseSearchObject where TDbEntity : class where TModel : class
+    public class BaseService<T, TDb, TSearch> : IService<T, TSearch> where TDb : class where T : class where TSearch : BaseSearchObject
     {
-        public BringMeHomeDbContext _context;
-        public IMapper _mapper;
+        protected BringMeHomeDbContext _context;
+        protected IMapper _mapper;
 
         public BaseService(BringMeHomeDbContext context, IMapper mapper)
         {
@@ -23,50 +23,51 @@ namespace BringMeHome.Services.Services
             _mapper = mapper;
         }
 
-        public TModel GetById(int id)
+        public virtual async Task<PageResult<T>> Get(TSearch? search = null)
         {
-            var entity = _context.Set<TDbEntity>().Find(id);
+            var query = _context.Set<TDb>().AsQueryable();
 
-            if (entity != null)
-            {
-                return _mapper.Map<TModel>(entity);
-            }
-            else
-            {
-                return null;
-            }
-        }
+            PageResult<T> result = new PageResult<T>();
+            query = AddFilter(query, search);
 
-        public PageResult<TModel> GetPaged(TSearch search)
-        {
-            List<TModel> result = new List<TModel>();
+            query = AddInclude(query, search);
 
-            var filteredQuery = _context.Set<TDbEntity>().AsQueryable();
-
-            filteredQuery = AddFilter(search, filteredQuery);
-
-            int count = filteredQuery.Count();
+            result.Count = await query.CountAsync();
 
             if (search?.Page.HasValue == true && search?.PageSize.HasValue == true)
             {
-                filteredQuery = filteredQuery.Skip(search.Page.Value * search.PageSize.Value).Take(search.PageSize.Value);
+                query = query.Take(search.PageSize.Value).Skip(search.Page.Value * search.PageSize.Value);
             }
 
-            var list = filteredQuery.ToList();
+            var list = await query.ToListAsync();
 
-            result = _mapper.Map(list, result);
-
-            PageResult<TModel> pagedResult = new PageResult<TModel>();
-
-            pagedResult.Result = result;
-            pagedResult.Count = count;
-
-            return pagedResult;
+            var tmp = _mapper.Map<List<T>>(list);
+            result.Result = tmp;
+            return result;
         }
 
-        public virtual IQueryable<TDbEntity> AddFilter(TSearch search, IQueryable<TDbEntity> filter)
+        public virtual IQueryable<TDb> AddInclude(IQueryable<TDb> query, TSearch? search = null)
         {
-            return filter;
+            return query;
+        }
+
+        public virtual IQueryable<TDb> AddFilter(IQueryable<TDb> query, TSearch? search = null)
+        {
+            return query;
+        }
+
+        public virtual async Task<TDb> AddIncludeId(IQueryable<TDb> query, int id)
+        {
+            return (TDb)query;
+        }
+
+        public virtual async Task<T> GetById(int id)
+        {
+            var query = _context.Set<TDb>().AsQueryable();
+
+            var entity = await AddIncludeId(query, id);
+
+            return _mapper.Map<T>(entity);
         }
     }
 }

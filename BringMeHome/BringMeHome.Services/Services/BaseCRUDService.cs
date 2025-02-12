@@ -1,56 +1,105 @@
 ﻿using BringMeHome.Models.SearchObjects;
 using BringMeHome.Services.Database;
 using MapsterMapper;
+using System.Security.Cryptography;
+using System.Text;
 
 
 namespace BringMeHome.Services.Services
 {
-    public abstract class BaseCRUDService<TModel, TSearch, TDbEntity, TInsert, TUpdate> : BaseService<TModel, TSearch, TDbEntity> where TModel : class where TSearch : BaseSearchObject where TDbEntity : class
+    public class BaseCRUDService<T, TDb, TSearch, TInsert, TUpdate> : BaseService<T, TDb, TSearch> where TDb : class where T : class where TSearch : BaseSearchObject where TInsert : class where TUpdate : class
     {
-        public BringMeHomeDbContext _context;
-        public IMapper _mapper;
 
-        public BaseCRUDService(BringMeHomeDbContext context, IMapper mapper) : base(context, mapper)
+        public BaseCRUDService(BringMeHomeDbContext context, IMapper mapper)
+            : base(context, mapper)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public TModel Insert(TInsert request)
-        {
-            TDbEntity entity = _mapper.Map<TDbEntity>(request);
-
-            BeforeInsert(request, entity);
-
-            _context.Add(entity);
-            _context.SaveChanges();
-
-            return _mapper.Map<TModel>(entity);
-        }
-
-        public virtual void BeforeInsert(TInsert request, TDbEntity entity)
+        public virtual async Task BeforeInsert(TDb db, TInsert insert)
         {
 
         }
 
-        public TModel Update(int id, TUpdate request)
+        public virtual async Task BeforeUpdate(TDb db, TUpdate update)
         {
-            var set = _context.Set<TDbEntity>();
 
-            var entity = set.Find(id);
-
-            BeforeUpdate(request, entity);
-
-            _mapper.Map(request, entity);
-
-            _context.SaveChanges();
-
-            return _mapper.Map<TModel>(entity);
         }
 
-        public virtual void BeforeUpdate(TUpdate request, TDbEntity entity)
+        public virtual async Task BeforeRemove(TDb db)
         {
 
+        }
+
+        public virtual async Task<T> Insert(TInsert insert)
+        {
+            var set = _context.Set<TDb>();
+
+            TDb entity = _mapper.Map<TDb>(insert);
+
+            set.Add(entity);
+            await BeforeInsert(entity, insert);
+            await _context.SaveChangesAsync();
+            return _mapper.Map<T>(entity);
+        }
+
+        public virtual async Task<T> Update(int id, TUpdate update)
+        {
+            var set = _context.Set<TDb>();
+
+            var entity = await set.FindAsync(id);
+
+            await BeforeUpdate(entity, update);
+
+            _mapper.Map(update, entity);
+
+            await _context.SaveChangesAsync();
+            return _mapper.Map<T>(entity);
+        }
+
+        public virtual async Task<bool> Delete(int id)
+        {
+            var set = _context.Set<TDb>();
+
+            var entity = await set.FindAsync(id);
+            if (entity == null)
+            {
+                return false;
+            }
+
+            await BeforeRemove(entity);
+
+            set.Remove(entity);
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public static string GenerateSalt()
+        {
+            int saltSize = 16;
+            byte[] saltBytes = new byte[saltSize];
+
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(saltBytes);
+            }
+
+            return Convert.ToBase64String(saltBytes);
+        }
+
+        public static string GenerateHash(string salt, string password)
+        {
+            string saltedPassword = salt + password;
+
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] saltedPasswordBytes = Encoding.UTF8.GetBytes(saltedPassword);
+                byte[] hashBytes = sha256.ComputeHash(saltedPasswordBytes);
+
+                // Convert the hash byte array to a base64 string
+                return Convert.ToBase64String(hashBytes);
+            }
         }
     }
 }

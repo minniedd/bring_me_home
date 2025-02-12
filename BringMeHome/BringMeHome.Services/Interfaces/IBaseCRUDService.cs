@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace BringMeHome.Services.Interfaces
 {
-    public interface IBaseCRUDService<TModel,TSearch,TInsert, TUpdate>:IService<TModel, TSearch> where TModel : class where TSearch : BaseSearchObject
-
+    public interface IBaseCRUDService<T, TSearch, TInsert, TUpdate> : IService<T, TSearch> where T : class where TSearch : class where TInsert : class where TUpdate : class
     {
-        TModel Insert(TInsert request);
-        TModel Update(int id, TUpdate request);
+        Task<T> Insert(TInsert insert);
+        Task<T> Update(int id, TUpdate update);
+        Task<bool> Delete(int id);
     }
 }

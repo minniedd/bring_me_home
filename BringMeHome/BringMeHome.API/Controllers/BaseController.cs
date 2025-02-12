@@ -6,29 +6,31 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BringMeHome.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class BaseController<TModel, TSearch> : ControllerBase where TSearch : BaseSearchObject
+    [Route("[controller]")]
+    public class BaseController<T, TSearch> : ControllerBase where T : class where TSearch : class
     {
-        protected IService<TModel, TSearch> _service;
+        protected readonly IService<T, TSearch> _service;
+        protected readonly ILogger<BaseController<T, TSearch>> _logger;
 
-        public BaseController(IService<TModel, TSearch> service)
+        public BaseController(ILogger<BaseController<T, TSearch>> logger, IService<T, TSearch> service)
         {
+            _logger = logger;
             _service = service;
         }
 
         [Authorize]
-        [HttpGet]
-        public virtual PageResult<TModel> GetList([FromQuery] TSearch searchObject)
+        [HttpGet()]
+        public async Task<PageResult<T>> Get([FromQuery] TSearch? search = null)
         {
-            return _service.GetPaged(searchObject);
+            return await _service.Get(search);
         }
 
         [Authorize]
         [HttpGet("{id}")]
-        public virtual TModel GetById(int id)
+        public async Task<T> GetById(int id)
         {
-            return _service.GetById(id);
+            return await _service.GetById(id);
         }
     }
 }

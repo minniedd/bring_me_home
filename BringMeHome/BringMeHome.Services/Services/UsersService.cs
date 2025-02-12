@@ -3,6 +3,7 @@ using BringMeHome.Models.Requests;
 using BringMeHome.Models.SearchObjects;
 using BringMeHome.Services.Database;
 using BringMeHome.Services.Interfaces;
+using Mapster;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -15,84 +16,72 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace BringMeHome.Services.Services
 {
-    public class UsersService : BaseCRUDService<Users, UsersSearchObject, Database.User, UserInsertRequest, UserUpdateRequest>, IUsersService
+    public class UserService : BaseCRUDService<Models.Model.Users, Database.User, Models.SearchObjects.UsersSearchObject, UserInsertRequest, UserUpdateRequest>, IUsersService
     {
-        public UsersService(BringMeHomeDbContext context, IMapper mapper) : base(context, mapper)
+
+        public UserService(BringMeHomeDbContext context, IMapper mapper)
+            : base(context, mapper)
         {
         }
 
-        public override IQueryable<User> AddFilter(UsersSearchObject searchObject, IQueryable<User> query)
+        public override IQueryable<User> AddFilter(IQueryable<User> query, UsersSearchObject? search = null)
         {
-            if (!string.IsNullOrWhiteSpace(searchObject?.UserFTS))
+
+            if (!string.IsNullOrWhiteSpace(search?.UserFTS))
             {
-                query = query.Where(x => x.FirstName.Contains(searchObject.UserFTS) || x.LastName.Contains(searchObject.UserFTS));
+                query = query.Where(x => x.FirstName.Contains(search.UserFTS) || x.LastName.Contains(search.UserFTS));
             }
 
-            if (searchObject.isUserRoleIncluded == true)
-            {
-                query = query.Include(x => x.UserRoles).ThenInclude(x => x.Role);
-            }
-
-            return base.AddFilter(searchObject, query);
+            return base.AddFilter(query, search);
         }
 
-        public override void BeforeInsert(UserInsertRequest request, User entity)
+        public override async Task<Models.Model.Users> Insert(UserInsertRequest insert)
         {
-            if (request.Password != request.PasswordRepeat)
-            {
-                throw new Exception("Passwords don't match!");
-            }
+            return await base.Insert(insert);
+        }
 
+        public override async Task BeforeInsert(User entity, UserInsertRequest request)
+        {
             entity.PasswordSalt = GenerateSalt();
             entity.PasswordHash = GenerateHash(entity.PasswordSalt, request.Password);
-
-            base.BeforeInsert(request, entity);
         }
 
-        public override void BeforeUpdate(UserUpdateRequest request, User entity)
+        public override async Task<Models.Model.Users> Update(int id, UserUpdateRequest update)
         {
-            base.BeforeUpdate(request, entity);
+            return await base.Update(id, update);
+        }
 
-            if (request.Password != null)
+        public override IQueryable<User> AddInclude(IQueryable<User> query, UsersSearchObject? search = null)
+        {
+            query = query.Include("UserRoles.Role");
+
+            return base.AddInclude(query, search);
+        }
+
+        public override async Task<User> AddIncludeId(IQueryable<User> query, int id)
+        {
+            query = query.Include("UserRoles.Role");
+            var entity = await query.FirstOrDefaultAsync(x => x.UsersId == id);
+            return entity;
+        }
+
+        public override async Task<Task> BeforeRemove(User db)
+        {
+            var entityRole = await _context.UserRoles.FirstOrDefaultAsync(x => x.UserId == db.UsersId);
+
+            if (entityRole != null)
             {
+                _context.UserRoles.Remove(entityRole);
 
-                if (request.Password != request.PasswordRepeat)
-                {
-                    throw new Exception("Passwords don't match!");
-                }
-
-                entity.PasswordSalt = GenerateSalt();
-                entity.PasswordHash = GenerateHash(entity.PasswordSalt, request.Password);
+                await _context.SaveChangesAsync();
             }
 
+            return base.BeforeRemove(db);
         }
 
-
-        public static string GenerateSalt()
+        public async Task<Models.Model.Users> Login(string email, string password)
         {
-            var byteArray = RandomNumberGenerator.GetBytes(16);
-
-
-            return Convert.ToBase64String(byteArray);
-        }
-
-        public static string GenerateHash(string salt, string password)
-        {
-            byte[] src = Convert.FromBase64String(salt);
-            byte[] bytes = Encoding.Unicode.GetBytes(password);
-            byte[] dst = new byte[src.Length + bytes.Length];
-
-            System.Buffer.BlockCopy(src, 0, dst, 0, src.Length);
-            System.Buffer.BlockCopy(bytes, 0, dst, src.Length, bytes.Length);
-
-            HashAlgorithm algorithm = HashAlgorithm.Create("SHA1");
-            byte[] inArray = algorithm.ComputeHash(dst);
-            return Convert.ToBase64String(inArray);
-        }
-
-        public async Task<Users> Login(string username, string password)
-        {
-            var entity = await _context.Users.Include("UserRoles.Role").FirstOrDefaultAsync(x => x.Username == username);
+            var entity = await _context.Users.Include("UserRoles.Role").FirstOrDefaultAsync(x => x.UserEmail == email);
 
             if (entity == null)
                 return null;
@@ -104,7 +93,8 @@ namespace BringMeHome.Services.Services
                 return null;
             }
 
-            return _mapper.Map<Users>(entity);
+            return _mapper.Map<Models.Model.Users>(entity);
+
         }
     }
 }

@@ -15,20 +15,20 @@ builder.Services.AddSwaggerGen(options =>
     options.CustomSchemaIds(type => type.ToString());
 });
 
-builder.Services.AddTransient<IUsersService, UsersService>();
+builder.Services.AddTransient<IUsersService, UserService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(a =>
 {
-    a.AddSecurityDefinition("basicAuth", new OpenApiSecurityScheme()
+    a.AddSecurityDefinition("basicAuth", new Microsoft.OpenApi.Models.OpenApiSecurityScheme()
     {
-        Type = SecuritySchemeType.Http,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
         Scheme = "basic"
     });
 
-    a.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    a.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement()
     {
         {
         new OpenApiSecurityScheme
@@ -40,6 +40,7 @@ builder.Services.AddSwaggerGen(a =>
     });
 }
 );
+builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddMapster();
 builder.Services.AddAuthentication("BasicAuthentication")
     .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
@@ -60,8 +61,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-app.UseAuthorization();
 
+app.UseAuthorization();
 
 app.MapControllers();
 

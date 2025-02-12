@@ -1,4 +1,5 @@
-﻿using BringMeHome.Models.SearchObjects;
+﻿using BringMeHome.Models.Model;
+using BringMeHome.Models.SearchObjects;
 using BringMeHome.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -6,29 +7,46 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BringMeHome.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class BaseCRUDController<TModel, TSearch, TInsert, TUpdate> : BaseController<TModel, TSearch>where TSearch : BaseSearchObject where TModel : class
+    [Route("[controller]")]
+    public class BaseCRUDController<T, TSearch, TInsert, Tupdate> : BaseController<T, TSearch> where T : class where TSearch : class where TInsert : class where Tupdate : class
     {
-        protected new IBaseCRUDService<TModel, TSearch, TInsert, TUpdate> _service;
+        protected new readonly IBaseCRUDService<T, TSearch, TInsert, Tupdate> _service;
+        protected readonly ILogger<BaseController<T, TSearch>> _logger;
 
-        public BaseCRUDController(IBaseCRUDService<TModel, TSearch,TInsert,TUpdate> service) : base(service)
+        public BaseCRUDController(ILogger<BaseController<T, TSearch>> logger, IBaseCRUDService<T, TSearch, TInsert, Tupdate> service)
+            : base(logger, service)
         {
             _service = service;
+            _logger = logger;
         }
 
-        [Authorize]
-        [HttpPost]
-        public virtual TModel Insert(TInsert request)
+        [AllowAnonymous]
+        [HttpPost()]
+        public virtual async Task<T> Insert([FromBody] TInsert insert)
         {
-            return _service.Insert(request);
+            return await _service.Insert(insert);
         }
 
         [Authorize]
         [HttpPut("{id}")]
-        public virtual TModel Update(int id, TUpdate request)
+        public virtual async Task<T> Update(int id, [FromBody] Tupdate update)
         {
-            return _service.Update(id, request);
+            return await _service.Update(id, update);
+        }
+
+        [Authorize]
+        [HttpDelete("{id}")]
+        public virtual async Task<IActionResult> Delete(int id)
+        {
+            var result = await _service.Delete(id);
+
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }
