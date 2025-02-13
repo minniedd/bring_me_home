@@ -41,8 +41,8 @@ namespace BringMeHome.API.Authentification
 
             var claim = new List<Claim>()
     {
-        new Claim(ClaimTypes.Email, user.UserEmail),
-        new Claim(ClaimTypes.NameIdentifier, user.Username)
+            new Claim(ClaimTypes.Email, user.UserEmail),
+            new Claim(ClaimTypes.NameIdentifier, user.FirstName, user.LastName)
     };
 
             foreach (var role in user.UserRoles)
