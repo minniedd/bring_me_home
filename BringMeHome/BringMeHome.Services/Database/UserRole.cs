@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace BringMeHome.Services.Database;
-
-public partial class UserRole
+namespace BringMeHome.Services.Database
 {
-    public int UserRolesId { get; set; }
+    public class UserRole
+    {
+        public int UserId { get; set; }
+        public User User { get; set; }
 
-    public int? UserId { get; set; }
-
-    public int? RoleId { get; set; }
-
-    public DateOnly DateChange { get; set; }
-
-    public virtual Role? Role { get; set; }
-
-    public virtual User? User { get; set; }
+        public int RoleId { get; set; }
+        public UserRole Role { get; set; }
+    }
 }

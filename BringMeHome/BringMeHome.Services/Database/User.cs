@@ -1,29 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace BringMeHome.Services.Database;
-
-public partial class User
+namespace BringMeHome.Services.Database
 {
-    public int UsersId { get; set; }
+    public class User
+    {
+        [Key]
+        public int Id { get; set; }
 
-    public string FirstName { get; set; } = null!;
+        [Required]
+        [MaxLength(50)]
+        public string FirstName { get; set; } = string.Empty;
 
-    public string LastName { get; set; } = null!;
+        [Required]
+        [MaxLength(50)]
+        public string LastName { get; set; } = string.Empty;
 
-    public string UserEmail { get; set; } = null!;
+        [Required]
+        [MaxLength(100)]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
 
-    public string Username { get; set; } = null!;
+        [Required]
+        [MaxLength(100)]
+        public string Username { get; set; } = string.Empty;
 
-    public string UserPhone { get; set; } = null!;
+        [Phone]
+        [MaxLength(20)]
+        public string? PhoneNumber { get; set; }
 
-    public string PasswordHash { get; set; } = null!;
+        public string PasswordHash { get; set; } = string.Empty;
 
-    public string PasswordSalt { get; set; } = null!;
+        public string PasswordSalt { get; set; } = string.Empty;
 
-    public string? UserStatus { get; set; }
+        public bool IsActive { get; set; } = true;
 
-    public virtual ICollection<ReviewComment> ReviewComments { get; set; } = new List<ReviewComment>();
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+        public DateTime? LastLoginAt { get; set; }
+
+        public string? ResetPasswordToken { get; set; } 
+
+        public DateTime? ResetPasswordExpiration { get; set; }
+
+        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+    }
 }

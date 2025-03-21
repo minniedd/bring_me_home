@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace BringMeHome.Services.Database
 {
-    public class AdoptionReason
+    public class Reason
     {
-        public int ApplicationID { get; set; }
-        public AdoptionApplication Application { get; set; }
-
         public int ReasonID { get; set; }
-        public Reason Reason { get; set; }
+        public string ReasonType { get; set; }
+
+        public ICollection<AdoptionReason> AdoptionReasons { get; set; }
     }
 }

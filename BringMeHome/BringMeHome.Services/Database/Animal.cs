@@ -1,47 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace BringMeHome.Services.Database;
-
-public partial class Animal
+namespace BringMeHome.Services.Database
 {
-    public int AnimalsId { get; set; }
+    public class Animal
+    {
+            [Key]
+            public int AnimalID { get; set; }
 
-    public string Name { get; set; } = null!;
+            [Required, StringLength(100)]
+            public string Name { get; set; }
 
-    public string Age { get; set; } = null!;
+            public int SpeciesID { get; set; }
 
-    public string Gender { get; set; } = null!;
+            public int BreedID { get; set; }
 
-    public string Weight { get; set; } = null!;
+            public int Age { get; set; }
 
-    public string About { get; set; } = null!;
+            [Required, StringLength(20)]
+            public string Gender { get; set; }
 
-    public byte[]? Photo { get; set; }
+            public decimal Weight { get; set; }
 
-    public DateTime? RegistrationDate { get; set; }
+            [DataType(DataType.Date)]
+            public DateTime DateArrived { get; set; }
 
-    public string? IsAdopted { get; set; }
+            public int StatusID { get; set; }
 
-    public string? IsDeleted { get; set; }
+            [StringLength(1000)]
+            public string Description { get; set; }
 
-    public int? BreedId { get; set; }
+            [StringLength(500)]
+            public string HealthStatus { get; set; }
 
-    public int? AnimalTypeId { get; set; }
+            public int ShelterID { get; set; }
 
-    public int? ShelterId { get; set; }
+            // Navigation properties
+            [ForeignKey("SpeciesID")]
+            public virtual Species Species { get; set; }
 
-    public int? CityId { get; set; }
+            [ForeignKey("BreedID")]
+            public virtual Breed Breed { get; set; }
 
-    public virtual AnimalType? AnimalType { get; set; }
+            [ForeignKey("StatusID")]
+            public virtual AnimalStatus Status { get; set; }
 
-    public virtual ICollection<Application> Applications { get; set; } = new List<Application>();
+            [ForeignKey("ShelterID")]
+            public virtual Shelter Shelter { get; set; }
 
-    public virtual Breed? Breed { get; set; }
-
-    public virtual City? City { get; set; }
-
-    public virtual ICollection<Favourite> Favourites { get; set; } = new List<Favourite>();
-
-    public virtual Shelter? Shelter { get; set; }
-}
+            public virtual ICollection<AnimalColor> AnimalColors { get; set; }
+            public virtual ICollection<AdoptionApplication> AdoptionApplications { get; set; }
+            public virtual ICollection<AnimalTemperamentJunction> AnimalTemperaments { get; set; }
+        }
+    }

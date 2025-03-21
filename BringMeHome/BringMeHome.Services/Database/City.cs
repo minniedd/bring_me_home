@@ -1,19 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using static BringMeHome.Services.Database.Adopters;
 
-namespace BringMeHome.Services.Database;
-
-public partial class City
+namespace BringMeHome.Services.Database
 {
-    public int CityId { get; set; }
+    public class City
+    {
+        [Key]
+        public int CityID { get; set; }
 
-    public string? Name { get; set; }
+        [Required, StringLength(100)]
+        public string CityName { get; set; }
 
-    public int? CantonId { get; set; }
+        public int CantonID { get; set; }
 
-    public virtual ICollection<Animal> Animals { get; set; } = new List<Animal>();
+        // Navigation properties
+        [ForeignKey("CantonID")]
+        public virtual Canton Canton { get; set; }
 
-    public virtual Canton? Canton { get; set; }
-
-    public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
+        public virtual ICollection<Shelter> Shelters { get; set; }
+        public virtual ICollection<Adopter> Adopters { get; set; }
+    }
 }

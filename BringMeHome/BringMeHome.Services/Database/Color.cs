@@ -7,22 +7,18 @@ using System.Threading.Tasks;
 
 namespace BringMeHome.Services.Database
 {
-    public class Role
+    public class Color
     {
         [Key]
-        public int RoleID { get; set; }
+        public int ColorID { get; set; }
 
         [Required, StringLength(50)]
-        public string RoleName { get; set; } 
+        public string ColorName { get; set; }
 
         [StringLength(200)]
         public string Description { get; set; }
 
-        public int PermissionLevel { get; set; } 
-
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-
-        // Navigation Property
-        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+        // Navigation properties
+        public virtual ICollection<AnimalColor> AnimalColors { get; set; }
     }
 }

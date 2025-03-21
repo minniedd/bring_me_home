@@ -7,22 +7,20 @@ using System.Threading.Tasks;
 
 namespace BringMeHome.Services.Database
 {
-    public class Role
+    public class DonationType
     {
         [Key]
-        public int RoleID { get; set; }
+        public int DonationTypeID { get; set; }
 
         [Required, StringLength(50)]
-        public string RoleName { get; set; } 
+        public string TypeName { get; set; }
 
         [StringLength(200)]
         public string Description { get; set; }
 
-        public int PermissionLevel { get; set; } 
+        public bool TaxDeductible { get; set; }
 
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-
-        // Navigation Property
-        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+        // Navigation properties
+        public virtual ICollection<Donation> Donations { get; set; }
     }
 }
