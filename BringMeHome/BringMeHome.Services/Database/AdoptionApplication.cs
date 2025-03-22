@@ -35,6 +35,8 @@ namespace BringMeHome.Services.Database
 
         public string? IsAnimalAllowed { get; set; }
 
+        public int AdoptionReasonId { get; set; }
+
         // Navigation properties
         [ForeignKey("AdopterID")]
         public virtual Adopter Adopter { get; set; }
@@ -49,6 +51,7 @@ namespace BringMeHome.Services.Database
         public virtual Staff ReviewedBy { get; set; }
 
         public ICollection<AdoptionReason> AdoptionReasons { get; set; }
+
 
     }
 }

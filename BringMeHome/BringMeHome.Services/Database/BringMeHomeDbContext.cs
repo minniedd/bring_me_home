@@ -9,7 +9,7 @@ using static BringMeHome.Services.Database.Adopters;
 
 namespace BringMeHome.Services.Database
 {
-    public class BringMeHomeDbContext: DbContext
+    public class BringMeHomeDbContext : DbContext
     {
         public BringMeHomeDbContext(DbContextOptions<BringMeHomeDbContext> options) : base(options)
         {
@@ -24,7 +24,7 @@ namespace BringMeHome.Services.Database
         public DbSet<Donor> Donors { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
-        public DbSet<Role>Roles { get; set; }
+        public DbSet<Role> Roles { get; set; }
         public DbSet<Species> Species { get; set; }
         public DbSet<Breed> Breeds { get; set; }
         public DbSet<Color> Colors { get; set; }
@@ -42,7 +42,6 @@ namespace BringMeHome.Services.Database
         public DbSet<MedicalRecord> MedicalRecords { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -59,113 +58,178 @@ namespace BringMeHome.Services.Database
             modelBuilder.Entity<Animal>()
                 .HasOne(a => a.Species)
                 .WithMany(s => s.Animals)
-                .HasForeignKey(a => a.SpeciesID);
+                .HasForeignKey(a => a.SpeciesID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Animal>()
                 .HasOne(a => a.Breed)
                 .WithMany(b => b.Animals)
-                .HasForeignKey(a => a.BreedID);
+                .HasForeignKey(a => a.BreedID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Animal>()
                 .HasOne(a => a.Shelter)
                 .WithMany(s => s.Animals)
-                .HasForeignKey(a => a.ShelterID);
+                .HasForeignKey(a => a.ShelterID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Animal>()
                 .HasOne(a => a.Status)
                 .WithMany(s => s.Animals)
-                .HasForeignKey(a => a.StatusID);
+                .HasForeignKey(a => a.StatusID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Shelter entity configuration
             modelBuilder.Entity<Shelter>()
                 .HasOne(s => s.City)
                 .WithMany(c => c.Shelters)
-                .HasForeignKey(s => s.CityID);
+                .HasForeignKey(s => s.CityID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Shelter>()
                 .HasOne(s => s.Canton)
                 .WithMany(c => c.Shelters)
-                .HasForeignKey(s => s.CantonID);
+                .HasForeignKey(s => s.CantonID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Adopter entity configuration
             modelBuilder.Entity<Adopter>()
                 .HasOne(a => a.User)
                 .WithMany()
-                .HasForeignKey(a => a.UserID);
+                .HasForeignKey(a => a.UserID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Adopter>()
                 .HasOne(a => a.City)
                 .WithMany(c => c.Adopters)
-                .HasForeignKey(a => a.CityID);
+                .HasForeignKey(a => a.CityID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Adopter>()
                 .HasOne(a => a.Canton)
                 .WithMany(c => c.Adopters)
-                .HasForeignKey(a => a.CantonID);
+                .HasForeignKey(a => a.CantonID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // AdoptionApplication entity configuration
             modelBuilder.Entity<AdoptionApplication>()
                 .HasOne(aa => aa.Adopter)
                 .WithMany()
-                .HasForeignKey(aa => aa.AdopterID);
+                .HasForeignKey(aa => aa.AdopterID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<AdoptionApplication>()
                 .HasOne(aa => aa.Animal)
                 .WithMany()
-                .HasForeignKey(aa => aa.AnimalID);
+                .HasForeignKey(aa => aa.AnimalID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<AdoptionApplication>()
                 .HasOne(aa => aa.Status)
                 .WithMany(s => s.Applications)
-                .HasForeignKey(aa => aa.StatusID);
+                .HasForeignKey(aa => aa.StatusID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<AdoptionApplication>()
                 .HasOne(aa => aa.ReviewedBy)
                 .WithMany()
-                .HasForeignKey(aa => aa.ReviewedByStaffID);
+                .HasForeignKey(aa => aa.ReviewedByStaffID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Donation entity configuration
             modelBuilder.Entity<Donation>()
                 .HasOne(d => d.Donor)
                 .WithMany(dn => dn.Donations)
-                .HasForeignKey(d => d.DonorID);
+                .HasForeignKey(d => d.DonorID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Donation>()
                 .HasOne(d => d.DonationType)
                 .WithMany(dt => dt.Donations)
-                .HasForeignKey(d => d.DonationTypeID);
+                .HasForeignKey(d => d.DonationTypeID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Donation>()
                 .HasOne(d => d.AcknowledgedBy)
                 .WithMany()
-                .HasForeignKey(d => d.AcknowledgedByStaffID);
+                .HasForeignKey(d => d.AcknowledgedByStaffID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // AnimalColor entity configuration
             modelBuilder.Entity<AnimalColor>()
                 .HasOne(ac => ac.Animal)
                 .WithMany()
-                .HasForeignKey(ac => ac.AnimalID);
+                .HasForeignKey(ac => ac.AnimalID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<AnimalColor>()
                 .HasOne(ac => ac.Color)
                 .WithMany()
-                .HasForeignKey(ac => ac.ColorID);
+                .HasForeignKey(ac => ac.ColorID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // AnimalTemperamentJunction entity configuration
             modelBuilder.Entity<AnimalTemperamentJunction>()
                 .HasOne(atj => atj.Animal)
                 .WithMany()
-                .HasForeignKey(atj => atj.AnimalID);
+                .HasForeignKey(atj => atj.AnimalID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<AnimalTemperamentJunction>()
                 .HasOne(atj => atj.Temperament)
                 .WithMany()
-                .HasForeignKey(atj => atj.TemperamentID);
+                .HasForeignKey(atj => atj.TemperamentID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<AnimalTemperamentJunction>()
                 .HasOne(atj => atj.AssessedBy)
                 .WithMany()
-                .HasForeignKey(atj => atj.AssessedByID);
+                .HasForeignKey(atj => atj.AssessedByID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // UserRole entity configuration
+            modelBuilder.Entity<UserRole>()
+                .HasKey(ur => new { ur.UserId, ur.RoleId });
+
+            modelBuilder.Entity<UserRole>()
+                .HasOne(ur => ur.User)
+                .WithMany(u => u.UserRoles)
+                .HasForeignKey(ur => ur.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserRole>()
+                .HasOne(ur => ur.Role)
+                .WithMany(r => r.UserRoles)
+                .HasForeignKey(ur => ur.RoleId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // AdoptionReason entity configuration
+            modelBuilder.Entity<AdoptionReason>()
+                .HasKey(ar => new { ar.ApplicationID, ar.ReasonID });
+
+            modelBuilder.Entity<AdoptionReason>()
+                .HasOne(ar => ar.Application)
+                .WithMany(aa => aa.AdoptionReasons)
+                .HasForeignKey(ar => ar.ApplicationID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AdoptionReason>()
+                .HasOne(ar => ar.Reason)
+                .WithMany()
+                .HasForeignKey(ar => ar.ReasonID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Event entity configuration
+            modelBuilder.Entity<Event>()
+                .HasKey(e => e.EventID);
+
+            // MedicalRecord entity configuration
+            modelBuilder.Entity<MedicalRecord>()
+                .HasKey(mr => mr.MedicalRecordID);
+
+            // Feedback entity configuration
+            modelBuilder.Entity<Feedback>()
+                .HasKey(f => f.FeedbackID);
         }
     }
 }
