@@ -18,9 +18,9 @@ namespace BringMeHome.Services.Database
         [StringLength(200)]
         public string Description { get; set; }
 
-        public int PermissionLevel { get; set; } 
-
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+
+        public DateTime? UpdatedDate { get; set; }
 
         // Navigation Property
         public ICollection<UserRole> UserRoles { get; set; } 

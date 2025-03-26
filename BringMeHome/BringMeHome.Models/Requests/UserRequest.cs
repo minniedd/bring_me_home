@@ -15,7 +15,7 @@ namespace BringMeHome.Models.Requests
 
         [Required]
         [MaxLength(50)]
-        public string LastName { get; set; } = string.Empty;
+        public string? LastName { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(100)]
@@ -27,7 +27,6 @@ namespace BringMeHome.Models.Requests
         public string Username { get; set; } = string.Empty;
 
         [MaxLength(20)]
-        [Phone]
         public string? PhoneNumber { get; set; }
 
         public bool IsActive { get; set; } = true;

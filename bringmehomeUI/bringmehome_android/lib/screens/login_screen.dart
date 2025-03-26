@@ -4,8 +4,40 @@ import 'package:learning_app/components/my_button.dart';
 import 'package:learning_app/screens/animal_list_screen.dart';
 import 'package:learning_app/screens/sign_up_screen.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  LoginScreen({super.key});
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  bool _showPassword = false;
+  Color _emailColor = Colors.black;
+
+  bool validateEmail(TextEditingController controller) {
+    final emailRegex = RegExp(
+        r"[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.[a-zA-Z]+");
+
+    if (controller.text.isEmpty) {
+      setState(() {
+        _emailColor = Colors.red; // Change color to red on empty field
+      });
+      return false;
+    } else if (emailRegex.hasMatch(controller.text) == false) {
+      setState(() {
+        _emailColor = Colors.red; // Change color to red on invalid format
+      });
+      return false;
+    }
+    setState(() {
+      _emailColor = Colors.black; // Reset color to black on valid input
+    });
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,16 +68,29 @@ class LoginScreen extends StatelessWidget {
                   padding:
                       const EdgeInsets.only(left: 60, right: 10, bottom: 15),
                   child: TextFormField(
+                    controller: widget._emailController,
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
-                      labelText: 'username',
+                      labelText: 'e-mail',
                     ),
+                    style: TextStyle(color: _emailColor),
+                    onChanged: (value) => validateEmail(widget._emailController)
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 60, right: 10),
                   child: TextFormField(
-                    decoration: const InputDecoration(
+                    controller: widget._passwordController,
+                    obscureText: !_showPassword,
+                    decoration:  InputDecoration(
+                        suffixIcon: IconButton(
+                          icon: Icon(_showPassword ? Icons.visibility_rounded : Icons.visibility_off_rounded),
+                          onPressed: () {
+                            setState(() {
+                              _showPassword = !_showPassword;
+                            });
+                          },
+                        ),
                         border: UnderlineInputBorder(), labelText: 'password'),
                   ),
                 ),
@@ -53,7 +98,7 @@ class LoginScreen extends StatelessWidget {
                   height: 45,
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(right: 100,left: 100),
+                  padding: const EdgeInsets.only(right: 100, left: 100),
                   child: MyButton(
                     buttonText: "login",
                     onTap: () {

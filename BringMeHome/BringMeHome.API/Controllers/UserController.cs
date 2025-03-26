@@ -1,4 +1,5 @@
-﻿using BringMeHome.Models.Requests;
+﻿using BringMeHome.Models.Helpers;
+using BringMeHome.Models.Requests;
 using BringMeHome.Models.Responses;
 using BringMeHome.Models.SearchObjects;
 using BringMeHome.Services.Interfaces;
@@ -19,7 +20,7 @@ namespace BringMeHome.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<UserResponse>>> Get([FromQuery] UserSearchObject? search = null)
+        public async Task<ActionResult<PagedResult<UserResponse>>> Get([FromQuery] UserSearchObject? search = null)
         {
             return await _userService.GetAsync(search ?? new UserSearchObject());
         }

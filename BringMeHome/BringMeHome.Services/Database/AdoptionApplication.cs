@@ -50,7 +50,7 @@ namespace BringMeHome.Services.Database
         [ForeignKey("ReviewedByStaffID")]
         public virtual Staff ReviewedBy { get; set; }
 
-        public ICollection<AdoptionReason> AdoptionReasons { get; set; }
+        public virtual ICollection<AdoptionReason> AdoptionReasons { get; set; }
 
 
     }

@@ -29,7 +29,6 @@ namespace BringMeHome.Services.Database
         [MaxLength(100)]
         public string Username { get; set; } = string.Empty;
 
-        [Phone]
         [MaxLength(20)]
         public string? PhoneNumber { get; set; }
 
@@ -46,6 +45,10 @@ namespace BringMeHome.Services.Database
         public string? ResetPasswordToken { get; set; } 
 
         public DateTime? ResetPasswordExpiration { get; set; }
+
+        public string? RefreshToken { get; set; }
+
+        public DateTime? RefreshTokenExpiryTime { get; set; }
 
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     }

@@ -11,6 +11,6 @@ namespace BringMeHome.Services.Database
         public int ReasonID { get; set; }
         public string ReasonType { get; set; }
 
-        public ICollection<AdoptionReason> AdoptionReasons { get; set; }
+        public virtual ICollection<AdoptionReason> AdoptionReasons { get; set; }
     }
 }

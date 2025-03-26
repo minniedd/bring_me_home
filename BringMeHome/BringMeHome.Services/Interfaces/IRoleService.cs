@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace BringMeHome.Services.Interfaces
 {
-    public interface IUserService
+    public interface IRoleService
     {
-        Task<PagedResult<UserResponse>> GetAsync(UserSearchObject search);
-        Task<UserResponse?> GetByIdAsync(int id);
-        Task<UserResponse> CreateAsync(UserRequest request);
-        Task<UserResponse?> UpdateAsync(int id, UserRequest request);
+        Task<PagedResult<RoleResponse>> GetAsync(RoleSearchObject search);
+        Task<RoleResponse?> GetByIdAsync(int id);
+        Task<RoleResponse> CreateAsync(RoleRequest request);
+        Task<RoleResponse?> UpdateAsync(int id, RoleRequest request);
         Task<bool> DeleteAsync(int id);
     }
 }

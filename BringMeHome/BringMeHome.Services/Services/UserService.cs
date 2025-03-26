@@ -1,4 +1,5 @@
-﻿using BringMeHome.Models.Requests;
+﻿using BringMeHome.Models.Helpers;
+using BringMeHome.Models.Requests;
 using BringMeHome.Models.Responses;
 using BringMeHome.Models.SearchObjects;
 using BringMeHome.Services.Database;
@@ -71,7 +72,7 @@ namespace BringMeHome.Services.Services
             return true;
         }
 
-        public async Task<List<UserResponse>> GetAsync(UserSearchObject search)
+        public async Task<PagedResult<UserResponse>> GetAsync(UserSearchObject search)
         {
             var query = _context.Users.AsQueryable();
 
@@ -94,8 +95,21 @@ namespace BringMeHome.Services.Services
                     u.Email.Contains(search.FTS));
             }
 
-            var users = await query.ToListAsync();
-            return users.Select(MapToResponse).ToList();
+            var totalCount = await query.CountAsync();
+
+            var users = await query
+                .ApplySort(search)
+                .ApplyPagination(search)
+                .Select(r => MapToResponse(r))
+                .ToListAsync();
+
+            return new PagedResult<UserResponse>
+            {
+                Items = users,
+                TotalCount = totalCount,
+                PageNumber = search.PageNumber,
+                PageSize = search.PageSize
+            };
         }
 
         public async Task<UserResponse?> GetByIdAsync(int id)
@@ -139,7 +153,7 @@ namespace BringMeHome.Services.Services
             return MapToResponse(user);
         }
 
-        private UserResponse MapToResponse(User user)
+        private static UserResponse MapToResponse(User user)
         {
             return new UserResponse
             {

@@ -55,7 +55,7 @@ class SignUpScreen extends StatelessWidget {
                   child: TextFormField(
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
-                      labelText: 'username',
+                      labelText: 'repeat password',
                     ),
                   ),
                 ),
