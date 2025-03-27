@@ -20,7 +20,6 @@ namespace BringMeHome.API.Controllers
             _roleService = roleService;
         }
 
-
         [HttpGet]
         public async Task<ActionResult<PagedResult<RoleResponse>>> Get([FromQuery] RoleSearchObject? search = null)
         {
