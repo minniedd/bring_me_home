@@ -29,14 +29,6 @@ namespace BringMeHome.Services.Services
                 throw new ArgumentException("City name cannot be empty");
             }
 
-            var existingColor = await _context.Cities
-                .FirstOrDefaultAsync(r => r.CityName.ToLower() == request.CityName.ToLower());
-
-            if (existingColor != null)
-            {
-                throw new InvalidOperationException($"City with name {request.CityName} already exists");
-            }
-
             var city = new City
             {
                 CityName = request.CityName,
