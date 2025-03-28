@@ -12,7 +12,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IAdopterService, AdopterService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-
+builder.Services.AddTransient<IAdoptionApplicationService, AdoptionApplicationService>();
+builder.Services.AddTransient<IAnimalStatusService, AnimalStatusService>();
+builder.Services.AddTransient<IBreedService, BreedService>();
+builder.Services.AddTransient<ICityService, CityService>();
+builder.Services.AddTransient<ICantonService, CantonService>();
+builder.Services.AddTransient<IAnimalTemperamentService, AnimalTemperamentService>();
+builder.Services.AddTransient<IColorService, ColorService>();
+builder.Services.AddTransient<IRoleService, RoleService>();
+builder.Services.AddTransient<ISpeciesService, SpeciesService>();
+builder.Services.AddTransient<ICountryService, CountryService>();
 
 
 // Configure database
