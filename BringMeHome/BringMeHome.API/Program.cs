@@ -22,6 +22,7 @@ builder.Services.AddTransient<IColorService, ColorService>();
 builder.Services.AddTransient<IRoleService, RoleService>();
 builder.Services.AddTransient<ISpeciesService, SpeciesService>();
 builder.Services.AddTransient<ICountryService, CountryService>();
+builder.Services.AddTransient<IEventService, EventService>();
 
 
 // Configure database
