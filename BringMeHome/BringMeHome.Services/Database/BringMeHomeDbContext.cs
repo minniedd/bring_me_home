@@ -41,6 +41,7 @@ namespace BringMeHome.Services.Database
         public DbSet<Event> Events { get; set; }
         public DbSet<MedicalRecord> MedicalRecords { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
+        public DbSet<Reason> Reasons { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

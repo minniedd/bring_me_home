@@ -23,6 +23,8 @@ builder.Services.AddTransient<IRoleService, RoleService>();
 builder.Services.AddTransient<ISpeciesService, SpeciesService>();
 builder.Services.AddTransient<ICountryService, CountryService>();
 builder.Services.AddTransient<IEventService, EventService>();
+builder.Services.AddTransient<IMedicalRecordService, MedicalRecordService>();
+builder.Services.AddTransient<IReasonService, ReasonService>();
 
 
 // Configure database
