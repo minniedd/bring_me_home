@@ -252,6 +252,16 @@ namespace BringMeHome.Services.Services
                 StatusID = animal.StatusID,
                 HealthStatus = animal.HealthStatus,
                 ShelterID = animal.ShelterID,
+                Colors = animal.AnimalColors?.Select(ac => new ColorResponse
+                {
+                    ColorID = ac.ColorID,
+                    ColorName = ac.Color?.ColorName
+                }).ToList(),
+                Temperaments = animal.AnimalTemperaments?.Select(at => new AnimalTemperamentResponse
+                {
+                    TemperamentID = at.TemperamentID,
+                    Name = at.Temperament?.Name
+                }).ToList()
             };
         }
     }

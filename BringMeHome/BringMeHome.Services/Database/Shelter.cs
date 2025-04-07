@@ -22,8 +22,6 @@ namespace BringMeHome.Services.Database
 
             public int CityID { get; set; }
 
-            public int CantonID { get; set; }
-
             [StringLength(20)]
             public string ZipCode { get; set; }
 
@@ -43,9 +41,6 @@ namespace BringMeHome.Services.Database
             // Navigation properties
             [ForeignKey("CityID")]
             public virtual City City { get; set; }
-
-            [ForeignKey("CantonID")]
-            public virtual Canton Canton { get; set; }
 
             public virtual ICollection<Animal> Animals { get; set; }
             public virtual ICollection<Staff> Staff { get; set; }

@@ -26,6 +26,7 @@ builder.Services.AddTransient<IEventService, EventService>();
 builder.Services.AddTransient<IMedicalRecordService, MedicalRecordService>();
 builder.Services.AddTransient<IReasonService, ReasonService>();
 builder.Services.AddTransient<IAnimalService, AnimalService>();
+builder.Services.AddTransient<IShelterService, ShelterService>();
 
 
 // Configure database
