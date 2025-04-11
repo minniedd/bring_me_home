@@ -87,12 +87,6 @@ namespace BringMeHome.Services.Database
                 .HasForeignKey(s => s.CityID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Shelter>()
-                .HasOne(s => s.Canton)
-                .WithMany(c => c.Shelters)
-                .HasForeignKey(s => s.CantonID)
-                .OnDelete(DeleteBehavior.Restrict);
-
             // Adopter entity configuration
             modelBuilder.Entity<Adopter>()
                 .HasOne(a => a.User)

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:learning_app/widgets/master_screen.dart';
 
 class ReviewsListScreen extends StatefulWidget {
