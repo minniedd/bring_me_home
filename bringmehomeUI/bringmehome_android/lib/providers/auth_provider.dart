@@ -46,7 +46,9 @@ class AuthProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final success = await AuthService.register(userData);
+    final success = await AuthService.register(userData).timeout(const Duration(seconds: 10),onTimeout: (){
+      throw TimeoutException('Sign up request timed out');
+    });
 
     _isLoading = false;
     notifyListeners();
