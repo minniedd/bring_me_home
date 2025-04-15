@@ -134,10 +134,11 @@ namespace BringMeHome.Services.Services
             return MapToResponse(temperament);
         }
 
-        private AnimalTemperamentResponse MapToResponse(AnimalTemperament animalTemperament)
+        private static AnimalTemperamentResponse MapToResponse(AnimalTemperament animalTemperament)
         {
             return new AnimalTemperamentResponse
             {
+                TemperamentID = animalTemperament.TemperamentID,
                 Name = animalTemperament.Name,
                 Description = animalTemperament.Description,
             };

@@ -9,7 +9,6 @@ namespace BringMeHome.Models.Requests
 {
     public class ShelterRequest
     {
-        public int ShelterID { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
         public int CityID { get; set; }

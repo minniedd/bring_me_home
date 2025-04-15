@@ -117,7 +117,7 @@ namespace BringMeHome.Services.Services
             return MapToResponse(city);
         }
 
-        private CityResponse MapToResponse(City city)
+        private static CityResponse MapToResponse(City city)
         {
             return new CityResponse
             {

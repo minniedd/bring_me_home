@@ -125,7 +125,7 @@ namespace BringMeHome.Services.Services
             return MapToResponse(country);
         }
 
-        private CountryResponse MapToResponse(Country country)
+        private static CountryResponse MapToResponse(Country country)
         {
             return new CountryResponse
             {

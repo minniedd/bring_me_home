@@ -139,7 +139,7 @@ namespace BringMeHome.Services.Services
             return MapToResponse(color);
         }
 
-        private ColorResponse MapToResponse(Color color)
+        private static ColorResponse MapToResponse(Color color)
         {
             return new ColorResponse
             {

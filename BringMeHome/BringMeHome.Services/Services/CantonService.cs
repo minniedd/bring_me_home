@@ -127,7 +127,7 @@ namespace BringMeHome.Services.Services
             return MapToResponse(canton);
         }
 
-        private CantonResponse MapToResponse(Canton canton)
+        private static CantonResponse MapToResponse(Canton canton)
         {
             return new CantonResponse
             {

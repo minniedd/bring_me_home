@@ -143,7 +143,7 @@ namespace BringMeHome.Services.Services
             return MapToResponse(breed);
         }
 
-        private BreedResponse MapToResponse(Breed breed)
+        private static BreedResponse MapToResponse(Breed breed)
         {
             return new BreedResponse
             {

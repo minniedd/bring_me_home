@@ -133,7 +133,7 @@ namespace BringMeHome.Services.Services
             return MapToResponse(status);
         }
 
-        private AnimalStatusResponse MapToResponse(AnimalStatus animalStatus)
+        private static AnimalStatusResponse MapToResponse(AnimalStatus animalStatus)
         {
             return new AnimalStatusResponse
             {

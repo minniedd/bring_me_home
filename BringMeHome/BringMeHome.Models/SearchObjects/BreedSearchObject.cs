@@ -8,6 +8,6 @@ namespace BringMeHome.Models.SearchObjects
 {
     public class BreedSearchObject:BaseSearchObject
     {
-        public string BreedName { get; set; }
+        public string? BreedName { get; set; }
     }
 }

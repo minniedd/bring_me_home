@@ -47,6 +47,13 @@ namespace BringMeHome.Services.Database
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<AnimalTemperament>()
+                .HasKey(t => t.TemperamentID);
+
+            modelBuilder.Entity<AnimalTemperament>()
+                .Property(t => t.TemperamentID)
+                .ValueGeneratedOnAdd();
+
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
@@ -56,11 +63,6 @@ namespace BringMeHome.Services.Database
                 .IsUnique();
 
             // Animal entity configuration
-            modelBuilder.Entity<Animal>()
-                .HasOne(a => a.Species)
-                .WithMany(s => s.Animals)
-                .HasForeignKey(a => a.SpeciesID)
-                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Animal>()
                 .HasOne(a => a.Breed)

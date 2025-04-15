@@ -137,7 +137,7 @@ namespace BringMeHome.Services.Services
             return MapToResponse(species);
         }
 
-        private SpeciesResponse MapToResponse(Species species)
+        private static SpeciesResponse MapToResponse(Species species)
         {
             return new SpeciesResponse
             {

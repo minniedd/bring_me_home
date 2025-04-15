@@ -8,6 +8,6 @@ namespace BringMeHome.Models.SearchObjects
 {
     public class ColorSearchObject:BaseSearchObject
     {
-        public string ColorName { get; set; }
+        public string? ColorName { get; set; }
     }
 }

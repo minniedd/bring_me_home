@@ -4,6 +4,7 @@ using BringMeHome.Services.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BringMeHome.Services.Migrations
 {
     [DbContext(typeof(BringMeHomeDbContext))]
-    partial class BringMeHomeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250415113714_ooooo")]
+    partial class ooooo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -211,7 +214,7 @@ namespace BringMeHome.Services.Migrations
                     b.Property<int>("ShelterID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SpeciesID")
+                    b.Property<int>("SpeciesID")
                         .HasColumnType("int");
 
                     b.Property<int>("StatusID")
@@ -1188,9 +1191,11 @@ namespace BringMeHome.Services.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BringMeHome.Services.Database.Species", null)
+                    b.HasOne("BringMeHome.Services.Database.Species", "Species")
                         .WithMany("Animals")
-                        .HasForeignKey("SpeciesID");
+                        .HasForeignKey("SpeciesID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("BringMeHome.Services.Database.AnimalStatus", "Status")
                         .WithMany("Animals")
@@ -1201,6 +1206,8 @@ namespace BringMeHome.Services.Migrations
                     b.Navigation("Breed");
 
                     b.Navigation("Shelter");
+
+                    b.Navigation("Species");
 
                     b.Navigation("Status");
                 });

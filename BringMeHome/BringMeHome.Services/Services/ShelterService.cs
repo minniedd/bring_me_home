@@ -38,11 +38,11 @@ namespace BringMeHome.Services.Services
                 Phone = request.Phone,
                 Email = request.Email,
                 Capacity = request.Capacity,
-                CurrentOccupancy = request.CurrentOccupancy,
                 OperatingHours = request.OperatingHours
             };
 
             await _context.Shelters.AddAsync(shelter);
+            shelter.CurrentOccupancy = await _context.Animals.CountAsync(a => a.ShelterID == shelter.ShelterID);
             await _context.SaveChangesAsync();
 
 
@@ -135,15 +135,15 @@ namespace BringMeHome.Services.Services
             shelter.Phone = request.Phone;
             shelter.Email = request.Email;
             shelter.Capacity = request.Capacity;
-            shelter.CurrentOccupancy = request.CurrentOccupancy;
             shelter.OperatingHours = request.OperatingHours;
 
+            shelter.CurrentOccupancy = await _context.Animals.CountAsync(a => a.ShelterID == id);
             await _context.SaveChangesAsync();
 
             return MapToResponse(shelter);
         }
 
-        private ShelterResponse MapToResponse(Shelter shelter)
+        private static ShelterResponse MapToResponse(Shelter shelter)
         {
             return new ShelterResponse
             {
