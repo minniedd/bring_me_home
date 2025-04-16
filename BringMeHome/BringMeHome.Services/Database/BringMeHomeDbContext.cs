@@ -157,7 +157,7 @@ namespace BringMeHome.Services.Database
                 .HasOne(ac => ac.Animal)
                 .WithMany()
                 .HasForeignKey(ac => ac.AnimalID)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<AnimalColor>()
                 .HasOne(ac => ac.Color)
@@ -170,7 +170,7 @@ namespace BringMeHome.Services.Database
                 .HasOne(atj => atj.Animal)
                 .WithMany()
                 .HasForeignKey(atj => atj.AnimalID)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<AnimalTemperamentJunction>()
                 .HasOne(atj => atj.Temperament)

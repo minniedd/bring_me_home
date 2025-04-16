@@ -25,15 +25,12 @@ namespace BringMeHome.Services.Services
         public async Task<AnimalResponse> CreateAsync(AnimalRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.Name))
-            {
                 throw new ArgumentException("Name cannot be empty");
-            }
 
             var animal = new Animal
             {
                 Name = request.Name,
                 Description = request.Description,
-                SpeciesID = request.SpeciesID,
                 BreedID = request.BreedID,
                 Age = request.Age,
                 Gender = request.Gender,
@@ -41,52 +38,90 @@ namespace BringMeHome.Services.Services
                 DateArrived = request.DateArrived,
                 StatusID = request.StatusID,
                 HealthStatus = request.HealthStatus,
+                ShelterID = request.ShelterID
             };
-
-            if (request.Colors != null && request.Colors.Any())
-            {
-                animal.AnimalColors = request.Colors.Select(colorRequest => new Database.AnimalColor
-                {
-                    ColorID = colorRequest.ColorID,
-                    IsPrimary = colorRequest.IsPrimary
-                }).ToList();
-            }
-
-            if (request.TemperamentIDs != null && request.TemperamentIDs.Any())
-            {
-                animal.AnimalTemperaments = request.TemperamentIDs.Select(tempId => new Database.AnimalTemperamentJunction
-                {
-                    TemperamentID = tempId
-                }).ToList();
-            }
 
             await _context.Animals.AddAsync(animal);
             await _context.SaveChangesAsync();
 
+            if (request.Colors != null && request.Colors.Any())
+            {
+                foreach (var colorRequest in request.Colors)
+                {
+                    _context.AnimalColors.Add(new Database.AnimalColor
+                    {
+                        AnimalID = animal.AnimalID,
+                        ColorID = colorRequest.ColorID,
+                        IsPrimary = colorRequest.IsPrimary
+                    });
+                }
+            }
 
-            return MapToResponse(animal);
+            if (request.TemperamentIDs != null && request.TemperamentIDs.Any())
+            {
+                foreach (var tempId in request.TemperamentIDs)
+                {
+                    _context.AnimalTemperamentJunctions.Add(new AnimalTemperamentJunction
+                    {
+                        AnimalID = animal.AnimalID,
+                        TemperamentID = tempId,
+                        Notes = string.Empty
+                    });
+                }
+            }
+
+            if ((request.Colors != null && request.Colors.Any()) ||
+                (request.TemperamentIDs != null && request.TemperamentIDs.Any()))
+            {
+                await _context.SaveChangesAsync();
+            }
+
+            var response = new AnimalResponse
+            {
+                AnimalID = animal.AnimalID,
+                Name = request.Name,
+                Description = request.Description,
+                BreedID = request.BreedID,
+                Age = request.Age,
+                Gender = request.Gender,
+                Weight = request.Weight,
+                DateArrived = request.DateArrived,
+                StatusID = request.StatusID,
+                HealthStatus = request.HealthStatus,
+                ShelterID = request.ShelterID
+            };
+
+            return response;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var animal = await _context.Animals
-            .Include(a => a.AnimalColors)
-            .Include(a => a.AnimalTemperaments)
-            .Include(a => a.AdoptionApplications)
-            .FirstOrDefaultAsync(a => a.AnimalID == id);
+            var animalColors = await _context.AnimalColors
+                .Where(ac => ac.AnimalID == id)
+                .ToListAsync();
+            _context.AnimalColors.RemoveRange(animalColors);
 
+            var temperamentJunctions = await _context.AnimalTemperamentJunctions
+                .Where(atj => atj.AnimalID == id)
+                .ToListAsync();
+            _context.AnimalTemperamentJunctions.RemoveRange(temperamentJunctions);
+
+            var hasApplications = await _context.AdoptionApplications
+                .AnyAsync(aa => aa.AnimalID == id);
+
+            if (hasApplications)
+            {
+                throw new InvalidOperationException("Cannot delete animal with existing adoption applications");
+            }
+
+            await _context.SaveChangesAsync();
+
+            var animal = await _context.Animals.FindAsync(id);
             if (animal == null)
             {
                 return false;
             }
 
-            if (animal.AdoptionApplications != null && animal.AdoptionApplications.Any())
-            {
-                throw new InvalidOperationException("Cannot delete animal with existing adoption applications");
-            }
-
-            _context.AnimalColors.RemoveRange(animal.AnimalColors);
-            _context.AnimalTemperamentJunctions.RemoveRange(animal.AnimalTemperaments);
             _context.Animals.Remove(animal);
             await _context.SaveChangesAsync();
 
@@ -96,7 +131,7 @@ namespace BringMeHome.Services.Services
         public async Task<PagedResult<AnimalResponse>> GetAsync(AnimalSearchObject search)
         {
             var query = _context.Animals
-            .Include(a => a.Species)
+            .Include(a => a.Breed.Species)
             .Include(a => a.Breed)
             .Include(a => a.AnimalColors)
                 .ThenInclude(ac => ac.Color)
@@ -109,7 +144,7 @@ namespace BringMeHome.Services.Services
                 query = query.Where(r =>
                     r.Name.Contains(search.FTS) ||
                     r.AnimalColors.Any(ac => ac.Color.ColorName.Contains(search.FTS)) ||
-                    r.Species.SpeciesName.Contains(search.FTS) ||
+                    r.Breed.Species.SpeciesName.Contains(search.FTS) ||
                     r.Breed.BreedName.Contains(search.FTS)
                     );
             }
@@ -126,7 +161,7 @@ namespace BringMeHome.Services.Services
 
             if (search.SpeciesID.HasValue)
             {
-                query = query.Where(a => a.SpeciesID == search.SpeciesID.Value);
+                query = query.Where(a => a.Breed.SpeciesID == search.SpeciesID.Value);
             }
 
             if (search.BreedID.HasValue)
@@ -159,7 +194,7 @@ namespace BringMeHome.Services.Services
         public async Task<AnimalResponse?> GetByIdAsync(int id)
         {
             var animal = await _context.Animals
-                .Include(a => a.Species)
+                .Include(a => a.Breed.Species)
                 .Include(a => a.Breed)
                 .Include(a => a.Status)
                 .Include(a => a.Shelter)
@@ -196,7 +231,6 @@ namespace BringMeHome.Services.Services
 
             animal.Name = request.Name;
             animal.Description = request.Description;
-            animal.SpeciesID = request.SpeciesID;
             animal.BreedID = request.BreedID;
             animal.Age = request.Age;
             animal.Gender = request.Gender;
@@ -236,14 +270,14 @@ namespace BringMeHome.Services.Services
             return await GetByIdAsync(animal.AnimalID);
         }
 
-        private AnimalResponse MapToResponse(Animal animal)
+        private static AnimalResponse MapToResponse(Animal animal)
         {
             return new AnimalResponse
             {
                 AnimalID = animal.AnimalID,
                 Name = animal.Name,
                 Description = animal.Description,
-                SpeciesID = animal.SpeciesID,
+                SpeciesID = animal.Breed.SpeciesID,
                 BreedID = animal.BreedID,
                 Age = animal.Age,
                 Gender = animal.Gender,
