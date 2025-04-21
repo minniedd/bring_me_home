@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:learning_app/components/animal_window.dart';
+import 'package:learning_app/models/animal.dart';
+import 'package:learning_app/models/search_objects/animal_search_object.dart';
+import 'package:learning_app/models/search_result.dart';
+import 'package:learning_app/providers/animal_provider.dart';
 import 'package:learning_app/screens/animal_screen.dart';
 import 'package:learning_app/widgets/master_screen.dart';
 
@@ -11,6 +15,83 @@ class AnimalListScreen extends StatefulWidget {
 }
 
 class _AnimalListScreenState extends State<AnimalListScreen> {
+  final AnimalProvider _animalProvider = AnimalProvider();
+  final ScrollController _scrollController = ScrollController();
+  SearchResult<Animal> _animalResult = SearchResult<Animal>();
+  bool _isLoading = false;
+  bool _hasMore = true;
+  String? _errorMessage;
+  final TextEditingController _searchController = TextEditingController();
+  AnimalSearchObject _searchObject = AnimalSearchObject();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAnimals();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      _loadMoreAnimals();
+    }
+  }
+
+  Future<void> _loadAnimals({bool reset = false}) async {
+    if (reset) {
+      _searchObject.pageNumber = 1;
+      _hasMore = true;
+    }
+
+    try {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+
+      final data = await _animalProvider.search(_searchObject);
+
+      setState(() {
+        if (reset) {
+          _animalResult = data;
+        } else {
+          _animalResult.result.addAll(data.result);
+          _animalResult.count = data.count;
+        }
+        _hasMore = data.result.length == _searchObject.pageSize;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Failed to load animals: ${e.toString()}';
+      });
+      print('Error loading animals: $e');
+    }
+  }
+
+  Future<void> _loadMoreAnimals() async {
+    if (_isLoading || !_hasMore) return;
+
+    setState(() {
+      _searchObject.pageNumber += 1;
+    });
+
+    await _loadAnimals();
+  }
+
+  void _handleSearch(String value) {
+    _searchObject.fts = value.isNotEmpty ? value : null;
+    _loadAnimals(reset: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
@@ -22,6 +103,7 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextField(
+                controller: _searchController,
                 decoration: InputDecoration(
                   labelText: 'Search',
                   border: OutlineInputBorder(
@@ -32,7 +114,17 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                     color: Colors.deepPurple.shade300,
                     size: 35,
                   ),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(Icons.clear),
+                          onPressed: () {
+                            _searchController.clear();
+                            _handleSearch('');
+                          },
+                        )
+                      : null,
                 ),
+                onChanged: _handleSearch,
               ),
               const SizedBox(height: 50),
               Container(
@@ -90,81 +182,6 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              SizedBox(
-                height: 100,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          // Button functionality here
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 25),
-                          backgroundColor: Colors.grey.shade200,
-                          foregroundColor: Colors.black87,
-                        ),
-                        child: const Text('MAČKE'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          // Button functionality here
-                        },
-                        style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 25),
-                            backgroundColor: Colors.grey.shade200,
-                            foregroundColor: Colors.black87,
-                            elevation: 2,
-                            shadowColor: Colors.grey.shade800),
-                        child: const Text('PSI'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          // Button functionality here
-                        },
-                        style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 25),
-                            backgroundColor: Colors.grey.shade200,
-                            foregroundColor: Colors.black87,
-                            elevation: 2,
-                            shadowColor: Colors.grey.shade800),
-                        child: const Text('PTICE'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          // Button functionality here
-                        },
-                        style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 25),
-                            backgroundColor: Colors.grey.shade200,
-                            foregroundColor: Colors.black87,
-                            elevation: 2,
-                            shadowColor: Colors.grey.shade800),
-                        child: const Text('HRČCI'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          // Button functionality here
-                        },
-                        style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 25),
-                            backgroundColor: Colors.grey.shade200,
-                            foregroundColor: Colors.black87,
-                            elevation: 2,
-                            shadowColor: Colors.grey.shade800),
-                        child: const Text('RIBICE'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -191,24 +208,53 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                   ),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 5),
-                child: AnimalWindow(
-                  animalName: 'animalName',
-                  animalAge: 'animalAge',
-                  shelterCity: 'shelterCity',
+             if (_isLoading && _animalResult.result.isEmpty)
+            const Center(child: CircularProgressIndicator())
+          else if (_errorMessage != null)
+            Center(
+              child: Text(
+                _errorMessage!,
+                style: const TextStyle(color: Colors.red),
+              ),
+            )
+          else if (_animalResult.result.isEmpty)
+            const Center(child: Text('No animals found'))
+          else
+            ...List.generate(
+              _animalResult.result.length + (_hasMore ? 1 : 0),
+              (index) {
+                if (index >= _animalResult.result.length) {
+                  return _buildLoader();
+                }
+                final animal = _animalResult.result[index];
+                return AnimalWindow(
+                  animalName: animal.name ?? 'Unknown',
+                  animalAge: '${animal.age}',
+                  shelterCity: 'Shelter ID: ${animal.shelterID}',
                   onTap: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AnimalScreen()));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AnimalScreen(),
+                      ),
+                    );
                   },
-                ),
-              ),
+                );
+              },
+            ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildLoader() {
+    return _hasMore
+        ? const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        : Container();
   }
 }

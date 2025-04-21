@@ -46,7 +46,7 @@ class AnimalWindow extends StatelessWidget {
                             TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
                       )),
                     ),
-                    Expanded(flex: 25, child: Text(animalAge + " godina")),
+                    Expanded(flex: 25, child: Text(animalAge + " years old")),
                     Expanded(flex: 25, child: Text(shelterCity)),
                   ],
                 ),
