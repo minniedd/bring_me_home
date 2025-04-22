@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 
 class AnimalWindow extends StatelessWidget {
@@ -46,7 +48,7 @@ class AnimalWindow extends StatelessWidget {
                             TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
                       )),
                     ),
-                    Expanded(flex: 25, child: Text(animalAge + " years old")),
+                    Expanded(flex: 25, child: Text("$animalAge years old")),
                     Expanded(flex: 25, child: Text(shelterCity)),
                   ],
                 ),

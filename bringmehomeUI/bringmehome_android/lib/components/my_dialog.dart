@@ -8,7 +8,7 @@ class MyDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: Theme.of(context).colorScheme.primary,
-      content: Container(
+      content: const SizedBox(
         height: 310,
         child: Column(
           children: [
@@ -26,7 +26,7 @@ class MyDialog extends StatelessWidget {
               Navigator.of(context).pop();
             },
             style: TextButton.styleFrom(
-              side: BorderSide(color: Colors.white,width: 2),
+              side: const BorderSide(color: Colors.white,width: 2),
             ),
             child: Padding(
               padding: const EdgeInsets.all(10.0),

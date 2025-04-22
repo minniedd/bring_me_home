@@ -10,33 +10,31 @@ class HistoryApplicationScreen extends StatelessWidget {
     return MasterScreenWidget(
       titleText: 'HISTORY',
       child: Center(
-        child: Container(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20,right: 20),
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 50,
-                ),
-                AnimalWindow(
-                    animalName: 'animalName',
-                    animalAge: 'animalAge',
-                    shelterCity: 'shelterCity',
-                    onTap: () {}),
-                Container(
-                  decoration: const BoxDecoration(
-                      color: Color.fromRGBO(176, 139, 215, 1),
-                      borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(12),
-                          bottomLeft: Radius.circular(12))),
-                  child: Text("Student",style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600
-                  ),),
-                  padding: const EdgeInsets.only(left: 100,right: 100,top: 10,bottom: 10),
-                )
-              ],
-            ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20,right: 20),
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 50,
+              ),
+              AnimalWindow(
+                  animalName: 'animalName',
+                  animalAge: 'animalAge',
+                  shelterCity: 'shelterCity',
+                  onTap: () {}),
+              Container(
+                decoration: const BoxDecoration(
+                    color: Color.fromRGBO(176, 139, 215, 1),
+                    borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(12),
+                        bottomLeft: Radius.circular(12))),
+                padding: const EdgeInsets.only(left: 100,right: 100,top: 10,bottom: 10),
+                child: const Text("Student",style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600
+                ),),
+              )
+            ],
           ),
         ),
       ),

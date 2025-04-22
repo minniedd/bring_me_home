@@ -17,5 +17,6 @@ namespace BringMeHome.Services.Interfaces
         Task<AnimalResponse> CreateAsync(AnimalRequest request);
         Task<AnimalResponse?> UpdateAsync(int id, AnimalRequest request);
         Task<bool> DeleteAsync(int id);
+        Task<bool> UpdateFavoriteStatusAsync(int animalId, int userId, bool isFavorite);
     }
 }

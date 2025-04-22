@@ -55,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (success) {
         // if login success navigate to list of animal aka main page
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => AnimalListScreen()),
+          MaterialPageRoute(builder: (_) => const AnimalListScreen()),
         );
       } else {
         // login failed - invalid credidentals
@@ -99,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Center(
         child: Center(
           child: Container(
-            constraints: BoxConstraints(maxHeight: 670, minHeight: 670),
+            constraints: const BoxConstraints(maxHeight: 670, minHeight: 670),
             child: SingleChildScrollView(
               child: Form(
                 key: _formKey,
@@ -190,13 +190,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("Need an account?  "),
+                        const Text("Need an account?  "),
                         GestureDetector(
                           onTap: () {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => SignUpScreen()));
+                                    builder: (context) => const SignUpScreen()));
                           },
                           child: Text(
                             "Sign up here",

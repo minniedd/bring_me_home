@@ -15,6 +15,7 @@ class Animal {
   int? shelterID;
   List<ColorResponse>? colors;
   List<AnimalTemperamentResponse>? temperaments;
+  bool isFavorite;
 
   Animal({
     this.animalID,
@@ -30,6 +31,7 @@ class Animal {
     this.shelterID,
     this.colors,
     this.temperaments,
+    this.isFavorite = false,
   });
 
   factory Animal.fromJson(Map<String, dynamic> json) {
@@ -58,6 +60,7 @@ class Animal {
                 ?.map((i) => AnimalTemperamentResponse.fromJson(i))
                 .toList() ??
             [],
+        isFavorite: json['isFavorite'] as bool? ?? false,
       );
     } catch (e) {
       print('Error parsing Animal: $e');

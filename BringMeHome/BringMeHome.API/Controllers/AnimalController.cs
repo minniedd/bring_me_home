@@ -1,4 +1,5 @@
 ﻿using BringMeHome.Models.Helpers;
+using BringMeHome.Models.Models;
 using BringMeHome.Models.Requests;
 using BringMeHome.Models.Responses;
 using BringMeHome.Models.SearchObjects;
@@ -6,6 +7,7 @@ using BringMeHome.Services.Interfaces;
 using BringMeHome.Services.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BringMeHome.API.Controllers
 {
@@ -62,6 +64,25 @@ namespace BringMeHome.API.Controllers
                 return NotFound();
 
             return NoContent();
+        }
+
+        [HttpPut("{id}/favorite")]
+        public async Task<IActionResult> ToggleFavorite(int id, [FromBody] FavoriteUpdateDto model)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return Unauthorized(new { message = "User ID not found or invalid" });
+            }
+
+            var result = await _animalService.UpdateFavoriteStatusAsync(id, userId, model.IsFavorite);
+
+            if (result)
+            {
+                return Ok(new { success = true });
+            }
+
+            return NotFound(new { success = false, message = "Animal not found or update failed" });
         }
     }
 }

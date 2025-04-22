@@ -22,7 +22,7 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
   bool _hasMore = true;
   String? _errorMessage;
   final TextEditingController _searchController = TextEditingController();
-  AnimalSearchObject _searchObject = AnimalSearchObject();
+  final AnimalSearchObject _searchObject = AnimalSearchObject();
 
   @override
   void initState() {
@@ -116,7 +116,7 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                   ),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
-                          icon: Icon(Icons.clear),
+                          icon: const Icon(Icons.clear),
                           onPressed: () {
                             _searchController.clear();
                             _handleSearch('');
@@ -235,7 +235,7 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AnimalScreen(),
+                        builder: (context) => AnimalScreen(animal: animal),
                       ),
                     );
                   },

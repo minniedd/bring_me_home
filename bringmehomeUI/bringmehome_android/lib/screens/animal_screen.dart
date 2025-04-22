@@ -1,20 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:learning_app/components/my_button.dart';
 import 'package:learning_app/components/my_dialog.dart';
+import 'package:learning_app/models/animal.dart';
+import 'package:learning_app/providers/animal_provider.dart';
 import 'package:learning_app/screens/application.dart';
 import 'package:like_button/like_button.dart';
 
 import '../components/small_contrainer.dart';
 
-class AnimalScreen extends StatelessWidget {
-  const AnimalScreen({super.key});
+class AnimalScreen extends StatefulWidget {
+  final Animal animal;
+
+  const AnimalScreen({super.key, required this.animal});
+
+  @override
+  State<AnimalScreen> createState() => _AnimalScreenState();
+}
+
+class _AnimalScreenState extends State<AnimalScreen> {
+  final AnimalProvider _animalProvider = AnimalProvider();
+  late bool _isFavorite;
+
+  @override
+  void initState() {
+    super.initState();
+    _isFavorite = widget.animal.isFavorite;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -52,15 +70,15 @@ class AnimalScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Text(
-                    "Lily",
-                    style: TextStyle(
+                    widget.animal.name ?? "Unknown",
+                    style: const TextStyle(
                       fontSize: 50,
                       fontWeight: FontWeight.w600,
                     ),
@@ -70,11 +88,12 @@ class AnimalScreen extends StatelessWidget {
                     width: 150,
                     child: ElevatedButton(
                       onPressed: () {
-                        showDialog(context: context, builder: (context){
-                          return MyDialog();
-                        });
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return const MyDialog();
+                            });
                       },
-                      child: Text("SKLONIŠTE"),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         side: BorderSide(
@@ -84,6 +103,7 @@ class AnimalScreen extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20)),
                       ),
+                      child: const Text("SKLONIŠTE"),
                     ),
                   ),
                 ],
@@ -97,13 +117,15 @@ class AnimalScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(right: 60),
                     child: Text(
-                      "Rasa: Mačka",
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+                      "Rasa: ${widget.animal.breedID ?? 'Nepoznato'}",
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w800),
                     ),
                   ),
                   Text(
-                    "u Sarajevo",
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+                    "Sklonište ID: ${widget.animal.shelterID ?? 'Nepoznato'}",
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.w800),
                   )
                 ],
               ),
@@ -113,9 +135,12 @@ class AnimalScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SmallContainer(containerText: 'Godina: 3'),
-                  SmallContainer(containerText: 'Ženski'),
-                  SmallContainer(containerText: '800 gr')
+                  SmallContainer(
+                      containerText: 'Godina: ${widget.animal.age ?? 'N/A'}'),
+                  SmallContainer(
+                      containerText: widget.animal.gender ?? 'Nepoznato'),
+                  SmallContainer(
+                      containerText: '${widget.animal.weight ?? 'N/A'} kg')
                 ],
               ),
               const SizedBox(
@@ -123,8 +148,8 @@ class AnimalScreen extends StatelessWidget {
               ),
               Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
                     child: Text(
                       "About:",
                       style: TextStyle(
@@ -135,31 +160,76 @@ class AnimalScreen extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                        "Lorem ipsum odor amet, consectetuer adipiscing elit. Pellentesque per suspendisse ex, ex finibus magna. Orci elit condimentum vestibulum tristique et. Cras aliquam sed quis luctus mus quis. Cursus egestas sagittis bibendum blandit metus sapien? At torquent vulputate cursus, hendrerit arcu turpis. Nascetur non hendrerit volutpat condimentum cras maximus ex. Porttitor senectus in sodales nisl penatibus amet."),
+                    child: Text(widget.animal.description ??
+                        "No description available."),
                   )
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  const LikeButton(
-                    size: 50
+                  LikeButton(
+                    size: 50,
+                    isLiked: _isFavorite,
+                    onTap: (isLiked) async {
+                      if (widget.animal.animalID == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Cannot favorite this animal'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return isLiked;
+                      }
+
+                      final success = await _animalProvider.toggleFavorite(
+                          widget.animal.animalID!, !isLiked);
+
+                      if (success) {
+                        setState(() {
+                          _isFavorite = !isLiked;
+                          widget.animal.isFavorite = !isLiked;
+                        });
+                        return !isLiked;
+                      }
+
+                      if (!mounted) return isLiked;
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Failed to update favorite status'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+
+                      return isLiked;
+                    },
+                    likeBuilder: (bool isLiked) {
+                      return Icon(
+                        isLiked ? Icons.favorite : Icons.favorite_border,
+                        color: isLiked ? Colors.red : Colors.grey,
+                        size: 50,
+                      );
+                    },
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 20),
-                    child: MyButton(onTap: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ApplicationScreen(),
-                        ),
-                      );
-                    }, buttonText: 'Usvoji'),
+                    child: MyButton(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ApplicationScreen(),
+                            ),
+                          );
+                        },
+                        buttonText: 'Usvoji'),
                   )
                 ],
               ),
-              const SizedBox(height: 10,)
+              const SizedBox(
+                height: 10,
+              )
             ],
           ),
         ),
@@ -168,65 +238,5 @@ class AnimalScreen extends StatelessWidget {
   }
 
   void _showMoreImagesDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Više slika",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                // grid
-                GridView.builder(
-                  shrinkWrap: true,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                  ),
-                  itemCount: 4,
-                  itemBuilder: (context, index) {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
-                        'assets/meowmeow.jpg',
-                        fit: BoxFit.cover,
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 10),
-                // close
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text(
-                    "Zatvori",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 }

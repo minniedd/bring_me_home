@@ -36,7 +36,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
 class StepOne extends StatelessWidget {
   final VoidCallback onNext;
 
-  const StepOne({required this.onNext, Key? key}) : super(key: key);
+  const StepOne({required this.onNext, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +45,10 @@ class StepOne extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 20),
-          CustomTextField(hintText: 'ime i prezime', obscureText: false),
-          CustomTextField(hintText: 'adresa', obscureText: false),
-          CustomTextField(hintText: 'grad', obscureText: false),
-          CustomTextField(hintText: 'email', obscureText: false),
+          const CustomTextField(hintText: 'ime i prezime', obscureText: false),
+          const CustomTextField(hintText: 'adresa', obscureText: false),
+          const CustomTextField(hintText: 'grad', obscureText: false),
+          const CustomTextField(hintText: 'email', obscureText: false),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: onNext,
@@ -63,7 +63,7 @@ class StepOne extends StatelessWidget {
 class StepTwo extends StatelessWidget {
   final VoidCallback onBack;
 
-  const StepTwo({required this.onBack, Key? key}) : super(key: key);
+  const StepTwo({required this.onBack, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -72,18 +72,18 @@ class StepTwo extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomTextField(hintText: 'U kakvoj vrsti stanovanja živite?', obscureText: false),
-          CustomTextField(hintText: 'Jesu li dozvoljeni kućni ljubimci?', obscureText: false),
+          const CustomTextField(hintText: 'U kakvoj vrsti stanovanja živite?', obscureText: false),
+          const CustomTextField(hintText: 'Jesu li dozvoljeni kućni ljubimci?', obscureText: false),
           const SizedBox(height: 10),
           const Text('Zašto želite usvojiti ovog ljubimca?',style: TextStyle(color: Colors.white),),
           const SizedBox(height: 20),
-          CustomCheckBox(titleText: 'Saputnik za dijete'),
-          CustomCheckBox(titleText: 'Saputnik za drugog ljubimca'),
-          CustomCheckBox(titleText: 'Saputnik za sebe'),
-          CustomCheckBox(titleText: 'Uslužna životinja'),
-          CustomCheckBox(titleText: 'Sigurnost'),
-          CustomCheckBox(titleText: 'Kućni ljubimac'),
-          CustomTextField(hintText: 'Ostalo', obscureText: false),
+          const CustomCheckBox(titleText: 'Saputnik za dijete'),
+          const CustomCheckBox(titleText: 'Saputnik za drugog ljubimca'),
+          const CustomCheckBox(titleText: 'Saputnik za sebe'),
+          const CustomCheckBox(titleText: 'Uslužna životinja'),
+          const CustomCheckBox(titleText: 'Sigurnost'),
+          const CustomCheckBox(titleText: 'Kućni ljubimac'),
+          const CustomTextField(hintText: 'Ostalo', obscureText: false),
           const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -93,7 +93,7 @@ class StepTwo extends StatelessWidget {
                   Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ApplicationCongratsScreen(),
+                          builder: (context) => const ApplicationCongratsScreen(),
                         ),
                       );
                 }, child: const Text("Potvrdi"),),

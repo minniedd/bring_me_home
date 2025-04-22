@@ -12,9 +12,9 @@ class _DonationScreenState extends State<DonationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Donation'),
+        title: const Text('Donation'),
       ),
-      body: Center(
+      body: const Center(
         child: Text('This is the Donation Screen'),
       ),
     );

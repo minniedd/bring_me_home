@@ -86,7 +86,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (success) {
         // navigation
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Registration successful! Please login.')));
+            const SnackBar(content: Text('Registration successful! Please login.')));
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => LoginScreen()),
         );
@@ -119,7 +119,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       body: Center(
         child: Center(
           child: Container(
-            constraints: BoxConstraints(maxHeight: 670, minHeight: 670),
+            constraints: const BoxConstraints(maxHeight: 670, minHeight: 670),
             child: SingleChildScrollView(
               child: Form(
                 key: _formKey,
@@ -217,7 +217,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: TextFormField(
                         controller: _passwordController,
                         decoration: InputDecoration(
-                          border: UnderlineInputBorder(),
+                          border: const UnderlineInputBorder(),
                           labelText: 'Password',
                           suffixIcon: IconButton(
                             icon: Icon(_obscurePassword
@@ -249,7 +249,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: TextFormField(
                         controller: _confirmPasswordController,
                         decoration: InputDecoration(
-                          border: UnderlineInputBorder(),
+                          border: const UnderlineInputBorder(),
                           labelText: 'Repeat Password',
                           suffixIcon: IconButton(
                             icon: Icon(_obscureConfirmPassword
@@ -299,7 +299,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         padding: const EdgeInsets.only(top: 16),
                         child: Text(
                           _errorMessage!,
-                          style: TextStyle(color: Colors.red),
+                          style: const TextStyle(color: Colors.red),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -324,7 +324,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("Already an user?  "),
+                        const Text("Already an user?  "),
                         GestureDetector(
                           onTap: () {
                             Navigator.push(
