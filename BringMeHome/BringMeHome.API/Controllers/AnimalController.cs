@@ -65,24 +65,5 @@ namespace BringMeHome.API.Controllers
 
             return NoContent();
         }
-
-        [HttpPut("{id}/favorite")]
-        public async Task<IActionResult> ToggleFavorite(int id, [FromBody] FavoriteUpdateDto model)
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            {
-                return Unauthorized(new { message = "User ID not found or invalid" });
-            }
-
-            var result = await _animalService.UpdateFavoriteStatusAsync(id, userId, model.IsFavorite);
-
-            if (result)
-            {
-                return Ok(new { success = true });
-            }
-
-            return NotFound(new { success = false, message = "Animal not found or update failed" });
-        }
     }
 }
