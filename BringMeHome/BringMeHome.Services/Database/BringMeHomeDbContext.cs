@@ -43,6 +43,7 @@ namespace BringMeHome.Services.Database
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<Reason> Reasons { get; set; }
         public DbSet<UserAnimalFavorite> UserAnimalFavorites { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
