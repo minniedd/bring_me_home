@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:learning_app/screens/animal_list_screen.dart';
 import 'package:learning_app/screens/donation_screen.dart';
@@ -7,10 +8,10 @@ import 'package:learning_app/screens/history_application.dart';
 import 'package:learning_app/screens/reviews_list_screen.dart';
 
 class MasterScreenWidget extends StatefulWidget {
-  Widget? child;
-  String? titleText;
+  final Widget? child;
+  final String? titleText;
 
-  MasterScreenWidget({this.child, this.titleText, super.key});
+  const MasterScreenWidget({this.child, this.titleText, super.key});
 
   @override
   State<MasterScreenWidget> createState() => _MasterScreenWidgetState();
@@ -51,6 +52,12 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          GestureDetector(onTap: (){},child: const Padding(
+            padding: EdgeInsets.only(right: 15),
+            child: Icon(Icons.settings_rounded),
+          ))
+        ],
         centerTitle: true,
         title: Text(
           widget.titleText ?? "",

@@ -27,7 +27,8 @@ builder.Services.AddTransient<IMedicalRecordService, MedicalRecordService>();
 builder.Services.AddTransient<IReasonService, ReasonService>();
 builder.Services.AddTransient<IAnimalService, AnimalService>();
 builder.Services.AddTransient<IShelterService, ShelterService>();
-
+builder.Services.AddTransient<IUserAnimalFavoritesService, UserAnimalFavoritesService>();
+builder.Services.AddTransient<IReviewService, ReviewService>();
 
 // Configure database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

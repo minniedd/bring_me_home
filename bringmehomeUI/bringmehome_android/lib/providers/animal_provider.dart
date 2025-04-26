@@ -7,11 +7,10 @@ import 'package:learning_app/services/auth_service.dart';
 
 class AnimalProvider extends BaseProvider<Animal> {
   final Dio _dio;
-  final String _baseUrl = "http://10.0.2.2:5115/api";
 
-  AnimalProvider() 
-    : _dio = Dio(),
-      super("api/Animal") {
+  AnimalProvider()
+      : _dio = Dio(),
+        super("api/Animal") {
     _dio.options.headers["Content-Type"] = "application/json";
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
@@ -33,17 +32,4 @@ class AnimalProvider extends BaseProvider<Animal> {
     return await get(filter: searchObject);
   }
 
-  Future<bool> toggleFavorite(int animalId, bool isFavorite) async {
-    try {
-      final response = await _dio.put(
-        '$_baseUrl/Animal/$animalId/favorite',
-        data: {'isFavorite': isFavorite}
-      );
-      
-      return response.statusCode == 200;
-    } catch (e) {
-      print('Error adding to favorites: $e');
-      return false;
-    }
-  }
 }

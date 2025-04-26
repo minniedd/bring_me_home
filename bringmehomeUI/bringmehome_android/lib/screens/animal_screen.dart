@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:learning_app/components/my_button.dart';
 import 'package:learning_app/components/my_dialog.dart';
 import 'package:learning_app/models/animal.dart';
-import 'package:learning_app/providers/animal_provider.dart';
+import 'package:learning_app/providers/favourite_provider.dart';
 import 'package:learning_app/screens/application.dart';
 import 'package:like_button/like_button.dart';
 
@@ -18,14 +18,26 @@ class AnimalScreen extends StatefulWidget {
 }
 
 class _AnimalScreenState extends State<AnimalScreen> {
-  final AnimalProvider _animalProvider = AnimalProvider();
+  final FavouritesProvider _favouriteProvider = FavouritesProvider();
   late bool _isFavorite;
 
   @override
   void initState() {
     super.initState();
     _isFavorite = widget.animal.isFavorite;
+    _refreshFavoriteStatus();
   }
+
+  Future<void> _refreshFavoriteStatus() async {
+  final favorites = await _favouriteProvider.getFavorites();
+  if (mounted) {
+    setState(() {
+      _isFavorite = favorites.any((animal) => 
+          animal.animalID == widget.animal.animalID);
+      widget.animal.isFavorite = _isFavorite;
+    });
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +194,7 @@ class _AnimalScreenState extends State<AnimalScreen> {
                         return isLiked;
                       }
 
-                      final success = await _animalProvider.toggleFavorite(
+                      final success = await _favouriteProvider.toggleFavorite(
                           widget.animal.animalID!, !isLiked);
 
                       if (success) {
