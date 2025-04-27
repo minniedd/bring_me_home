@@ -1,10 +1,13 @@
 ﻿using BringMeHome.Models.Models;
+using BringMeHome.Models.Requests;
+using BringMeHome.Models.Responses;
 using BringMeHome.Services.Database;
 using BringMeHome.Services.Interfaces;
 using BringMeHome.Services.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Security.Claims;
 
 namespace BringMeHome.API.Controllers
@@ -23,7 +26,7 @@ namespace BringMeHome.API.Controllers
         }
 
         [HttpPut("{id}/favorite")]
-        public async Task<IActionResult> ToggleFavorite(int id, [FromBody] FavoriteUpdateDto model)
+        public async Task<IActionResult> ToggleFavorite(int id, [FromBody] FavoriteAnimalRequest request)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
@@ -31,7 +34,7 @@ namespace BringMeHome.API.Controllers
                 return Unauthorized(new { message = "User ID not found or invalid" });
             }
 
-            var result = await _userAnimalFavoritesService.UpdateFavoriteStatusAsync(id, userId, model.IsFavorite);
+            var result = await _userAnimalFavoritesService.UpdateFavoriteStatusAsync(id, userId, request.IsFavorite);
 
             if (result)
             {
@@ -50,11 +53,7 @@ namespace BringMeHome.API.Controllers
                 return Unauthorized(new { message = "User ID not found or invalid" });
             }
 
-            var favoriteAnimalIds = await _userAnimalFavoritesService.GetUserFavoriteAnimalIdsAsync(userId);
-
-            var favoriteAnimals = await _context.Animals
-                .Where(a => favoriteAnimalIds.Contains(a.AnimalID))
-                .ToListAsync();
+            var favoriteAnimals = await _userAnimalFavoritesService.GetUserFavoriteAnimalsAsync(userId);
 
             return Ok(favoriteAnimals);
         }

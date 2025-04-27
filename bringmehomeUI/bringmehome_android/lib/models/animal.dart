@@ -6,6 +6,7 @@ class Animal {
   String? name;
   String? description;
   int? breedID;
+  String? breedName;
   int? age;
   String? gender;
   double? weight;
@@ -13,6 +14,7 @@ class Animal {
   int? statusID;
   String? healthStatus;
   int? shelterID;
+  String? shelterName;
   List<ColorResponse>? colors;
   List<AnimalTemperamentResponse>? temperaments;
   bool isFavorite;
@@ -31,6 +33,8 @@ class Animal {
     this.shelterID,
     this.colors,
     this.temperaments,
+    this.breedName,
+    this.shelterName,
     this.isFavorite = false,
   });
 
@@ -41,6 +45,7 @@ class Animal {
         name: json['name'] as String?,
         description: json['description'] as String?,
         breedID: json['breedID'] as int?,
+        breedName: json['breedName'] as String?,
         age: json['age'] != null ? int.tryParse(json['age'].toString()) : null,
         gender: json['gender'] as String?,
         weight: json['weight'] != null
@@ -52,6 +57,7 @@ class Animal {
         statusID: json['statusID'] as int?,
         healthStatus: json['healthStatus'] as String?,
         shelterID: json['shelterID'] as int?,
+        shelterName: json['shelterName'] as String?,
         colors: (json['colors'] as List<dynamic>?)
                 ?.map((i) => ColorResponse.fromJson(i))
                 .toList() ??

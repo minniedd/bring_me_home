@@ -230,7 +230,7 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                 return AnimalWindow(
                   animalName: animal.name ?? 'Unknown',
                   animalAge: '${animal.age}',
-                  shelterCity: 'Shelter ID: ${animal.shelterID}',
+                  shelterCity: '${animal.shelterName}',
                   showLikeButton: false,
                   onTap: () {
                     Navigator.push(

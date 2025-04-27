@@ -85,7 +85,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                       return AnimalWindow(
                         animalName: animal.name ?? 'Unknown',
                         animalAge: animal.age?.toString() ?? 'Unknown',
-                        shelterCity: animal.shelterID.toString(),
+                        shelterCity: '${animal.shelterName}',
                         isFavorite: true,
                         onTap: () {
                           Navigator.push(

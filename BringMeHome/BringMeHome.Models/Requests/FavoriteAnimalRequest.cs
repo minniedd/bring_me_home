@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BringMeHome.Models.Models
+namespace BringMeHome.Models.Requests
 {
-    public class FavoriteUpdateDto
+    public class FavoriteAnimalRequest
     {
         public bool IsFavorite { get; set; }
     }

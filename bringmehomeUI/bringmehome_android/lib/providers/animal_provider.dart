@@ -31,5 +31,4 @@ class AnimalProvider extends BaseProvider<Animal> {
   Future<SearchResult<Animal>> search(AnimalSearchObject searchObject) async {
     return await get(filter: searchObject);
   }
-
 }

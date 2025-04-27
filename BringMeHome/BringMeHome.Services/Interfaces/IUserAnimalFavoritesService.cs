@@ -1,6 +1,7 @@
 ﻿using BringMeHome.Models.Helpers;
 using BringMeHome.Models.Responses;
 using BringMeHome.Models.SearchObjects;
+using BringMeHome.Services.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,6 @@ namespace BringMeHome.Services.Interfaces
     {
         Task<bool> UpdateFavoriteStatusAsync(int animalId, int userId, bool isFavorite);
         Task<List<int>> GetUserFavoriteAnimalIdsAsync(int userId);
+        Task<List<AnimalResponse>> GetUserFavoriteAnimalsAsync(int userId);
     }
 }

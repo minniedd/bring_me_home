@@ -136,6 +136,7 @@ namespace BringMeHome.Services.Services
             var query = _context.Animals
             .Include(a => a.Breed.Species)
             .Include(a => a.Breed)
+            .Include(a => a.Shelter)
             .Include(a => a.AnimalColors)
                 .ThenInclude(ac => ac.Color)
             .Include(a => a.AnimalTemperaments)
@@ -177,6 +178,16 @@ namespace BringMeHome.Services.Services
                 query = query.Where(a => a.ShelterID == search.ShelterID.Value);
             }
 
+            if(search.SpeciesName != null)
+            {
+                query = query.Where(a => a.Breed.Species.SpeciesName.Contains(search.SpeciesName));
+            }
+
+            if (search.BreedName != null)
+            {
+                query = query.Where(a => a.Breed.BreedName.Contains(search.BreedName));
+            }
+
             var totalCount = await query.CountAsync();
 
             var animal = await query
@@ -200,6 +211,7 @@ namespace BringMeHome.Services.Services
                 .Include(a => a.Breed.Species)
                 .Include(a => a.Breed)
                 .Include(a => a.Status)
+                .Include(a => a.Shelter)
                 .Include(a => a.Shelter)
                 .Include(a => a.AnimalColors)
                     .ThenInclude(ac => ac.Color)
@@ -281,7 +293,9 @@ namespace BringMeHome.Services.Services
                 Name = animal.Name,
                 Description = animal.Description,
                 SpeciesID = animal.Breed.SpeciesID,
+                SpeciesName = animal.Breed.Species.SpeciesName,
                 BreedID = animal.BreedID,
+                BreedName = animal.Breed.BreedName,
                 Age = animal.Age,
                 Gender = animal.Gender,
                 Weight = animal.Weight,
@@ -289,6 +303,7 @@ namespace BringMeHome.Services.Services
                 StatusID = animal.StatusID,
                 HealthStatus = animal.HealthStatus,
                 ShelterID = animal.ShelterID,
+                ShelterName = animal.Shelter?.Name,
                 Colors = animal.AnimalColors?.Select(ac => new ColorResponse
                 {
                     ColorID = ac.ColorID,

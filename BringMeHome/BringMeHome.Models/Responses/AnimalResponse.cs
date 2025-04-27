@@ -11,7 +11,9 @@ namespace BringMeHome.Models.Responses
         public int AnimalID { get; set; }
         public string Name { get; set; }
         public int SpeciesID { get; set; }
+        public string SpeciesName { get; set; }
         public int BreedID { get; set; }
+        public string BreedName { get; set; }
         public int Age { get; set; }
         public string Gender { get; set; }
         public decimal Weight { get; set; }
@@ -20,6 +22,7 @@ namespace BringMeHome.Models.Responses
         public string Description { get; set; }
         public string HealthStatus { get; set; }
         public int ShelterID { get; set; }
+        public string ShelterName { get; set; }
         public List<ColorResponse> Colors { get; set; }
         public List<AnimalTemperamentResponse> Temperaments { get; set; }
     }

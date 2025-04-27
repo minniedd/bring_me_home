@@ -1,11 +1,10 @@
-﻿using BringMeHome.Services.Database;
+﻿using BringMeHome.Models.Responses;
+using BringMeHome.Services.Database;
 using BringMeHome.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace BringMeHome.Services.Services
 {
@@ -24,6 +23,22 @@ namespace BringMeHome.Services.Services
                 .Where(f => f.UserId == userId)
                 .Select(f => f.AnimalId)
                 .ToListAsync();
+        }
+
+        public async Task<List<AnimalResponse>> GetUserFavoriteAnimalsAsync(int userId)
+        {
+            var favoriteAnimalIds = await GetUserFavoriteAnimalIdsAsync(userId);
+
+            return await _context.Animals
+                .Where(a => favoriteAnimalIds.Contains(a.AnimalID))
+                .Include(a => a.Shelter)
+                .Include(a => a.Breed)
+                    .ThenInclude(b => b.Species)
+                .Include(a => a.AnimalColors)
+                    .ThenInclude(ac => ac.Color)
+                .Include(a => a.AnimalTemperaments)
+                    .ThenInclude(at => at.Temperament)
+                .Select(animal => MapToResponse(animal)) .ToListAsync();
         }
 
         public async Task<bool> UpdateFavoriteStatusAsync(int animalId, int userId, bool isFavorite)
@@ -53,6 +68,38 @@ namespace BringMeHome.Services.Services
 
             var saveResult = await _context.SaveChangesAsync();
             return saveResult > 0;
+        }
+
+        private static AnimalResponse MapToResponse(Animal animal)
+        {
+            return new AnimalResponse
+            {
+                AnimalID = animal.AnimalID,
+                Name = animal.Name,
+                Description = animal.Description,
+                SpeciesID = animal.Breed.SpeciesID,
+                SpeciesName = animal.Breed.Species.SpeciesName,
+                BreedID = animal.BreedID,
+                BreedName = animal.Breed.BreedName,
+                Age = animal.Age,
+                Gender = animal.Gender,
+                Weight = animal.Weight,
+                DateArrived = animal.DateArrived,
+                StatusID = animal.StatusID,
+                HealthStatus = animal.HealthStatus,
+                ShelterID = animal.ShelterID,
+                ShelterName = animal.Shelter?.Name,
+                Colors = animal.AnimalColors?.Select(ac => new ColorResponse
+                {
+                    ColorID = ac.ColorID,
+                    ColorName = ac.Color?.ColorName
+                }).ToList(),
+                Temperaments = animal.AnimalTemperaments?.Select(at => new AnimalTemperamentResponse
+                {
+                    TemperamentID = at.TemperamentID,
+                    Name = at.Temperament?.Name
+                }).ToList()
+            };
         }
     }
 }

@@ -76,10 +76,22 @@ namespace BringMeHome.Services.Services
                 PhoneNumber = request.PhoneNumber,
                 IsActive = request.IsActive,
                 CreatedAt = DateTime.UtcNow,
+                UserRoles = new List<UserRole>()
             };
 
             var hashedPassword = new PasswordHasher<User>().HashPassword(user, request.Password);
             user.PasswordHash = hashedPassword;
+
+            var adopterRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleName == "Adopter");
+
+            if (adopterRole != null)
+            {
+                user.UserRoles.Add(new UserRole
+                {
+                    Role = adopterRole,
+                    RoleId = adopterRole.RoleID
+                });
+            }
 
             await _dbContext.Users.AddAsync(user);
             await _dbContext.SaveChangesAsync();

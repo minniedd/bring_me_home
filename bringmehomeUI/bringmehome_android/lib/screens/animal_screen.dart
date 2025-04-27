@@ -29,15 +29,15 @@ class _AnimalScreenState extends State<AnimalScreen> {
   }
 
   Future<void> _refreshFavoriteStatus() async {
-  final favorites = await _favouriteProvider.getFavorites();
-  if (mounted) {
-    setState(() {
-      _isFavorite = favorites.any((animal) => 
-          animal.animalID == widget.animal.animalID);
-      widget.animal.isFavorite = _isFavorite;
-    });
+    final favorites = await _favouriteProvider.getFavorites();
+    if (mounted) {
+      setState(() {
+        _isFavorite = favorites
+            .any((animal) => animal.animalID == widget.animal.animalID);
+        widget.animal.isFavorite = _isFavorite;
+      });
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -85,61 +85,74 @@ class _AnimalScreenState extends State<AnimalScreen> {
               const SizedBox(
                 height: 15,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text(
-                    widget.animal.name ?? "Unknown",
-                    style: const TextStyle(
-                      fontSize: 50,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 50,
-                    width: 150,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return const MyDialog();
-                            });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        side: BorderSide(
-                          color: Theme.of(context).colorScheme.primary,
-                          width: 3,
-                        ),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      widget.animal.name ?? "Unknown",
+                      style: const TextStyle(
+                        fontSize: 50,
+                        fontWeight: FontWeight.w600,
                       ),
-                      child: const Text("SKLONIŠTE"),
                     ),
-                  ),
-                ],
+                    SizedBox(
+                      height: 50,
+                      width: 150,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return const MyDialog();
+                              });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          side: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 3,
+                          ),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                        ),
+                        child: const Text("SKLONIŠTE"),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(
                 height: 10,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 60),
-                    child: Text(
-                      "Rasa: ${widget.animal.breedID ?? 'Nepoznato'}",
-                      style: const TextStyle(
-                          fontSize: 15, fontWeight: FontWeight.w800),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 60),
+                      child: Text(
+                        "Rasa: ${widget.animal.breedName ?? 'Nepoznato'}",
+                        style: const TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w800),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
                     ),
-                  ),
-                  Text(
-                    "Sklonište ID: ${widget.animal.shelterID ?? 'Nepoznato'}",
-                    style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.w800),
-                  )
-                ],
+                    Flexible(
+                      child: Text(
+                        widget.animal.shelterName ?? 'Nepoznato',
+                        style: const TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w800),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  ],
+                ),
               ),
               const SizedBox(
                 height: 20,
@@ -249,6 +262,5 @@ class _AnimalScreenState extends State<AnimalScreen> {
     );
   }
 
-  void _showMoreImagesDialog(BuildContext context) {
-  }
+  void _showMoreImagesDialog(BuildContext context) {}
 }
