@@ -188,6 +188,11 @@ namespace BringMeHome.Services.Services
                 query = query.Where(a => a.Breed.BreedName.Contains(search.BreedName));
             }
 
+            if (search.CantonID.HasValue)
+            {
+                query = query.Where(a => a.Shelter.City.CantonID == search.CantonID.Value);
+            }
+
             var totalCount = await query.CountAsync();
 
             var animal = await query

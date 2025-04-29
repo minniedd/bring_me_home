@@ -15,5 +15,6 @@ namespace BringMeHome.Models.SearchObjects
         public int? BreedID { get; set; }
         public string? BreedName { get; set; }
         public int? ShelterID { get; set; }
+        public int? CantonID { get; set; }
     }
 }
