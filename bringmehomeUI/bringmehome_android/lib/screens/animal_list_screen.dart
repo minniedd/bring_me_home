@@ -3,7 +3,9 @@ import 'package:learning_app/components/animal_window.dart';
 import 'package:learning_app/models/animal.dart';
 import 'package:learning_app/models/search_objects/animal_search_object.dart';
 import 'package:learning_app/models/search_result.dart';
+import 'package:learning_app/models/species.dart';
 import 'package:learning_app/providers/animal_provider.dart';
+import 'package:learning_app/providers/species_provider.dart';
 import 'package:learning_app/screens/animal_screen.dart';
 import 'package:learning_app/widgets/master_screen.dart';
 
@@ -16,6 +18,7 @@ class AnimalListScreen extends StatefulWidget {
 
 class _AnimalListScreenState extends State<AnimalListScreen> {
   final AnimalProvider _animalProvider = AnimalProvider();
+  final SpeciesProvider _speciesProvider = SpeciesProvider();
   final ScrollController _scrollController = ScrollController();
   SearchResult<Animal> _animalResult = SearchResult<Animal>();
   bool _isLoading = false;
@@ -23,11 +26,15 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
   String? _errorMessage;
   final TextEditingController _searchController = TextEditingController();
   final AnimalSearchObject _searchObject = AnimalSearchObject();
+  List<Species> _availableSpecies = [];
+  bool _isLoadingSpecies = false;
+  int? _selectedSpeciesId;
 
   @override
   void initState() {
     super.initState();
     _loadAnimals();
+    _loadSpecies();
     _scrollController.addListener(_scrollListener);
   }
 
@@ -92,6 +99,37 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
     _loadAnimals(reset: true);
   }
 
+  Future<void> _loadSpecies() async {
+    setState(() {
+      _isLoadingSpecies = true;
+    });
+
+    try {
+      final species = await _speciesProvider.getSpecies();
+      setState(() {
+        _availableSpecies = species;
+        _isLoadingSpecies = false;
+      });
+    } catch (e) {
+      print('Error loading species: $e');
+      setState(() {
+        _isLoadingSpecies = false;
+      });
+    }
+  }
+
+  void _selectSpecies(int? speciesId) {
+    setState(() {
+      if (_selectedSpeciesId == speciesId) {
+        _selectedSpeciesId = null;
+      } else {
+        _selectedSpeciesId = speciesId;
+      }
+      _searchObject.speciesID = _selectedSpeciesId;
+    });
+    _loadAnimals(reset: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
@@ -99,6 +137,7 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
       child: Container(
         margin: const EdgeInsets.all(10),
         child: SingleChildScrollView(
+          controller: _scrollController,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -182,67 +221,116 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Column(
-                    children: [
-                      Text(
-                        "Filter",
-                        style: TextStyle(
-                            color: Colors.deepPurple.shade200,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          // button func
-                        },
-                        icon: const Icon(
-                          Icons.filter_list_alt,
-                          size: 40,
-                          color: Color.fromRGBO(176, 139, 215, 1),
-                        ),
-                      ),
-                    ],
+              if (_isLoadingSpecies)
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: CircularProgressIndicator(
+                      color: Colors.deepPurple.shade300,
+                    ),
                   ),
-                ],
-              ),
-             if (_isLoading && _animalResult.result.isEmpty)
-            const Center(child: CircularProgressIndicator())
-          else if (_errorMessage != null)
-            Center(
-              child: Text(
-                _errorMessage!,
-                style: const TextStyle(color: Colors.red),
-              ),
-            )
-          else if (_animalResult.result.isEmpty)
-            const Center(child: Text('No animals found'))
-          else
-            ...List.generate(
-              _animalResult.result.length + (_hasMore ? 1 : 0),
-              (index) {
-                if (index >= _animalResult.result.length) {
-                  return _buildLoader();
-                }
-                final animal = _animalResult.result[index];
-                return AnimalWindow(
-                  animalName: animal.name ?? 'Unknown',
-                  animalAge: '${animal.age}',
-                  shelterCity: '${animal.shelterName}',
-                  showLikeButton: false,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AnimalScreen(animal: animal),
-                      ),
+                )
+              else
+                SizedBox(
+                  height: 50,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: FilterChip(
+                            avatar: Icon(
+                              Icons.all_inclusive,
+                              color: _selectedSpeciesId == null
+                                  ? Colors.white
+                                  : Colors.deepPurple.shade300,
+                              size: 18,
+                            ),
+                            label: const Text("All"),
+                            selected: _selectedSpeciesId == null,
+                            selectedColor: Colors.deepPurple.shade400,
+                            labelStyle: TextStyle(
+                              color: _selectedSpeciesId == null
+                                  ? Colors.white
+                                  : Colors.black87,
+                              fontWeight: _selectedSpeciesId == null
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                            backgroundColor: Colors.grey.shade200,
+                            onSelected: (bool selected) {
+                              if (selected) {
+                                _selectSpecies(null);
+                              }
+                            },
+                          ),
+                        ),
+                        ..._availableSpecies.map((species) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: FilterChip(
+                              label: Text(species.speciesName),
+                              selected: _selectedSpeciesId == species.speciesID,
+                              selectedColor: Colors.deepPurple.shade400,
+                              labelStyle: TextStyle(
+                                color: _selectedSpeciesId == species.speciesID
+                                    ? Colors.white
+                                    : Colors.black87,
+                                fontWeight:
+                                    _selectedSpeciesId == species.speciesID
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                              ),
+                              backgroundColor: Colors.grey.shade200,
+                              onSelected: (bool selected) {
+                                if (selected) {
+                                  _selectSpecies(species.speciesID);
+                                }
+                              },
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 20),
+              if (_isLoading && _animalResult.result.isEmpty)
+                const Center(child: CircularProgressIndicator())
+              else if (_errorMessage != null)
+                Center(
+                  child: Text(
+                    _errorMessage!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                )
+              else if (_animalResult.result.isEmpty)
+                const Center(child: Text('No animals found'))
+              else
+                ...List.generate(
+                  _animalResult.result.length + (_hasMore ? 1 : 0),
+                  (index) {
+                    if (index >= _animalResult.result.length) {
+                      return _buildLoader();
+                    }
+                    final animal = _animalResult.result[index];
+                    return AnimalWindow(
+                      animalName: animal.name ?? 'Unknown',
+                      animalAge: '${animal.age}',
+                      shelterCity: '${animal.shelterName}',
+                      showLikeButton: false,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AnimalScreen(animal: animal),
+                          ),
+                        );
+                      },
                     );
                   },
-                );
-              },
-            ),
+                ),
             ],
           ),
         ),
