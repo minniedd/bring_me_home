@@ -67,7 +67,7 @@ namespace BringMeHome.Services.Services
             return MapToResponse(reason);
         }
 
-        private ReasonResponse MapToResponse(Reason reason)
+        private static ReasonResponse MapToResponse(Reason reason)
         {
             return new ReasonResponse
             {

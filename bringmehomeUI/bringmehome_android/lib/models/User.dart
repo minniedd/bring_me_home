@@ -1,34 +1,65 @@
+import 'package:flutter/foundation.dart';
+
 class User {
-  final int id;
+  final int? id;
   final String firstName;
   final String lastName;
   final String email;
   final String username;
-  final String phoneNumber;
+  final String? phoneNumber;
   final bool isActive;
-  final DateTime createdAt;
+  final DateTime? createdAt;
+  final String? address;
+  final String? city;
 
   User({
-    required this.id,
     required this.firstName,
     required this.lastName,
     required this.email,
     required this.username,
-    required this.phoneNumber,
+    this.phoneNumber,
     required this.isActive,
-    required this.createdAt,
+    this.createdAt,
+    this.id,
+    this.address,
+    this.city,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
+  try {
     return User(
-      id: json['id'],
-      firstName: json['firstName'],
-      lastName: json['lastName'],
-      email: json['email'],
-      username: json['username'],
-      phoneNumber: json['phoneNumber'],
-      isActive: json['isActive'],
-      createdAt: DateTime.parse(json['createdAt']),
+      id: json['id'] as int?,
+      firstName: json['firstName'] as String,
+      lastName: json['lastName'] as String,
+      email: json['email'] as String,
+      username: json['username'] as String,
+      phoneNumber: json['phoneNumber'] as String?,
+      isActive: json['isActive'] as bool,
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt'] as String) : null,
+      address: json['address'] as String?,
+      city: json['city'] as String?,
     );
+  } catch (e) {
+     if (kDebugMode) {
+        print('Error parsing User.fromJson: $e');
+        print('JSON data that caused error: $json');
+     }
+     rethrow;
   }
+}
+
+   Map<String, dynamic> toJson() {
+     return {
+       'id': id,
+       'firstName': firstName,
+       'lastName': lastName,
+       'email': email,
+       'username': username,
+       'phoneNumber': phoneNumber,
+       'isActive': isActive,
+       'createdAt': createdAt?.toIso8601String(),
+       'address': address,
+       'city': city,
+     };
+   }
 }

@@ -29,6 +29,10 @@ namespace BringMeHome.Models.Requests
         [MaxLength(20)]
         public string? PhoneNumber { get; set; }
 
+        public string? Address { get; set; }
+
+        public int? CityID { get; set; }
+
         public bool IsActive { get; set; } = true;
 
         // Only used when creating a new user

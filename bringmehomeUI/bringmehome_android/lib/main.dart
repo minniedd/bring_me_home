@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:learning_app/providers/adoption_application_provider.dart';
 import 'package:learning_app/providers/auth_provider.dart';
+import 'package:learning_app/providers/favourite_provider.dart';
+import 'package:learning_app/providers/user_provider.dart';
 import 'package:learning_app/screens/login_screen.dart';
 import 'package:learning_app/theme/themeData.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +13,9 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AdoptionApplicationProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => FavouritesProvider()),
       ],
       child: const MyApp(),
     ),

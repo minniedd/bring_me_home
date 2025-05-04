@@ -133,7 +133,7 @@ namespace BringMeHome.Services.Services
             return MapToResponse(status);
         }
 
-        private ApplicationStatusResponse MapToResponse(ApplicationStatus applicationStatus)
+        private static ApplicationStatusResponse MapToResponse(ApplicationStatus applicationStatus)
         {
             return new ApplicationStatusResponse
             {

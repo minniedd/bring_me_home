@@ -241,12 +241,23 @@ class _AnimalScreenState extends State<AnimalScreen> {
                     padding: const EdgeInsets.only(right: 20),
                     child: MyButton(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ApplicationScreen(),
-                            ),
-                          );
+                          if (widget.animal.animalID != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ApplicationScreen(
+                                    animalId: widget.animal.animalID!),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text('Animal ID is missing. Cannot apply.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         },
                         buttonText: 'Usvoji'),
                   )

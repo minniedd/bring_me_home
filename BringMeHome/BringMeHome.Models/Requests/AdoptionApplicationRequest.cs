@@ -11,33 +11,16 @@ namespace BringMeHome.Models.Requests
 {
     public class AdoptionApplicationRequest
     {
-        [Required]
-        public int AdopterID { get; set; }
-
-        [Required]
+        public int UserID { get; set; }
         public int AnimalID { get; set; }
-
-        [Required]
-        [DataType(DataType.Date)]
         public DateTime ApplicationDate { get; set; }
-
-        [Required]
         public int StatusID { get; set; }
-
         public int? ReviewedByStaffID { get; set; }
-
-        [DataType(DataType.Date)]
         public DateTime? ReviewDate { get; set; }
-
-        [StringLength(1000)]
-        public string Notes { get; set; }
-
+        public string? Notes { get; set; }
         public string? LivingSituation { get; set; }
-
         public string? IsAnimalAllowed { get; set; }
-
-        [Required]
-        public List<int> AdoptionReasonIds { get; set; }
+        public int? ReasonId { get; set; }
     }
 }
 

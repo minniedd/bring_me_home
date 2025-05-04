@@ -13,7 +13,7 @@ namespace BringMeHome.Services.Interfaces
     {
         Task<List<AdopterResponse>> GetAsync(AdopterSearchObject search);
         Task<AdopterResponse?> GetByIdAsync(int id);
-        Task<AdopterResponse> CreateAsync(AdopterRequest request);
+        Task<AdopterResponse> CreateAsync(int userId, AdopterRequest request);
         Task<AdopterResponse?> UpdateAsync(int id, AdopterRequest request);
         Task<bool> DeleteAsync(int id);
     }

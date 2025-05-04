@@ -1,7 +1,10 @@
-﻿using BringMeHome.Models.Requests;
+﻿using BringMeHome.Models.Helpers;
+using BringMeHome.Models.Requests;
 using BringMeHome.Models.Responses;
+using BringMeHome.Models.SearchObjects;
 using BringMeHome.Services.Database;
 using BringMeHome.Services.Interfaces;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using System;
@@ -9,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace BringMeHome.Services.Services
 {
@@ -41,104 +45,163 @@ namespace BringMeHome.Services.Services
                                  arguments: null);
         }
 
-        public async Task<AdoptionApplicationResponse> CreateAsync(AdoptionApplicationRequest request)
+        public async Task<AdoptionApplicationResponse> CreateAsync(int userId, AdoptionApplicationRequest request)
         {
+            var existingUser = await _context.Users.FindAsync(userId);
+            if (existingUser == null)
+                throw new Exception($"User with ID {userId} not found.");
+
+            var existingAnimal = await _context.Animals.FindAsync(request.AnimalID);
+            if (existingAnimal == null)
+                throw new Exception($"Animal with ID {request.AnimalID} not found.");
+
+            if (request.ReasonId.HasValue &&
+                await _context.Reasons.FindAsync(request.ReasonId.Value) == null)
+            {
+                throw new Exception($"Reason with ID {request.ReasonId.Value} not found.");
+            }
+
             var adoptionApplication = new AdoptionApplication
             {
-                AdopterID = request.AdopterID,
                 AnimalID = request.AnimalID,
-                ApplicationDate = request.ApplicationDate,
-                StatusID = request.StatusID,
-                ReviewedByStaffID = request.ReviewedByStaffID,
-                ReviewDate = request.ReviewDate,
+                ApplicationDate = DateTime.UtcNow,
+                StatusID = 1, // in database status for this is 1
                 Notes = request.Notes,
                 LivingSituation = request.LivingSituation,
                 IsAnimalAllowed = request.IsAnimalAllowed,
-                AdoptionReasons = request.AdoptionReasonIds.Select(id => new AdoptionReason { ReasonID = id }).ToList()
+                UserID = userId,
+                ReasonID = request.ReasonId
             };
 
             _context.AdoptionApplications.Add(adoptionApplication);
             await _context.SaveChangesAsync();
 
-            var adopter = await _context.Adopters.FindAsync(request.AdopterID);
-            if (adopter != null && !string.IsNullOrEmpty(adopter.Email))
+            var savedApplication = await _context.AdoptionApplications
+                .Include(aa => aa.Reason)
+                .FirstOrDefaultAsync(aa => aa.ApplicationID == adoptionApplication.ApplicationID)
+                ?? throw new Exception("Failed to retrieve saved application for mapping.");
+
+            await SendAdoptionNotification(userId);
+
+            return MapToResponse(savedApplication);
+        }
+
+        private async Task SendAdoptionNotification(int userId)
+        {
+            try
             {
-                var message = $"Adoption application created for {adopter.Email}";
+                var adopter = await _context.Adopters.FindAsync(userId);
+                if (adopter?.User.Email == null) return;
+
+                var message = $"Adoption application created for {adopter.User.Email}";
                 var body = Encoding.UTF8.GetBytes(message);
 
-                _channel.BasicPublish(exchange: "",
-                                      routingKey: "adoptionQueue",
-                                      basicProperties: null,
-                                      body: body);
+                _channel.BasicPublish(
+                    exchange: "",
+                    routingKey: "adoptionQueue",
+                    basicProperties: null,
+                    body: body);
 
                 Console.WriteLine($"Published message to RabbitMQ: {message}");
             }
-
-            return MapToResponse(adoptionApplication);
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to send adoption notification: {ex.Message}");
+            }
         }
-
-        public async Task<List<AdoptionApplicationResponse>> GetAsync()
+        public async Task<PagedResult<AdoptionApplicationResponse>> GetAsync(AdoptionApplicationSearchObject search)
         {
-            var adoptionApplications = await _context.AdoptionApplications
-                .Include(aa => aa.Adopter)
+            var query = _context.AdoptionApplications
+                .Include(aa => aa.User)
                 .Include(aa => aa.Animal)
-                .Include(aa => aa.Status)
-                .Include(aa => aa.ReviewedBy)
-                .Include(aa => aa.AdoptionReasons)
-                .ThenInclude(ar => ar.Reason)
-                .ToListAsync();
+                    .ThenInclude(a => a.Breed)
+                        .ThenInclude(b => b.Species)
+                        .Include(aa => aa.Animal)
+                        .ThenInclude(a => a.AnimalColors)
+                            .ThenInclude(ac => ac.Color)
+                            .Include(aa => aa.Animal)
+                            .ThenInclude(a => a.AnimalTemperaments)
+                                .ThenInclude(at => at.Temperament)
+                                .Include(aa => aa.Status)
+                                .Include(aa => aa.ReviewedBy)
+                                .Include(aa => aa.Reason) 
 
-            return adoptionApplications.Select(MapToResponse).ToList();
+            .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search.FTS))
+            {
+                query = query.Where(r =>
+                    r.User.Username.Contains(search.FTS) ||
+                    r.Animal.Name.Contains(search.FTS)
+                    );
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var adoptionApplication = await query
+            .ApplySort(search)
+            .ApplyPagination(search)
+            .Select(r => MapToResponse(r))
+            .ToListAsync();
+            
+            return new PagedResult<AdoptionApplicationResponse>
+            {
+                Items = adoptionApplication,
+                TotalCount = totalCount,
+                PageNumber = search.PageNumber,
+                PageSize = search.PageSize
+            };
         }
 
         public async Task<AdoptionApplicationResponse?> GetByIdAsync(int id)
         {
             var adoptionApplication = await _context.AdoptionApplications
-                .Include(aa => aa.Adopter)
+                .Include(aa => aa.User)
                 .Include(aa => aa.Animal)
                 .Include(aa => aa.Status)
                 .Include(aa => aa.ReviewedBy)
-                .Include(aa => aa.AdoptionReasons)
-                .ThenInclude(ar => ar.Reason)
+                .Include(aa => aa.Reason)
                 .FirstOrDefaultAsync(aa => aa.ApplicationID == id);
 
             return adoptionApplication != null ? MapToResponse(adoptionApplication) : null;
         }
 
-        public async Task<AdoptionApplicationResponse?> UpdateAsync(int id, AdoptionApplicationRequest request)
+        public async Task<AdoptionApplicationResponse> UpdateAsync(int id, AdoptionApplicationRequest request)
         {
             var adoptionApplication = await _context.AdoptionApplications
-                .Include(aa => aa.AdoptionReasons)
-                .FirstOrDefaultAsync(aa => aa.ApplicationID == id);
+                    .Include(aa => aa.Reason)
+                    .Include(aa => aa.Status)
+                    .FirstOrDefaultAsync(aa => aa.ApplicationID == id);
 
             if (adoptionApplication == null)
+            {
                 return null;
+            }
 
-            adoptionApplication.AdopterID = request.AdopterID;
+            bool statusChanged = adoptionApplication.StatusID != request.StatusID;
+            var oldStatus = adoptionApplication.Status?.StatusName;
+
             adoptionApplication.AnimalID = request.AnimalID;
-            adoptionApplication.ApplicationDate = request.ApplicationDate;
             adoptionApplication.StatusID = request.StatusID;
             adoptionApplication.ReviewedByStaffID = request.ReviewedByStaffID;
-            adoptionApplication.ReviewDate = request.ReviewDate;
+            adoptionApplication.ReviewDate = request.ReviewDate ?? DateTime.UtcNow;
             adoptionApplication.Notes = request.Notes;
             adoptionApplication.LivingSituation = request.LivingSituation;
             adoptionApplication.IsAnimalAllowed = request.IsAnimalAllowed;
+            adoptionApplication.ReasonID = request.ReasonId;
 
-            // update adoption reasons
-            adoptionApplication.AdoptionReasons.Clear();
-            adoptionApplication.AdoptionReasons = request.AdoptionReasonIds.Select(id => new AdoptionReason { ReasonID = id }).ToList();
 
             await _context.SaveChangesAsync();
-
             return MapToResponse(adoptionApplication);
+
         }
 
-        private AdoptionApplicationResponse MapToResponse(AdoptionApplication adoptionApplication)
+        private static AdoptionApplicationResponse MapToResponse(AdoptionApplication adoptionApplication)
         {
             return new AdoptionApplicationResponse
             {
                 ApplicationID = adoptionApplication.ApplicationID,
-                AdopterID = adoptionApplication.AdopterID,
+                UserID = adoptionApplication.UserID,
                 AnimalID = adoptionApplication.AnimalID,
                 ApplicationDate = adoptionApplication.ApplicationDate,
                 StatusID = adoptionApplication.StatusID,
@@ -147,7 +210,8 @@ namespace BringMeHome.Services.Services
                 Notes = adoptionApplication.Notes,
                 LivingSituation = adoptionApplication.LivingSituation,
                 IsAnimalAllowed = adoptionApplication.IsAnimalAllowed,
-                AdoptionReasonIds = adoptionApplication.AdoptionReasons.Select(ar => ar.ReasonID).ToList()
+                ReasonId = adoptionApplication.ReasonID,
+                ReasonName = adoptionApplication.Reason?.ReasonType
             };
         }
     }

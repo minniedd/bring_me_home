@@ -22,25 +22,34 @@ namespace BringMeHome.Services.Services
             _context = context;
         }
 
-        public async Task<AdopterResponse> CreateAsync(AdopterRequest request)
+        public async Task<AdopterResponse> CreateAsync(int userId, AdopterRequest request)
         {
-            var adopter = new Adopter
+            var adopter = await _context.Adopters
+                               .Include(a => a.User)
+                               .Include(a => a.City)
+                               .FirstOrDefaultAsync(a => a.UserID == userId);
+
+            var user = await _context.Users.FindAsync(userId);
+
+            if (adopter == null)
             {
-                UserID = request.UserID,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Email = request.Email,
-                Phone = request.Phone,
+                if (user == null)
+                {
+                    throw new InvalidOperationException($"User has not been found!");
+                }
+            }
+
+            adopter = new Adopter
+            {
+                UserID = userId,
                 Address = request.Address,
                 CityID = request.CityID,
-                CantonID = request.CantonID,
-                ZipCode = request.ZipCode,
-                DateRegistered = DateTime.UtcNow
+
+                User = user
             };
 
             _context.Adopters.Add(adopter);
             await _context.SaveChangesAsync();
-
             return MapToResponse(adopter);
         }
 
@@ -66,20 +75,20 @@ namespace BringMeHome.Services.Services
 
             if (!string.IsNullOrEmpty(search.FirstName))
             {
-                query = query.Where(u => u.FirstName.Contains(search.FirstName));
+                query = query.Where(u => u.User.FirstName.Contains(search.FirstName));
             }
 
             if (!string.IsNullOrEmpty(search.LastName))
             {
-                query = query.Where(u => u.LastName.Contains(search.LastName));
+                query = query.Where(u => u.User.LastName.Contains(search.LastName));
             }
 
             if (!string.IsNullOrEmpty(search.FTS))
             {
                 query = query.Where(u =>
-                    u.FirstName.Contains(search.FTS) ||
-                    u.LastName.Contains(search.FTS) ||
-                    u.Email.Contains(search.FTS));
+                    u.User.FirstName.Contains(search.FTS) ||
+                    u.User.LastName.Contains(search.FTS) ||
+                    u.User.Email.Contains(search.FTS));
             }
 
             var adopters = await query.ToListAsync();
@@ -88,7 +97,10 @@ namespace BringMeHome.Services.Services
 
         public async Task<AdopterResponse?> GetByIdAsync(int id)
         {
-            var adopter = await _context.Adopters.FindAsync(id);
+            var adopter = await _context.Adopters
+                               .Include(a => a.User)
+                               .Include(a => a.City)
+                               .FirstOrDefaultAsync(a => a.UserID == id);
             return adopter != null ? MapToResponse(adopter) : null;
         }
 
@@ -98,14 +110,12 @@ namespace BringMeHome.Services.Services
             if (adopter == null)
                 return null;
 
-            adopter.FirstName = request.FirstName;
-            adopter.LastName = request.LastName;
-            adopter.Email = request.Email;
-            adopter.Phone = request.Phone;
+            adopter.User.FirstName = request.FirstName;
+            adopter.User.LastName = request.LastName;
+            adopter.User.Email = request.Email;
             adopter.Address = request.Address;
-            adopter.CityID = request.CityID;
-            adopter.CantonID = request.CantonID;
-            adopter.ZipCode = request.ZipCode;
+            adopter.City.CityID = request.CityID;
+
 
             await _context.SaveChangesAsync();
 
@@ -116,15 +126,11 @@ namespace BringMeHome.Services.Services
         {
             return new AdopterResponse
             {
-                UserID = adopter.UserID,
-                FirstName = adopter.FirstName,
-                LastName = adopter.LastName,
-                Email = adopter.Email,
-                Phone = adopter.Phone,
+                FirstName = adopter.User.FirstName,
+                LastName = adopter.User.LastName,
                 Address = adopter.Address,
-                CityID = adopter.CityID,
-                CantonID = adopter.CantonID,
-                ZipCode = adopter.ZipCode
+                City = adopter.City.CityName,
+                Email = adopter.User.Email,
             };
         }
     }

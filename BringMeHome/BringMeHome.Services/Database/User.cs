@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,8 +30,12 @@ namespace BringMeHome.Services.Database
         [MaxLength(100)]
         public string Username { get; set; } = string.Empty;
 
+        public string? Address { get; set; }
+
         [MaxLength(20)]
         public string? PhoneNumber { get; set; }
+
+        public int? CityID { get; set; }
 
         public string PasswordHash { get; set; } = string.Empty;
 
@@ -50,6 +55,11 @@ namespace BringMeHome.Services.Database
 
         public DateTime? RefreshTokenExpiryTime { get; set; }
 
+        [ForeignKey("CityID")]
+        public virtual City? City { get; set; }
+
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+
+        public virtual ICollection<AdoptionApplication> AdoptionApplications { get; set; }
     }
 }

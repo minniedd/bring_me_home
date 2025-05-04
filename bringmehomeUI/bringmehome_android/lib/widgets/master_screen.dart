@@ -6,6 +6,7 @@ import 'package:learning_app/screens/donation_screen.dart';
 import 'package:learning_app/screens/favourites_screen.dart';
 import 'package:learning_app/screens/history_application.dart';
 import 'package:learning_app/screens/reviews_list_screen.dart';
+import 'package:learning_app/screens/settings_screen.dart';
 
 class MasterScreenWidget extends StatefulWidget {
   final Widget? child;
@@ -53,7 +54,11 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          GestureDetector(onTap: (){},child: const Padding(
+          GestureDetector(onTap: (){
+            Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const SettingsScreen())
+        );
+          },child: const Padding(
             padding: EdgeInsets.only(right: 15),
             child: Icon(Icons.settings_rounded),
           ))

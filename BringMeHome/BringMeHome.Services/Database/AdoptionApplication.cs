@@ -14,7 +14,7 @@ namespace BringMeHome.Services.Database
         [Key]
         public int ApplicationID { get; set; }
 
-        public int AdopterID { get; set; }
+        public int UserID { get; set; }
 
         public int AnimalID { get; set; }
 
@@ -29,17 +29,17 @@ namespace BringMeHome.Services.Database
         public DateTime? ReviewDate { get; set; }
 
         [StringLength(1000)]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
 
         public string? LivingSituation { get; set; }
 
         public string? IsAnimalAllowed { get; set; }
 
-        public int AdoptionReasonId { get; set; }
+        public int? ReasonID { get; set; } 
 
         // Navigation properties
-        [ForeignKey("AdopterID")]
-        public virtual Adopter Adopter { get; set; }
+        [ForeignKey("UserID")]
+        public virtual User User { get; set; }
 
         [ForeignKey("AnimalID")]
         public virtual Animal Animal { get; set; }
@@ -50,8 +50,8 @@ namespace BringMeHome.Services.Database
         [ForeignKey("ReviewedByStaffID")]
         public virtual Staff ReviewedBy { get; set; }
 
-        public virtual ICollection<AdoptionReason> AdoptionReasons { get; set; }
-
+        [ForeignKey("ReasonID")]
+        public virtual Reason? Reason { get; set; }
 
     }
 }

@@ -4,6 +4,7 @@ using BringMeHome.Services.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BringMeHome.Services.Migrations
 {
     [DbContext(typeof(BringMeHomeDbContext))]
-    partial class BringMeHomeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250502134644_userdb")]
+    partial class userdb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -71,7 +74,13 @@ namespace BringMeHome.Services.Migrations
                     b.Property<int?>("AdopterID")
                         .HasColumnType("int");
 
+                    b.Property<int>("AdoptionReasonId")
+                        .HasColumnType("int");
+
                     b.Property<int>("AnimalID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AnimalID1")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ApplicationDate")
@@ -84,16 +93,17 @@ namespace BringMeHome.Services.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
+                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int?>("ReasonID")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("ReviewDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("ReviewedByStaffID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StaffID")
                         .HasColumnType("int");
 
                     b.Property<int>("StatusID")
@@ -108,15 +118,37 @@ namespace BringMeHome.Services.Migrations
 
                     b.HasIndex("AnimalID");
 
-                    b.HasIndex("ReasonID");
+                    b.HasIndex("AnimalID1");
 
                     b.HasIndex("ReviewedByStaffID");
+
+                    b.HasIndex("StaffID");
 
                     b.HasIndex("StatusID");
 
                     b.HasIndex("UserID");
 
                     b.ToTable("AdoptionApplications");
+                });
+
+            modelBuilder.Entity("BringMeHome.Services.Database.AdoptionReason", b =>
+                {
+                    b.Property<int>("ApplicationID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReasonID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReasonID1")
+                        .HasColumnType("int");
+
+                    b.HasKey("ApplicationID", "ReasonID");
+
+                    b.HasIndex("ReasonID");
+
+                    b.HasIndex("ReasonID1");
+
+                    b.ToTable("AdoptionReasons");
                 });
 
             modelBuilder.Entity("BringMeHome.Services.Database.Animal", b =>
@@ -1125,23 +1157,28 @@ namespace BringMeHome.Services.Migrations
                         .HasForeignKey("AdopterID");
 
                     b.HasOne("BringMeHome.Services.Database.Animal", "Animal")
-                        .WithMany("AdoptionApplications")
+                        .WithMany()
                         .HasForeignKey("AnimalID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BringMeHome.Services.Database.Reason", "Reason")
+                    b.HasOne("BringMeHome.Services.Database.Animal", null)
                         .WithMany("AdoptionApplications")
-                        .HasForeignKey("ReasonID");
+                        .HasForeignKey("AnimalID1");
 
                     b.HasOne("BringMeHome.Services.Database.Staff", "ReviewedBy")
+                        .WithMany()
+                        .HasForeignKey("ReviewedByStaffID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("BringMeHome.Services.Database.Staff", null)
                         .WithMany("ReviewedApplications")
-                        .HasForeignKey("ReviewedByStaffID");
+                        .HasForeignKey("StaffID");
 
                     b.HasOne("BringMeHome.Services.Database.ApplicationStatus", "Status")
                         .WithMany("Applications")
                         .HasForeignKey("StatusID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BringMeHome.Services.Database.User", "User")
@@ -1152,13 +1189,34 @@ namespace BringMeHome.Services.Migrations
 
                     b.Navigation("Animal");
 
-                    b.Navigation("Reason");
-
                     b.Navigation("ReviewedBy");
 
                     b.Navigation("Status");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BringMeHome.Services.Database.AdoptionReason", b =>
+                {
+                    b.HasOne("BringMeHome.Services.Database.AdoptionApplication", "Application")
+                        .WithMany("AdoptionReasons")
+                        .HasForeignKey("ApplicationID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BringMeHome.Services.Database.Reason", "Reason")
+                        .WithMany()
+                        .HasForeignKey("ReasonID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BringMeHome.Services.Database.Reason", null)
+                        .WithMany("AdoptionReasons")
+                        .HasForeignKey("ReasonID1");
+
+                    b.Navigation("Application");
+
+                    b.Navigation("Reason");
                 });
 
             modelBuilder.Entity("BringMeHome.Services.Database.Animal", b =>
@@ -1482,6 +1540,11 @@ namespace BringMeHome.Services.Migrations
                     b.Navigation("AdoptionApplications");
                 });
 
+            modelBuilder.Entity("BringMeHome.Services.Database.AdoptionApplication", b =>
+                {
+                    b.Navigation("AdoptionReasons");
+                });
+
             modelBuilder.Entity("BringMeHome.Services.Database.Animal", b =>
                 {
                     b.Navigation("AdoptionApplications");
@@ -1549,7 +1612,7 @@ namespace BringMeHome.Services.Migrations
 
             modelBuilder.Entity("BringMeHome.Services.Database.Reason", b =>
                 {
-                    b.Navigation("AdoptionApplications");
+                    b.Navigation("AdoptionReasons");
                 });
 
             modelBuilder.Entity("BringMeHome.Services.Database.Role", b =>

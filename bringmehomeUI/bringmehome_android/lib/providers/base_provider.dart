@@ -9,6 +9,9 @@ abstract class BaseProvider<T> with ChangeNotifier {
   static String? _baseUrl;
   String _endpoint = "";
 
+  static String? get baseUrl => _baseUrl;
+  String get endpoint => _endpoint;
+
   BaseProvider(String endpoint) {
     _endpoint = endpoint;
     _baseUrl = const String.fromEnvironment("baseUrl",
@@ -16,40 +19,40 @@ abstract class BaseProvider<T> with ChangeNotifier {
   }
 
   Future<SearchResult<T>> get({dynamic filter}) async {
-  var url = "$_baseUrl$_endpoint";
-  
-  if (filter != null) {
-    final queryParams = filter is Map ? filter : filter.toJson();
-    var queryString = getQueryString(queryParams);
-    url = "$url?$queryString";
-  }
-  print('Request URL: $url');
-  var uri = Uri.parse(url);
-  var headers = createHeaders();
+    var url = "$_baseUrl$_endpoint";
 
-  try {
-    var response = await http.get(uri, headers: headers);
-    print('Response status: ${response.statusCode}');
-
-    if (isValidResponse(response)) {
-      var data = jsonDecode(response.body);
-      print('Pagination response: $data');
-
-      var result = SearchResult<T>();
-      result.count = data['totalCount'] as int? ?? 0;
-      
-      var items = data['items'] as List? ?? [];
-      result.result = items.map((item) => fromJson(item)).toList();
-
-      return result;
-    } else {
-      throw Exception("Failed to load data: ${response.statusCode}");
+    if (filter != null) {
+      final queryParams = filter is Map ? filter : filter.toJson();
+      var queryString = getQueryString(queryParams);
+      url = "$url?$queryString";
     }
-  } catch (e) {
-    print('Error in BaseProvider.get: $e');
-    rethrow;
+    print('Request URL: $url');
+    var uri = Uri.parse(url);
+    var headers = createHeaders();
+
+    try {
+      var response = await http.get(uri, headers: headers);
+      print('Response status: ${response.statusCode}');
+
+      if (isValidResponse(response)) {
+        var data = jsonDecode(response.body);
+        print('Pagination response: $data');
+
+        var result = SearchResult<T>();
+        result.count = data['totalCount'] as int? ?? 0;
+
+        var items = data['items'] as List? ?? [];
+        result.result = items.map((item) => fromJson(item)).toList();
+
+        return result;
+      } else {
+        throw Exception("Failed to load data: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('Error in BaseProvider.get: $e');
+      rethrow;
+    }
   }
-}
 
   Future<T> getById(int id) async {
     var url = "$_baseUrl$_endpoint/$id";

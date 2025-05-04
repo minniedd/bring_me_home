@@ -74,6 +74,8 @@ namespace BringMeHome.Services.Services
                 Email = request.Email,
                 Username = request.Username,
                 PhoneNumber = request.PhoneNumber,
+                Address = request.Address,
+                CityID = request.CityID,
                 IsActive = request.IsActive,
                 CreatedAt = DateTime.UtcNow,
                 UserRoles = new List<UserRole>()

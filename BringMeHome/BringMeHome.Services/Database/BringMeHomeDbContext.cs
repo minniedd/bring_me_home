@@ -37,7 +37,6 @@ namespace BringMeHome.Services.Database
         public DbSet<Canton> Cantons { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<DonationType> DonationTypes { get; set; }
-        public DbSet<AdoptionReason> AdoptionReasons { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<MedicalRecord> MedicalRecords { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
@@ -105,36 +104,13 @@ namespace BringMeHome.Services.Database
                 .HasForeignKey(a => a.CityID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Adopter>()
-                .HasOne(a => a.Canton)
-                .WithMany(c => c.Adopters)
-                .HasForeignKey(a => a.CantonID)
-                .OnDelete(DeleteBehavior.Restrict);
-
             // AdoptionApplication entity configuration
             modelBuilder.Entity<AdoptionApplication>()
-                .HasOne(aa => aa.Adopter)
-                .WithMany()
-                .HasForeignKey(aa => aa.AdopterID)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<AdoptionApplication>()
                 .HasOne(aa => aa.Animal)
-                .WithMany()
+                .WithMany(a => a.AdoptionApplications) 
                 .HasForeignKey(aa => aa.AnimalID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<AdoptionApplication>()
-                .HasOne(aa => aa.Status)
-                .WithMany(s => s.Applications)
-                .HasForeignKey(aa => aa.StatusID)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<AdoptionApplication>()
-                .HasOne(aa => aa.ReviewedBy)
-                .WithMany()
-                .HasForeignKey(aa => aa.ReviewedByStaffID)
-                .OnDelete(DeleteBehavior.Restrict);
 
             // Donation entity configuration
             modelBuilder.Entity<Donation>()
@@ -201,22 +177,6 @@ namespace BringMeHome.Services.Database
                 .HasOne(ur => ur.Role)
                 .WithMany(r => r.UserRoles)
                 .HasForeignKey(ur => ur.RoleId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // AdoptionReason entity configuration
-            modelBuilder.Entity<AdoptionReason>()
-                .HasKey(ar => new { ar.ApplicationID, ar.ReasonID });
-
-            modelBuilder.Entity<AdoptionReason>()
-                .HasOne(ar => ar.Application)
-                .WithMany(aa => aa.AdoptionReasons)
-                .HasForeignKey(ar => ar.ApplicationID)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<AdoptionReason>()
-                .HasOne(ar => ar.Reason)
-                .WithMany()
-                .HasForeignKey(ar => ar.ReasonID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Event entity configuration

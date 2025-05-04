@@ -1,5 +1,7 @@
-﻿using BringMeHome.Models.Requests;
+﻿using BringMeHome.Models.Helpers;
+using BringMeHome.Models.Requests;
 using BringMeHome.Models.Responses;
+using BringMeHome.Models.SearchObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +12,9 @@ namespace BringMeHome.Services.Interfaces
 {
     public interface IAdoptionApplicationService
     {
-        Task<AdoptionApplicationResponse> CreateAsync(AdoptionApplicationRequest request);
+        Task<AdoptionApplicationResponse> CreateAsync(int id, AdoptionApplicationRequest request);
         Task<AdoptionApplicationResponse?> UpdateAsync(int id, AdoptionApplicationRequest request);
         Task<AdoptionApplicationResponse?> GetByIdAsync(int id);
-        Task<List<AdoptionApplicationResponse>> GetAsync();
+        Task<PagedResult<AdoptionApplicationResponse>> GetAsync(AdoptionApplicationSearchObject search);
     }
 }
