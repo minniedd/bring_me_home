@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class User {
   final int? id;
   final String firstName;
@@ -26,7 +24,6 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
-  try {
     return User(
       id: json['id'] as int?,
       firstName: json['firstName'] as String,
@@ -35,31 +32,26 @@ class User {
       username: json['username'] as String,
       phoneNumber: json['phoneNumber'] as String?,
       isActive: json['isActive'] as bool,
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt'] as String) : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'] as String)
+          : null,
       address: json['address'] as String?,
       city: json['city'] as String?,
     );
-  } catch (e) {
-     if (kDebugMode) {
-        print('Error parsing User.fromJson: $e');
-        print('JSON data that caused error: $json');
-     }
-     rethrow;
   }
-}
 
-   Map<String, dynamic> toJson() {
-     return {
-       'id': id,
-       'firstName': firstName,
-       'lastName': lastName,
-       'email': email,
-       'username': username,
-       'phoneNumber': phoneNumber,
-       'isActive': isActive,
-       'createdAt': createdAt?.toIso8601String(),
-       'address': address,
-       'city': city,
-     };
-   }
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'firstName': firstName,
+      'lastName': lastName,
+      'email': email,
+      'username': username,
+      'phoneNumber': phoneNumber,
+      'isActive': isActive,
+      'createdAt': createdAt?.toIso8601String(),
+      'address': address,
+      'city': city,
+    };
+  }
 }

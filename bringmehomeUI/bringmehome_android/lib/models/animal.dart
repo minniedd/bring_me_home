@@ -39,39 +39,33 @@ class Animal {
   });
 
   factory Animal.fromJson(Map<String, dynamic> json) {
-    try {
-      return Animal(
-        animalID: json['animalID'] as int?,
-        name: json['name'] as String?,
-        description: json['description'] as String?,
-        breedID: json['breedID'] as int?,
-        breedName: json['breedName'] as String?,
-        age: json['age'] != null ? int.tryParse(json['age'].toString()) : null,
-        gender: json['gender'] as String?,
-        weight: json['weight'] != null
-            ? double.tryParse(json['weight'].toString())
-            : null,
-        dateArrived: json['dateArrived'] != null
-            ? DateTime.tryParse(json['dateArrived'].toString())
-            : null,
-        statusID: json['statusID'] as int?,
-        healthStatus: json['healthStatus'] as String?,
-        shelterID: json['shelterID'] as int?,
-        shelterName: json['shelterName'] as String?,
-        colors: (json['colors'] as List<dynamic>?)
-                ?.map((i) => ColorResponse.fromJson(i))
-                .toList() ??
-            [],
-        temperaments: (json['temperaments'] as List<dynamic>?)
-                ?.map((i) => AnimalTemperamentResponse.fromJson(i))
-                .toList() ??
-            [],
-        isFavorite: json['isFavorite'] as bool? ?? false,
-      );
-    } catch (e) {
-      print('Error parsing Animal: $e');
-      print('Problematic JSON: $json');
-      rethrow;
-    }
+    return Animal(
+      animalID: json['animalID'] as int?,
+      name: json['name'] as String?,
+      description: json['description'] as String?,
+      breedID: json['breedID'] as int?,
+      breedName: json['breedName'] as String?,
+      age: json['age'] != null ? int.tryParse(json['age'].toString()) : null,
+      gender: json['gender'] as String?,
+      weight: json['weight'] != null
+          ? double.tryParse(json['weight'].toString())
+          : null,
+      dateArrived: json['dateArrived'] != null
+          ? DateTime.tryParse(json['dateArrived'].toString())
+          : null,
+      statusID: json['statusID'] as int?,
+      healthStatus: json['healthStatus'] as String?,
+      shelterID: json['shelterID'] as int?,
+      shelterName: json['shelterName'] as String?,
+      colors: (json['colors'] as List<dynamic>?)
+              ?.map((i) => ColorResponse.fromJson(i))
+              .toList() ??
+          [],
+      temperaments: (json['temperaments'] as List<dynamic>?)
+              ?.map((i) => AnimalTemperamentResponse.fromJson(i))
+              .toList() ??
+          [],
+      isFavorite: json['isFavorite'] as bool? ?? false,
+    );
   }
 }

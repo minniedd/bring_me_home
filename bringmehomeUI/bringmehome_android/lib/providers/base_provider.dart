@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:learning_app/models/search_result.dart';
@@ -26,17 +26,23 @@ abstract class BaseProvider<T> with ChangeNotifier {
       var queryString = getQueryString(queryParams);
       url = "$url?$queryString";
     }
-    print('Request URL: $url');
+    if (kDebugMode) {
+      print('Request URL: $url');
+    }
     var uri = Uri.parse(url);
     var headers = createHeaders();
 
     try {
       var response = await http.get(uri, headers: headers);
-      print('Response status: ${response.statusCode}');
+      if (kDebugMode) {
+        print('Response status: ${response.statusCode}');
+      }
 
       if (isValidResponse(response)) {
         var data = jsonDecode(response.body);
-        print('Pagination response: $data');
+        if (kDebugMode) {
+          print('Pagination response: $data');
+        }
 
         var result = SearchResult<T>();
         result.count = data['totalCount'] as int? ?? 0;
@@ -49,7 +55,9 @@ abstract class BaseProvider<T> with ChangeNotifier {
         throw Exception("Failed to load data: ${response.statusCode}");
       }
     } catch (e) {
-      print('Error in BaseProvider.get: $e');
+      if (kDebugMode) {
+        print('Error in BaseProvider.get: $e');
+      }
       rethrow;
     }
   }
@@ -76,7 +84,9 @@ abstract class BaseProvider<T> with ChangeNotifier {
 
     var jsonRequest = jsonEncode(request);
     var response = await http.post(uri, headers: headers, body: jsonRequest);
-    print(response.body);
+    if (kDebugMode) {
+      print(response.body);
+    }
     if (isValidResponse(response)) {
       var data = jsonDecode(response.body);
       return fromJson(data);

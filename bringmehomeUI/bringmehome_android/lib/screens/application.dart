@@ -1,17 +1,16 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:learning_app/components/custom_check_box.dart'; // Ensure correct path
-import 'package:learning_app/components/custom_text_field.dart'; // Ensure correct path
-import 'package:learning_app/models/User.dart'; // Ensure correct path
-import 'package:learning_app/providers/adoption_application_provider.dart'; // Ensure correct path
-import 'package:learning_app/providers/user_provider.dart'; // Ensure correct path
-import 'package:learning_app/screens/application_congrats_screen.dart'; // Ensure correct path
+import 'package:learning_app/components/custom_check_box.dart';
+import 'package:learning_app/components/custom_text_field.dart';
+import 'package:learning_app/models/user.dart';
+import 'package:learning_app/providers/adoption_application_provider.dart';
+import 'package:learning_app/providers/user_provider.dart';
+import 'package:learning_app/screens/application_congrats_screen.dart';
 import 'package:provider/provider.dart';
 
 class ApplicationScreen extends StatefulWidget {
-  final int animalId; 
+  final int animalId;
 
   const ApplicationScreen({super.key, required this.animalId});
 
@@ -61,34 +60,24 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
   }
 
   Future<void> _loadUserData() async {
-    if (kDebugMode) print("ApplicationScreen: _loadUserData called");
     try {
       await _userProvider.loadCurrentUser();
       _loggedInUser = _userProvider.currentUser;
 
-      if (_loggedInUser == null) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to load user data. Cannot apply.'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          Navigator.of(context).pop();
-        }
-      } else {
-        if (kDebugMode)
-          print(
-              "ApplicationScreen: Logged in user data loaded (ID: ${_loggedInUser!.id})");
+      if (_loggedInUser == null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to load user data. Cannot apply.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        Navigator.of(context).pop();
       }
     } catch (e) {
-      if (kDebugMode)
-        print("ApplicationScreen: Error during user data loading: $e");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-                'Error while loading user data: ${e.toString()}'),
+            content: Text('Error while loading user data: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -107,15 +96,8 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
     final reasonId = _reasonMapping[title];
     if (reasonId != null) {
       setState(() {
-        if (isChecked) {
-          _selectedReasonId = reasonId;
-        } else {
-          if (_selectedReasonId == reasonId) {
-            _selectedReasonId = null;
-          }
-        }
+        _selectedReasonId = isChecked ? reasonId : null;
       });
-      if (kDebugMode) print("Selected Reason ID: $_selectedReasonId");
     }
   }
 
@@ -124,39 +106,28 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
       setState(() {
         _isAnimalAllowed = value;
       });
-      if (kDebugMode) print("Is animal allowed: $_isAnimalAllowed");
     }
   }
 
   Future<void> _submitApplication() async {
-    if (kDebugMode) print("ApplicationScreen: _submitApplication called");
-
     if (_loggedInUser == null || _loggedInUser!.id == null) {
-      if (kDebugMode)
-        print("ApplicationScreen: Cannot submit, user data or ID missing.");
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'User data or ID not available. Cannot submit application. Please try logging in again.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'User data or ID not available. Cannot submit application. Please try logging in again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 
     if (_livingSituationController.text.trim().isEmpty) {
-      if (kDebugMode)
-        print("ApplicationScreen: Validation failed: Living situation empty.");
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please enter your living situation.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your living situation.'),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 
@@ -169,32 +140,17 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
       final notes = _notesController.text.trim().isEmpty
           ? null
           : _notesController.text.trim();
-      final isAnimalAllowed = _isAnimalAllowed;
-      final reasonId = _selectedReasonId;
-
-      if (kDebugMode) {
-        print("ApplicationScreen: Submitting application with data:");
-        print("   userId: ${_loggedInUser!.id!}");
-        print("   animalId: ${widget.animalId}");
-        print("   livingSituation: $livingSituation");
-        print("   isAnimalAllowed: $isAnimalAllowed");
-        print("   reasonId: $reasonId");
-        print("   notes: $notes");
-      }
 
       await _adoptionApplicationProvider.createApplication(
         userId: _loggedInUser!.id!,
         animalId: widget.animalId,
         livingSituation: livingSituation,
-        isAnimalAllowed: isAnimalAllowed,
-        reasonId: reasonId,
+        isAnimalAllowed: _isAnimalAllowed,
+        reasonId: _selectedReasonId,
         notes: notes,
       );
 
       if (mounted) {
-        if (kDebugMode)
-          print(
-              "ApplicationScreen: Application submitted successfully, navigating to congrats screen.");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -203,9 +159,6 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
         );
       }
     } on DioException catch (e) {
-      if (kDebugMode)
-        print(
-            "ApplicationScreen: Dio Error submitting application: ${e.message}");
       String userMessage = 'Error while sending application.';
       if (e.response?.data is Map<String, dynamic> &&
           e.response!.data.containsKey('message')) {
@@ -216,25 +169,19 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
         userMessage = "Network Error!";
       }
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(userMessage),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } on Exception catch (e) {
-      if (kDebugMode)
-        print("ApplicationScreen: Generic Error submitting application: $e");
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error while sending application: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(userMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error while sending application: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -265,9 +212,6 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
     }
 
     if (_loggedInUser == null) {
-      if (kDebugMode)
-        print(
-            "ApplicationScreen: User data loading failed, showing error state.");
       return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.primary,
         appBar: AppBar(

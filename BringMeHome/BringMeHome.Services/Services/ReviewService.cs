@@ -72,6 +72,7 @@ namespace BringMeHome.Services.Services
             var totalCount = await query.CountAsync();
 
             var reviews = await query
+            .Include(r => r.Shelter)
             .ApplySort(search)
             .ApplyPagination(search)
             .Select(r => MapToResponse(r))

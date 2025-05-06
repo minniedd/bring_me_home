@@ -1,16 +1,17 @@
-import 'dart:async';
 import 'package:dio/dio.dart';
-import 'package:learning_app/models/adoption_application.dart';
+import 'package:learning_app/models/reviews.dart';
+import 'package:learning_app/models/search_objects/review_search_object.dart';
+import 'package:learning_app/models/search_result.dart';
 import 'package:learning_app/providers/base_provider.dart';
 import 'package:learning_app/services/auth_service.dart';
 
-class AdoptionApplicationProvider extends BaseProvider<AdoptionApplication> {
+class ReviewProvider extends BaseProvider<Review> {
   final Dio _dio;
-  static const String _applicationEndpoint = '/AdoptionApplication';
+  static const String _applicationEndpoint = '/Review';
 
-  AdoptionApplicationProvider()
+  ReviewProvider()
       : _dio = Dio(),
-        super("api/AdoptionApplication") {
+        super("api/Review") {
     _dio.options.headers["Content-Type"] = "application/json";
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
@@ -18,34 +19,31 @@ class AdoptionApplicationProvider extends BaseProvider<AdoptionApplication> {
         if (token != null) {
           options.headers["Authorization"] = "Bearer $token";
         }
-        handler.next(options);
+        return handler.next(options);
       },
     ));
   }
 
   @override
-  AdoptionApplication fromJson(data) {
-    if (data is! Map<String, dynamic>) {
-      throw Exception("Invalid data format for AdoptionApplication");
-    }
-    return AdoptionApplication.fromJson(data);
+  Review fromJson(data) {
+    return Review.fromJson(data);
   }
 
-  Future<void> createApplication({
+  Future<SearchResult<Review>> search(ReviewSearchObject searchObject) async {
+    return await get(filter: searchObject);
+  }
+
+  Future<void> createReview({
     required int userId,
-    required int animalId,
-    required String livingSituation,
-    required bool isAnimalAllowed,
-    int? reasonId,
-    String? notes,
+    required int shelterId,
+    required int rating,
+    required String comment,
   }) async {
     final requestData = {
       'userID': userId,
-      'animalID': animalId,
-      'livingSituation': livingSituation,
-      'isAnimalAllowed': isAnimalAllowed.toString(),
-      'reasonId': reasonId,
-      'notes': notes,
+      'shelterID': shelterId,
+      'rating': rating,
+      'comment': comment,
     };
 
     final url = "${BaseProvider.baseUrl}$endpoint";
@@ -57,7 +55,7 @@ class AdoptionApplicationProvider extends BaseProvider<AdoptionApplication> {
   }
 
   @override
-  Future<AdoptionApplication> insert(dynamic request) async {
+  Future<Review> insert(dynamic request) async {
     final url = "${BaseProvider.baseUrl}$_applicationEndpoint";
     final response = await _dio.post(url, data: request);
 
@@ -80,7 +78,8 @@ class AdoptionApplicationProvider extends BaseProvider<AdoptionApplication> {
       } else if (response.data['errors'] != null) {
         final errors = response.data['errors'] as Map<String, dynamic>;
         errorMessage = errors.entries
-            .map((e) => e.value is List ? e.value.join(', ') : e.value.toString())
+            .map((e) =>
+                e.value is List ? e.value.join(', ') : e.value.toString())
             .join(', ');
       }
     } else if (response.data is String) {

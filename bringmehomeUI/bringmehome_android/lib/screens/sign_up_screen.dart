@@ -88,7 +88,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Registration successful! Please login.')));
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => LoginScreen()),
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
         );
       } else {
         setState(() => _errorMessage =
@@ -330,7 +330,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => LoginScreen()));
+                                    builder: (context) => const LoginScreen()));
                           },
                           child: Text(
                             "Login in here",

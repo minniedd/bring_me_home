@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({super.key});
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -32,10 +32,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _performLogin(BuildContext context) async {
-    print("Starting login process");
     setState(() => _errorMessage = null);
 
-    // validate
+    // Validate form
     if (_formKey.currentState == null || !_formKey.currentState!.validate()) {
       return;
     }
@@ -46,38 +45,36 @@ class _LoginScreenState extends State<LoginScreen> {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final username = _usernameController.text.trim();
       final password = _passwordController.text;
-      print("Calling login API");
+
       final success = await authProvider.login(username, password);
-      print("Login API response: $success");
 
       if (!mounted) return;
 
       if (success) {
-        // if login success navigate to list of animal aka main page
+        // if login success, navigate to list of animals (main page)
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const AnimalListScreen()),
         );
       } else {
-        // login failed - invalid credidentals
+        // login failed - invalid credentials
         setState(() => _errorMessage = 'Invalid username or password');
       }
     } on SocketException catch (_) {
       if (mounted) {
         setState(() =>
-            _errorMessage = 'Network error. Please check your connection.'); // network error
+            _errorMessage = 'Network error. Please check your connection.');
       }
     } on FormatException catch (_) {
       if (mounted) {
-        setState(() => _errorMessage = 'Unexpected response from server'); // server error
+        setState(() => _errorMessage = 'Unexpected response from server');
       }
     } on http.ClientException catch (e) {
       if (mounted) {
-        setState(() => _errorMessage = 'Connection error: ${e.message}'); // connction error
+        setState(() => _errorMessage = 'Connection error: ${e.message}');
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _errorMessage = 'An error occurred: ${e.toString()}'); // error with description
-        debugPrint('Login error: $e');
+        setState(() => _errorMessage = 'An error occurred: ${e.toString()}');
       }
     } finally {
       if (mounted) {
@@ -196,7 +193,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const SignUpScreen()));
+                                    builder: (context) =>
+                                        const SignUpScreen()));
                           },
                           child: Text(
                             "Sign up here",

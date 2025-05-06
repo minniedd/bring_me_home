@@ -1,4 +1,4 @@
-import 'package:learning_app/models/User.dart';
+import 'package:learning_app/models/user.dart';
 import 'package:learning_app/models/animal.dart';
 import 'package:learning_app/models/application_status.dart';
 

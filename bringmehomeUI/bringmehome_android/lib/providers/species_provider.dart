@@ -19,73 +19,39 @@ class SpeciesProvider extends BaseProvider<Species> {
         }
         return handler.next(options);
       },
-      onError: (DioException e, handler) async {
-        print('Dio Error: ${e.message}');
-        if (e.response != null) {
-          print('Error Response Status: ${e.response!.statusCode}');
-          print('Error Response Data: ${e.response!.data}');
-        }
-        return handler.next(e);
-      },
     ));
   }
 
   @override
-  Species fromJson(data) {
-    return Species.fromJson(data);
-  }
+  Species fromJson(data) => Species.fromJson(data);
 
   Future<List<Species>> getSpecies() async {
     try {
       final response = await _dio.get(
         '$_baseUrl/Species',
-        options: Options(
-          validateStatus: (status) => status! < 500,
-        ),
+        options: Options(validateStatus: (status) => status! < 500),
       );
 
-      if (response.statusCode == 200) {
-        final responseData = response.data;
-        List<dynamic> speciesJsonList = [];
+      if (response.statusCode != 200) return [];
 
-        if (responseData is Map &&
-            responseData.containsKey('items') &&
-            responseData['items'] is List) {
-          speciesJsonList = responseData['items'];
-        } else if (responseData is List) {
-          speciesJsonList = responseData;
-        } else {
-          print(
-              'Unexpected response type for species: ${responseData.runtimeType}');
-          return [];
-        }
+      final responseData = response.data;
+      final speciesJsonList = responseData is Map && responseData['items'] is List
+          ? responseData['items'] as List
+          : responseData is List
+              ? responseData
+              : [];
 
-        return speciesJsonList
-            .map((speciesJson) {
-              try {
-                return fromJson(speciesJson);
-              } catch (e) {
-                print('Error parsing species JSON: $e');
-                print('Error species JSON: $speciesJson');
-                return null;
-              }
-            })
-            .where((species) => species != null)
-            .cast<Species>()
-            .toList();
-      } else {
-        print('Failed to fetch species - Status: ${response.statusCode}');
-        return [];
-      }
-    } on DioException catch (e) {
-      print('Error fetching species: ${e.message}');
-      if (e.response != null) {
-        print('Error response status: ${e.response!.statusCode}');
-        print('Error response data: ${e.response!.data}');
-      }
-      return [];
-    } catch (e) {
-      print('An unexpected error occurred during species fetching: $e');
+      return speciesJsonList
+          .map((json) {
+            try {
+              return fromJson(json);
+            } catch (_) {
+              return null;
+            }
+          })
+          .whereType<Species>()
+          .toList();
+    } catch (_) {
       return [];
     }
   }

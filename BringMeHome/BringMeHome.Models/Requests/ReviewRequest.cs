@@ -11,8 +11,7 @@ namespace BringMeHome.Models.Requests
     {
         public int UserID { get; set; }
         public int ShelterID { get; set; }
-        [Range(1, 5)]
-        public int Rating { get; set; }
+        public float Rating { get; set; }
         public string? Comment { get; set; }
     }
 }

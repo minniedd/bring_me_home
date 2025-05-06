@@ -50,6 +50,7 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -89,7 +90,6 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
         _isLoading = false;
         _errorMessage = 'Failed to load animals: ${e.toString()}';
       });
-      print('Error loading animals: $e');
     }
   }
 
@@ -120,7 +120,6 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
         _isLoadingSpecies = false;
       });
     } catch (e) {
-      print('Error loading species: $e');
       setState(() {
         _isLoadingSpecies = false;
       });
@@ -151,7 +150,6 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
         _isLoadingCantons = false;
       });
     } catch (e) {
-      print('Error loading cantons: $e');
       setState(() {
         _isLoadingCantons = false;
       });
@@ -260,7 +258,9 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
               Card(
                 elevation: 2,
                 shape: RoundedRectangleBorder(
@@ -365,7 +365,7 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                                         },
                                       ),
                                     );
-                                  }).toList(),
+                                  }),
                                 ],
                               ),
                             ),
@@ -481,7 +481,7 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                                         },
                                       ),
                                     );
-                                  }).toList(),
+                                  }),
                                 ],
                               ),
                             ),

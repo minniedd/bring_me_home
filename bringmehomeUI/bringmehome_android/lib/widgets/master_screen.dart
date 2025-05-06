@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:learning_app/screens/animal_list_screen.dart';
 import 'package:learning_app/screens/donation_screen.dart';
@@ -38,7 +37,7 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
         break;
       case 3:
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const ReviewsListScreen()),
+          MaterialPageRoute(builder: (context) => const ReviewListScreen()),
         );
         break;
       case 4:

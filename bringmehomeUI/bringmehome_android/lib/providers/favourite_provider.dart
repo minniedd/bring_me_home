@@ -23,60 +23,34 @@ class FavouritesProvider extends BaseProvider<Animal> {
   }
 
   @override
-  Animal fromJson(data) {
-    return Animal.fromJson(data);
-  }
+  Animal fromJson(data) => Animal.fromJson(data);
 
   Future<bool> toggleFavorite(int animalId, bool isFavorite) async {
-  try {
     final url = '$_baseUrl/UserFavoriteAnimal/$animalId/favorite';
     
     final response = await _dio.put(
       url,
-      data: {
-        'isFavorite': isFavorite
-      },
-      options: Options(
-        validateStatus: (status) => true, 
-      ),
+      data: {'isFavorite': isFavorite},
+      options: Options(validateStatus: (status) => true),
     );
 
-    if (response.statusCode == 200 || 
-        (response.statusCode == 404 && !isFavorite)) {
-      return true;
-    } else {
-      print('Server error: ${response.statusCode} - ${response.data}');
-      return false;
-    }
-  } catch (e) {
-    print('Error toggling favorite: $e');
-    return false;
+    return response.statusCode == 200 || 
+           (response.statusCode == 404 && !isFavorite);
   }
-}
 
   Future<List<Animal>> getFavorites() async {
     try {
       final response = await _dio.get(
         '$_baseUrl/UserFavoriteAnimal/favorites',
-        options: Options(
-          validateStatus: (status) => status! < 500,
-        ),
+        options: Options(validateStatus: (status) => status! < 500),
       );
 
-      if (response.statusCode == 200) {
-        return (response.data as List)
-            .map((animalJson) => Animal.fromJson(animalJson))
-            .toList();
-      } else {
-        print('Failed to fetch favorites: ${response.statusCode}');
-        return [];
-      }
-    } on DioException catch (e) {
-      print('Error fetching favorites: ${e.message}');
-      if (e.response != null) {
-        print('Status code: ${e.response!.statusCode}');
-        print('Response data: ${e.response!.data}');
-      }
+      if (response.statusCode != 200) return [];
+
+      return (response.data as List)
+          .map((animalJson) => Animal.fromJson(animalJson))
+          .toList();
+    } catch (_) {
       return [];
     }
   }
