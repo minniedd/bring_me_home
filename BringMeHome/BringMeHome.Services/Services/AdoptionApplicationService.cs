@@ -109,7 +109,8 @@ namespace BringMeHome.Services.Services
                 Console.WriteLine($"Failed to send adoption notification: {ex.Message}");
             }
         }
-        public async Task<PagedResult<AdoptionApplicationResponse>> GetAsync(AdoptionApplicationSearchObject search)
+
+        public async Task<PagedResult<AdoptionApplicationResponse>> GetAsync(int? userId, AdoptionApplicationSearchObject search)
         {
             var query = _context.AdoptionApplications
                 .Include(aa => aa.User)
@@ -211,7 +212,16 @@ namespace BringMeHome.Services.Services
                 LivingSituation = adoptionApplication.LivingSituation,
                 IsAnimalAllowed = adoptionApplication.IsAnimalAllowed,
                 ReasonId = adoptionApplication.ReasonID,
-                ReasonName = adoptionApplication.Reason?.ReasonType
+                ReasonName = adoptionApplication.Reason?.ReasonType,
+                Animal = adoptionApplication.Animal != null ? new AnimalResponse
+                {
+                    AnimalID = adoptionApplication.Animal.AnimalID,
+                    Name = adoptionApplication.Animal.Name,
+                    Age = adoptionApplication.Animal.Age,
+                    ShelterName = adoptionApplication.Animal.Shelter?.Name,
+                                                             
+                } : null,
+                StatusName = adoptionApplication.Status?.StatusName
             };
         }
     }

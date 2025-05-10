@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -9,33 +8,25 @@ class AuthService {
 
   // Login
   static Future<bool> login(String username, String password) async {
-    final client = HttpClient()
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-
     try {
-      final request = await client.postUrl(Uri.parse('$_baseUrl/login'));
-
-      request.headers.set('Content-Type', 'application/json');
-      request.write(jsonEncode({
-        'username': username,
-        'password': password,
-      }));
-
-      final response =
-          await request.close().timeout(const Duration(seconds: 5));
+      final response = await http.post(
+        Uri.parse('$_baseUrl/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'username': username,
+          'password': password,
+        }),
+      ).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
-        final body = await response.transform(utf8.decoder).join();
-        final data = jsonDecode(body);
+        final data = jsonDecode(response.body);
         await storeTokens(data['accessToken'], data['refreshToken']);
         return true;
       }
       return false;
     } catch (e) {
+      print('Login error: $e');
       return false;
-    } finally {
-      client.close();
     }
   }
 

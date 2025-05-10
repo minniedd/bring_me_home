@@ -26,7 +26,7 @@ class AnimalWindow extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.only(bottom: 0),
         child: Container(
           height: 150,
           decoration: BoxDecoration(

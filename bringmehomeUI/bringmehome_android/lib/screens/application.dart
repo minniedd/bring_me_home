@@ -141,11 +141,14 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
           ? null
           : _notesController.text.trim();
 
+          final String isAnimalAllowedString = _isAnimalAllowed ? 'Yes' : 'No';
+
+
       await _adoptionApplicationProvider.createApplication(
         userId: _loggedInUser!.id!,
         animalId: widget.animalId,
         livingSituation: livingSituation,
-        isAnimalAllowed: _isAnimalAllowed,
+        isAnimalAllowed: isAnimalAllowedString,
         reasonId: _selectedReasonId,
         notes: notes,
       );

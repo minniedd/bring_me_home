@@ -10,12 +10,13 @@ class AdoptionApplication {
   final int statusID; 
   final String? notes; 
   final String? livingSituation;
-  final bool? isAnimalAllowed; 
+  final String? isAnimalAllowed; 
   final int? reasonId;
 
   final User? user; 
   final Animal? animal;
   final ApplicationStatus? status;
+  final String? statusName;
   final User? reviewedBy; 
 
   AdoptionApplication.create({
@@ -30,6 +31,7 @@ class AdoptionApplication {
     this.statusID = 1, 
     this.reviewedBy,
     this.status,
+    this.statusName,
     this.user, 
     this.animal,
   });
@@ -51,7 +53,8 @@ class AdoptionApplication {
       statusID: json['statusID'] as int,
       notes: json['notes'] as String?,
       livingSituation: json['livingSituation'] as String?,
-      isAnimalAllowed: json['isAnimalAllowed'] as bool?,
+      isAnimalAllowed: json['isAnimalAllowed'] as String?,
+      statusName: json['statusName'] as String?,
       reasonId:json['reasonId'] as int?,
       user: userJson != null ? User.fromJson(userJson as Map<String, dynamic>) : null,
       animal: animalJson != null ? Animal.fromJson(animalJson as Map<String, dynamic>) : null,
@@ -71,6 +74,7 @@ class AdoptionApplication {
       this.isAnimalAllowed,
       this.reasonId,
       this.user,
+      this.statusName,
       this.animal,
       this.status,
       this.reviewedBy,
@@ -83,6 +87,7 @@ class AdoptionApplication {
       'animalID': animalID,
       if(applicationDate != null) 'applicationDate': applicationDate!.toIso8601String(), 
       'statusID': statusID,
+      if(statusName != null) 'statusName': statusName,      
       'notes': notes,
       'livingSituation': livingSituation,
       'isAnimalAllowed': isAnimalAllowed,

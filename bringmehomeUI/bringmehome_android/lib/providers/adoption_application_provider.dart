@@ -3,10 +3,12 @@ import 'package:dio/dio.dart';
 import 'package:learning_app/models/adoption_application.dart';
 import 'package:learning_app/providers/base_provider.dart';
 import 'package:learning_app/services/auth_service.dart';
+//import 'package:http/http.dart' as http;
 
 class AdoptionApplicationProvider extends BaseProvider<AdoptionApplication> {
   final Dio _dio;
   static const String _applicationEndpoint = '/AdoptionApplication';
+  final String _baseUrl = 'http://10.0.2.2:5115/api';
 
   AdoptionApplicationProvider()
       : _dio = Dio(),
@@ -18,7 +20,7 @@ class AdoptionApplicationProvider extends BaseProvider<AdoptionApplication> {
         if (token != null) {
           options.headers["Authorization"] = "Bearer $token";
         }
-        handler.next(options);
+        return handler.next(options);
       },
     ));
   }
@@ -31,11 +33,39 @@ class AdoptionApplicationProvider extends BaseProvider<AdoptionApplication> {
     return AdoptionApplication.fromJson(data);
   }
 
+  Future<List<AdoptionApplication>> getHistory() async {
+  try {
+    final response = await _dio.get(
+      '$_baseUrl/AdoptionApplication/history',
+      options: Options(validateStatus: (status) => status! < 500),
+    );
+
+    if (response.statusCode == 200) {
+      if (response.data is Map<String, dynamic> && response.data.containsKey('items')) {
+        final List<dynamic> applicationsJson = response.data['items'];
+
+        return applicationsJson
+            .map((applicationJson) => AdoptionApplication.fromJson(applicationJson))
+            .toList();
+      } else {
+        print('Unexpected response data structure: ${response.data}');
+        return [];
+      }
+    } else {
+      print('API returned status code: ${response.statusCode}');
+      return [];
+    }
+  } catch (e) {
+    print('Error fetching history: $e');
+    return [];
+  }
+}
+
   Future<void> createApplication({
     required int userId,
     required int animalId,
     required String livingSituation,
-    required bool isAnimalAllowed,
+    required String isAnimalAllowed,
     int? reasonId,
     String? notes,
   }) async {
@@ -43,7 +73,7 @@ class AdoptionApplicationProvider extends BaseProvider<AdoptionApplication> {
       'userID': userId,
       'animalID': animalId,
       'livingSituation': livingSituation,
-      'isAnimalAllowed': isAnimalAllowed.toString(),
+      'isAnimalAllowed': isAnimalAllowed,
       'reasonId': reasonId,
       'notes': notes,
     };

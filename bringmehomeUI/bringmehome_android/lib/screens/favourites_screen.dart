@@ -82,22 +82,25 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                     itemCount: _favoriteAnimals.length,
                     itemBuilder: (context, index) {
                       final animal = _favoriteAnimals[index];
-                      return AnimalWindow(
-                        animalName: animal.name ?? 'Unknown',
-                        animalAge: animal.age?.toString() ?? 'Unknown',
-                        shelterCity: '${animal.shelterName}',
-                        isFavorite: true,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  AnimalScreen(animal: animal),
-                            ),
-                          );
-                        },
-                        onLikeTap: (isLiked) =>
-                            _toggleFavorite(animal.animalID!, isLiked),
+                      return Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                        child: AnimalWindow(
+                          animalName: animal.name ?? 'Unknown',
+                          animalAge: animal.age?.toString() ?? 'Unknown',
+                          shelterCity: '${animal.shelterName}',
+                          isFavorite: true,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    AnimalScreen(animal: animal),
+                              ),
+                            );
+                          },
+                          onLikeTap: (isLiked) =>
+                              _toggleFavorite(animal.animalID!, isLiked),
+                        ),
                       );
                     },
                   ),

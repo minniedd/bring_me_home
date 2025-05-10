@@ -512,19 +512,22 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                       return _buildLoader();
                     }
                     final animal = _animalResult.result[index];
-                    return AnimalWindow(
-                      animalName: animal.name ?? 'Unknown',
-                      animalAge: '${animal.age}',
-                      shelterCity: '${animal.shelterName}',
-                      showLikeButton: false,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AnimalScreen(animal: animal),
-                          ),
-                        );
-                      },
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: AnimalWindow(
+                        animalName: animal.name ?? 'Unknown',
+                        animalAge: '${animal.age}',
+                        shelterCity: '${animal.shelterName}',
+                        showLikeButton: false,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AnimalScreen(animal: animal),
+                            ),
+                          );
+                        },
+                      ),
                     );
                   },
                 ),

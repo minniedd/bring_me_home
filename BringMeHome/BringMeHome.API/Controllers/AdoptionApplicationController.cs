@@ -21,10 +21,17 @@ namespace BringMeHome.API.Controllers
             _adoptionApplicationService = adoptionApplicationService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<PagedResult<AdoptionApplicationResponse>>> Get([FromQuery] AdoptionApplicationSearchObject? search = null)
+        [HttpGet("history")]
+        public async Task<ActionResult<PagedResult<AdoptionApplicationResponse>>> Get([FromQuery]AdoptionApplicationSearchObject? search = null)
         {
-            return await _adoptionApplicationService.GetAsync(search ?? new AdoptionApplicationSearchObject());
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return Unauthorized(new { message = "User ID not found or invalid" });
+            }
+
+            var result = await _adoptionApplicationService.GetAsync(userId, search);
+            return Ok(result);
         }
 
         [HttpGet("{id}")]

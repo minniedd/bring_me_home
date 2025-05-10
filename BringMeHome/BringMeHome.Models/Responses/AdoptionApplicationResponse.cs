@@ -20,5 +20,7 @@ namespace BringMeHome.Models.Responses
         public string? IsAnimalAllowed { get; set; }
         public int? ReasonId { get; set; }
         public string? ReasonName { get; set; }
+        public AnimalResponse? Animal { get; set; }
+        public string? StatusName { get; set; }
     }
 }
