@@ -8,6 +8,7 @@ import 'package:learning_app/models/species.dart';
 import 'package:learning_app/providers/animal_provider.dart';
 import 'package:learning_app/providers/canton_provider.dart';
 import 'package:learning_app/providers/species_provider.dart';
+import 'package:learning_app/screens/add_review_screen.dart';
 import 'package:learning_app/screens/animal_screen.dart';
 import 'package:learning_app/widgets/master_screen.dart';
 
@@ -221,7 +222,15 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            "Recite nam šta mislite",
+                            "Tell us what you",
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Text(
+                            "think about us",
                             style: TextStyle(
                               fontSize: 20,
                               color: Colors.white,
@@ -231,7 +240,13 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                           const SizedBox(height: 20),
                           ElevatedButton(
                             onPressed: () {
-                              // Button functionality here
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const AddReviewScreen(),
+                                ),
+                              );
                             },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(
@@ -239,7 +254,7 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                               backgroundColor: Colors.white,
                               foregroundColor: Colors.deepPurple.shade300,
                             ),
-                            child: const Text('RECENZIJE'),
+                            child: const Text('REVIEWS'),
                           ),
                         ],
                       ),
@@ -523,7 +538,8 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AnimalScreen(animal: animal),
+                              builder: (context) =>
+                                  AnimalScreen(animal: animal),
                             ),
                           );
                         },
