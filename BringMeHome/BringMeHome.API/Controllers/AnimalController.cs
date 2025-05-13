@@ -28,6 +28,13 @@ namespace BringMeHome.API.Controllers
             return await _animalService.GetAsync(search ?? new AnimalSearchObject());
         }
 
+        [HttpGet]
+        public async Task<ActionResult<PagedResult<AnimalResponse>>> GetAvailable([FromQuery] AnimalSearchObject? search = null)
+        {
+            search.AvailableOnly = true;
+            return await _animalService.GetAsync(search ?? new AnimalSearchObject());
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<AnimalResponse>> GetById(int id)
         {

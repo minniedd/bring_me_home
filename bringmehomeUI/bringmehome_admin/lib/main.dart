@@ -1,5 +1,4 @@
-import 'package:bringmehome_admin/components/master_screen.dart';
-import 'package:bringmehome_admin/screens/available_animals_screen.dart';
+import 'package:bringmehome_admin/screens/login_screen.dart';
 import 'package:bringmehome_admin/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: themeData,
-      home: AvailableAnimalsScreen(),
+      home: const LoginScreen(),
     );
   }
 }

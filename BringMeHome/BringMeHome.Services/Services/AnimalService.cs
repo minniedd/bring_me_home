@@ -153,6 +153,16 @@ namespace BringMeHome.Services.Services
                     );
             }
 
+            if (search.Status != null)
+            {
+                query = query.Where(a => a.Status.StatusName == search.Status);
+            }
+
+            if (search.AvailableOnly == true)
+            {
+                query = query.Where(a => a.Status.StatusName != "Adopted");
+            }
+
             if (search.ColorID.HasValue)
             {
                 query = query.Where(a => a.AnimalColors.Any(ac => ac.ColorID == search.ColorID.Value));
