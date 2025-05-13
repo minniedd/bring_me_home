@@ -1,9 +1,14 @@
-import 'package:bringmehome_admin/screens/edit_animal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class AnimalContainer extends StatelessWidget {
-  const AnimalContainer({super.key});
+  final String animalName;
+  final String? animalImageUrl;
+  final String buttonText;
+  final VoidCallback onTap;
+
+
+  const AnimalContainer({super.key, required this.animalName, this.animalImageUrl, required this.buttonText, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -27,22 +32,16 @@ class AnimalContainer extends StatelessWidget {
                 ),
               ),
               Text(
-                "data",
+                animalName,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const EditAnimalDataScreen(),
-                    ),
-                  );
-                },
-                child: Text("data"),
+                onPressed: onTap, 
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white,
                 ),
+                child: Text(buttonText),
               )
             ],
           ),

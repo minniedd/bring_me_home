@@ -12,13 +12,15 @@ class MasterScreenWidget extends StatefulWidget {
   final Widget? child;
   final String? titleText;
 
-  MasterScreenWidget({required this.child, required this.titleText, Key? key}) : super(key: key);
+  MasterScreenWidget({required this.child, required this.titleText, Key? key})
+      : super(key: key);
 
   @override
   State<MasterScreenWidget> createState() => _MasterScreenWidgetState();
 }
 
-class _MasterScreenWidgetState extends State<MasterScreenWidget> with WindowListener {
+class _MasterScreenWidgetState extends State<MasterScreenWidget>
+    with WindowListener {
   final AuthProvider _authProvider = AuthProvider();
 
   logOut() async {
@@ -57,9 +59,21 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> with WindowList
         backgroundColor: Theme.of(context).colorScheme.secondary,
         title: Row(
           children: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.arrow_back),
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSecondary, 
+              onPressed: () {
+                Navigator.canPop(context);
+              },
+              tooltip: 'Back',
+            ),
+            const SizedBox(width: 10,),
             Text(
               widget.titleText ?? "",
-              style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 20),
+              style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold, fontSize: 20),
             ),
             Expanded(
               child: Center(
@@ -93,7 +107,8 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> with WindowList
               leading: Icon(Icons.pets),
               title: Text('DOSTUPNE ŽIVOTINJE'),
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AvailableAnimalsScreen()));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const AvailableAnimalsScreen()));
               },
             ),
             ListTile(
@@ -101,7 +116,8 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> with WindowList
               title: Text('ZAHTJEVI'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ApplicationsScreen()));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const ApplicationsScreen()));
               },
             ),
             ListTile(
@@ -141,8 +157,14 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> with WindowList
             ),
             ListTile(
               focusColor: Colors.red.shade200,
-              leading: const Icon(Icons.logout_rounded,color: Color.fromRGBO(239, 83, 80, 1),),
-              title: const Text('LOGOUT', style: TextStyle(color: Color.fromRGBO(239, 83, 80, 1)),),
+              leading: const Icon(
+                Icons.logout_rounded,
+                color: Color.fromRGBO(239, 83, 80, 1),
+              ),
+              title: const Text(
+                'LOGOUT',
+                style: TextStyle(color: Color.fromRGBO(239, 83, 80, 1)),
+              ),
               onTap: () {
                 logOut();
               },

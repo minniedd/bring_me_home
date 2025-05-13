@@ -28,7 +28,7 @@ namespace BringMeHome.API.Controllers
             return await _animalService.GetAsync(search ?? new AnimalSearchObject());
         }
 
-        [HttpGet]
+        [HttpGet("get-available")]
         public async Task<ActionResult<PagedResult<AnimalResponse>>> GetAvailable([FromQuery] AnimalSearchObject? search = null)
         {
             search.AvailableOnly = true;
