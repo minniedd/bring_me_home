@@ -36,6 +36,12 @@ namespace BringMeHome.API.Controllers
             return shelter;
         }
 
+        [HttpGet("all")]
+        public async Task<ActionResult<List<ShelterResponse>>> GetAll()
+        {
+            return await _shelterService.GetAllAsync();
+        }
+
         [HttpPost]
         public async Task<ActionResult<ShelterResponse>> Create(ShelterRequest request)
         {

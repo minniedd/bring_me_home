@@ -19,6 +19,6 @@ namespace BringMeHome.Services.Database
         public string Description { get; set; }
 
         // Navigation properties
-        public virtual ICollection<AnimalTemperamentJunction> AnimalTemperaments { get; set; }
+        public virtual ICollection<Animal> Animals { get; set; }
     }
 }

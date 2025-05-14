@@ -34,10 +34,8 @@ namespace BringMeHome.Services.Services
                 .Include(a => a.Shelter)
                 .Include(a => a.Breed)
                     .ThenInclude(b => b.Species)
-                .Include(a => a.AnimalColors)
-                    .ThenInclude(ac => ac.Color)
-                .Include(a => a.AnimalTemperaments)
-                    .ThenInclude(at => at.Temperament)
+                .Include(a => a.Color)
+                .Include(a => a.AnimalTemperament)
                 .Select(animal => MapToResponse(animal)) .ToListAsync();
         }
 
@@ -77,10 +75,10 @@ namespace BringMeHome.Services.Services
                 AnimalID = animal.AnimalID,
                 Name = animal.Name,
                 Description = animal.Description,
-                SpeciesID = animal.Breed.SpeciesID,
-                SpeciesName = animal.Breed.Species.SpeciesName,
+                SpeciesID = animal.Breed?.SpeciesID ?? 0,
+                SpeciesName = animal.Breed?.Species?.SpeciesName,
                 BreedID = animal.BreedID,
-                BreedName = animal.Breed.BreedName,
+                BreedName = animal.Breed?.BreedName,
                 Age = animal.Age,
                 Gender = animal.Gender,
                 Weight = animal.Weight,
@@ -89,16 +87,10 @@ namespace BringMeHome.Services.Services
                 HealthStatus = animal.HealthStatus,
                 ShelterID = animal.ShelterID,
                 ShelterName = animal.Shelter?.Name,
-                Colors = animal.AnimalColors?.Select(ac => new ColorResponse
-                {
-                    ColorID = ac.ColorID,
-                    ColorName = ac.Color?.ColorName
-                }).ToList(),
-                Temperaments = animal.AnimalTemperaments?.Select(at => new AnimalTemperamentResponse
-                {
-                    TemperamentID = at.TemperamentID,
-                    Name = at.Temperament?.Name
-                }).ToList()
+                ColorID = animal.ColorID ?? 0,
+                ColorName = animal.Color?.ColorName,
+                TempermentID = animal.TempermentID ?? 0,
+                TemperamentName = animal.AnimalTemperament?.Name
             };
         }
     }

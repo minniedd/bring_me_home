@@ -38,6 +38,10 @@ namespace BringMeHome.Services.Database
 
         public int ShelterID { get; set; }
 
+        public int? ColorID { get; set; }
+
+        public int? TempermentID { get; set; }
+
         // Navigation properties
         [ForeignKey("BreedID")]
         public virtual Breed Breed { get; set; }
@@ -48,8 +52,12 @@ namespace BringMeHome.Services.Database
         [ForeignKey("ShelterID")]
         public virtual Shelter Shelter { get; set; }
 
-        public virtual ICollection<AnimalColor> AnimalColors { get; set; }
+        [ForeignKey("ColorID")]
+        public virtual Color Color { get; set; }
+
+        [ForeignKey("TempermentID")]
+        public virtual AnimalTemperament AnimalTemperament { get; set; }
+
         public virtual ICollection<AdoptionApplication> AdoptionApplications { get; set; }
-        public virtual ICollection<AnimalTemperamentJunction> AnimalTemperaments { get; set; }
     }
 }

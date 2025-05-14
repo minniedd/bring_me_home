@@ -1,5 +1,4 @@
 import 'package:bringmehome_admin/models/breed.dart';
-import 'package:bringmehome_admin/models/search_result.dart';
 import 'package:bringmehome_admin/services/base_provider.dart';
 
 class BreedProvider extends BaseProvider<Breed> {
@@ -12,13 +11,24 @@ class BreedProvider extends BaseProvider<Breed> {
 
   Future<List<Breed>> getBreeds() async {
     try {
-      final SearchResult<Breed> searchResult = await get();
+      final List<Breed> breeds = await super.getAll(endpointOverride: "all");
 
-      return searchResult.result;
+      return breeds;
     } catch (e) {
-      print('Error fetching breeds: $e');
+      print('Error fetching breeds using getList: $e');
       rethrow;
     }
   }
 
+  Future<List<Breed>> getBreedsBySpecies(int speciesId) async {
+    try {
+      final List<Breed> breeds = await super.getAll(
+        endpointOverride: "species/$speciesId",
+      );
+      return breeds;
+    } catch (e) {
+      print('Error fetching breeds by species ID $speciesId: $e');
+      rethrow;
+    }
+  }
 }

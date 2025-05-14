@@ -143,6 +143,17 @@ namespace BringMeHome.Services.Services
             return MapToResponse(shelter);
         }
 
+        public async Task<List<ShelterResponse>> GetAllAsync()
+        {
+            var query = _context.Shelters.AsQueryable();
+
+            var shelters = await query
+               .Select(r => MapToResponse(r))
+               .ToListAsync();
+
+            return shelters;
+        }
+
         private static ShelterResponse MapToResponse(Shelter shelter)
         {
             return new ShelterResponse

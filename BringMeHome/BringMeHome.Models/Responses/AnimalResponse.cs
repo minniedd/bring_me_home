@@ -23,7 +23,9 @@ namespace BringMeHome.Models.Responses
         public string HealthStatus { get; set; }
         public int ShelterID { get; set; }
         public string ShelterName { get; set; }
-        public List<ColorResponse> Colors { get; set; }
-        public List<AnimalTemperamentResponse> Temperaments { get; set; }
+        public int ColorID { get; set; }
+        public string ColorName { get; set; }
+        public int TempermentID { get; set; }
+        public string TemperamentName { get; set; }
     }
 }

@@ -35,6 +35,12 @@ namespace BringMeHome.API.Controllers
             return temperment;
         }
 
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<AnimalTemperamentResponse>>> GetAll()
+        {
+            return await _animalTempermentService.GetAllAsync();
+        }
+
         [HttpPost]
         public async Task<ActionResult<AnimalTemperamentResponse>> Create(AnimalTemperamentRequest request)
         {

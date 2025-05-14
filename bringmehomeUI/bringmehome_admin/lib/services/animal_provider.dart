@@ -43,5 +43,15 @@ class AnimalProvider extends BaseProvider<Animal> {
     }
   }
 
+  Future<Animal> addAnimal(dynamic request) async {
+    try {
+      if (kDebugMode) print('Calling add for animal with data: $request');
+      return await super.insert(request);
+    } catch (e) {
+      if (kDebugMode) print('Error adding animal: $e');
+      rethrow;
+    }
+  }
+
 
 }

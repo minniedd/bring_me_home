@@ -35,6 +35,18 @@ namespace BringMeHome.API.Controllers
             return breed;
         }
 
+        [HttpGet("all")]
+        public async Task<ActionResult<List<BreedResponse>>> GetAll()
+        {
+            return await _breedService.GetAllAsync();
+        }
+
+        [HttpGet("species/{speciesId}")]
+        public async Task<ActionResult<List<BreedResponse>>> GetBySpeciesId(int speciesId)
+        {
+            return await _breedService.GetBreedBySpieces(speciesId);
+        }
+
         [HttpPost]
         public async Task<ActionResult<BreedResponse>> Create(BreedRequest request)
         {

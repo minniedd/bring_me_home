@@ -28,11 +28,9 @@ namespace BringMeHome.Services.Database
         public DbSet<Species> Species { get; set; }
         public DbSet<Breed> Breeds { get; set; }
         public DbSet<Color> Colors { get; set; }
-        public DbSet<AnimalColor> AnimalColors { get; set; }
         public DbSet<AnimalStatus> AnimalStatuses { get; set; }
         public DbSet<ApplicationStatus> ApplicationStatuses { get; set; }
         public DbSet<AnimalTemperament> AnimalTemperaments { get; set; }
-        public DbSet<AnimalTemperamentJunction> AnimalTemperamentJunctions { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<Canton> Cantons { get; set; }
         public DbSet<Country> Countries { get; set; }
@@ -129,38 +127,6 @@ namespace BringMeHome.Services.Database
                 .HasOne(d => d.AcknowledgedBy)
                 .WithMany()
                 .HasForeignKey(d => d.AcknowledgedByStaffID)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // AnimalColor entity configuration
-            modelBuilder.Entity<AnimalColor>()
-                .HasOne(ac => ac.Animal)
-                .WithMany()
-                .HasForeignKey(ac => ac.AnimalID)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<AnimalColor>()
-                .HasOne(ac => ac.Color)
-                .WithMany()
-                .HasForeignKey(ac => ac.ColorID)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // AnimalTemperamentJunction entity configuration
-            modelBuilder.Entity<AnimalTemperamentJunction>()
-                .HasOne(atj => atj.Animal)
-                .WithMany()
-                .HasForeignKey(atj => atj.AnimalID)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<AnimalTemperamentJunction>()
-                .HasOne(atj => atj.Temperament)
-                .WithMany()
-                .HasForeignKey(atj => atj.TemperamentID)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<AnimalTemperamentJunction>()
-                .HasOne(atj => atj.AssessedBy)
-                .WithMany()
-                .HasForeignKey(atj => atj.AssessedByID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // UserRole entity configuration

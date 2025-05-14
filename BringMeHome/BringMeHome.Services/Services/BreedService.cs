@@ -143,6 +143,26 @@ namespace BringMeHome.Services.Services
             return MapToResponse(breed);
         }
 
+        public async Task<List<BreedResponse>> GetAllAsync()
+        {
+            var query = _context.Breeds.AsQueryable();
+
+            var breeds = await query
+               .Select(r => MapToResponse(r))
+               .ToListAsync();
+
+            return breeds;
+        }
+
+        public async Task<List<BreedResponse>> GetBreedBySpieces(int speciesId)
+        {
+            var query = _context.Breeds.Where(b => b.SpeciesID == speciesId).AsQueryable();
+            var breeds = await query
+                .Select(r => MapToResponse(r))
+                .ToListAsync();
+            return breeds;
+        }
+
         private static BreedResponse MapToResponse(Breed breed)
         {
             return new BreedResponse

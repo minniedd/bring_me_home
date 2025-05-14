@@ -1,6 +1,3 @@
-import 'package:bringmehome_admin/models/animal_temperment.dart';
-import 'package:bringmehome_admin/models/color.dart';
-
 class Animal {
   int? animalID;
   String? name;
@@ -15,8 +12,10 @@ class Animal {
   String? healthStatus;
   int? shelterID;
   String? shelterName;
-  List<Color>? colors;
-  List<AnimalTemperament>? temperaments;
+  int? colorID;
+  String? colorName;
+  int? tempermentID;
+  String? tempermentName;
   bool isFavorite;
 
   Animal({
@@ -31,8 +30,10 @@ class Animal {
     this.statusID,
     this.healthStatus,
     this.shelterID,
-    this.colors,
-    this.temperaments,
+    this.colorID,
+    this.colorName,
+    this.tempermentID,
+    this.tempermentName,
     this.breedName,
     this.shelterName,
     this.isFavorite = false,
@@ -57,14 +58,10 @@ class Animal {
       healthStatus: json['healthStatus'] as String?,
       shelterID: json['shelterID'] as int?,
       shelterName: json['shelterName'] as String?,
-      colors: (json['colors'] as List<dynamic>?)
-              ?.map((i) => Color.fromJson(i))
-              .toList() ??
-          [],
-      temperaments: (json['temperaments'] as List<dynamic>?)
-              ?.map((i) => AnimalTemperament.fromJson(i))
-              .toList() ??
-          [],
+      colorID: json['colorID'] as int?,
+      colorName: json['colorName'] as String?,
+      tempermentID: json['tempermentID'] as int?,
+      tempermentName: json['tempermentName'] as String?,
       isFavorite: json['isFavorite'] as bool? ?? false,
     );
   }

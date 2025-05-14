@@ -41,74 +41,20 @@ namespace BringMeHome.Services.Services
                 DateArrived = request.DateArrived,
                 StatusID = request.StatusID,
                 HealthStatus = request.HealthStatus,
-                ShelterID = request.ShelterID
+                ShelterID = request.ShelterID,
+                ColorID = request.ColorID,
+                TempermentID = request.TemperamentID,
             };
 
             await _context.Animals.AddAsync(animal);
             await _context.SaveChangesAsync();
 
-            if (request.Colors != null && request.Colors.Any())
-            {
-                foreach (var colorRequest in request.Colors)
-                {
-                    _context.AnimalColors.Add(new Database.AnimalColor
-                    {
-                        AnimalID = animal.AnimalID,
-                        ColorID = colorRequest.ColorID,
-                        IsPrimary = colorRequest.IsPrimary
-                    });
-                }
-            }
 
-            if (request.TemperamentIDs != null && request.TemperamentIDs.Any())
-            {
-                foreach (var tempId in request.TemperamentIDs)
-                {
-                    _context.AnimalTemperamentJunctions.Add(new AnimalTemperamentJunction
-                    {
-                        AnimalID = animal.AnimalID,
-                        TemperamentID = tempId,
-                        Notes = string.Empty
-                    });
-                }
-            }
-
-            if ((request.Colors != null && request.Colors.Any()) ||
-                (request.TemperamentIDs != null && request.TemperamentIDs.Any()))
-            {
-                await _context.SaveChangesAsync();
-            }
-
-            var response = new AnimalResponse
-            {
-                AnimalID = animal.AnimalID,
-                Name = request.Name,
-                Description = request.Description,
-                BreedID = request.BreedID,
-                Age = request.Age,
-                Gender = request.Gender,
-                Weight = request.Weight,
-                DateArrived = request.DateArrived,
-                StatusID = request.StatusID,
-                HealthStatus = request.HealthStatus,
-                ShelterID = request.ShelterID
-            };
-
-            return response;
+            return MapToResponse(animal);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var animalColors = await _context.AnimalColors
-                .Where(ac => ac.AnimalID == id)
-                .ToListAsync();
-            _context.AnimalColors.RemoveRange(animalColors);
-
-            var temperamentJunctions = await _context.AnimalTemperamentJunctions
-                .Where(atj => atj.AnimalID == id)
-                .ToListAsync();
-            _context.AnimalTemperamentJunctions.RemoveRange(temperamentJunctions);
-
             var hasApplications = await _context.AdoptionApplications
                 .AnyAsync(aa => aa.AnimalID == id);
 
@@ -137,17 +83,16 @@ namespace BringMeHome.Services.Services
             .Include(a => a.Breed.Species)
             .Include(a => a.Breed)
             .Include(a => a.Shelter)
-            .Include(a => a.AnimalColors)
-                .ThenInclude(ac => ac.Color)
-            .Include(a => a.AnimalTemperaments)
-                .ThenInclude(at => at.Temperament)
+            .Include(a => a.Status)
+            .Include(a => a.Color)
+            .Include(a=> a.AnimalTemperament)
             .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search.FTS))
             {
                 query = query.Where(r =>
                     r.Name.Contains(search.FTS) ||
-                    r.AnimalColors.Any(ac => ac.Color.ColorName.Contains(search.FTS)) ||
+                    r.Color.ColorName.Contains(search.FTS) ||
                     r.Breed.Species.SpeciesName.Contains(search.FTS) ||
                     r.Breed.BreedName.Contains(search.FTS)
                     );
@@ -165,12 +110,7 @@ namespace BringMeHome.Services.Services
 
             if (search.ColorID.HasValue)
             {
-                query = query.Where(a => a.AnimalColors.Any(ac => ac.ColorID == search.ColorID.Value));
-            }
-
-            if (search.TemperamentID.HasValue)
-            {
-                query = query.Where(a => a.AnimalTemperaments.Any(at => at.TemperamentID == search.TemperamentID.Value));
+                query = query.Where(a => a.Color.ColorID == search.ColorID);
             }
 
             if (search.SpeciesID.HasValue)
@@ -228,12 +168,9 @@ namespace BringMeHome.Services.Services
                 .Include(a => a.Status)
                 .Include(a => a.Shelter)
                 .Include(a => a.Shelter)
-                .Include(a => a.AnimalColors)
-                    .ThenInclude(ac => ac.Color)
-                .Include(a => a.AnimalTemperaments)
-                    .ThenInclude(at => at.Temperament)
+                .Include(a => a.Color)
+                .Include(a => a.AnimalTemperament)
                 .FirstOrDefaultAsync(a => a.AnimalID == id);
-
             if (animal == null)
             {
                 return null;
@@ -249,10 +186,7 @@ namespace BringMeHome.Services.Services
                 throw new ArgumentException("Name cannot be empty");
             }
 
-            var animal = await _context.Animals
-                .Include(a => a.AnimalColors)
-                .Include(a => a.AnimalTemperaments)
-                .FirstOrDefaultAsync(a => a.AnimalID == id);
+            var animal = await _context.Animals.FindAsync(id);
 
             if (animal == null)
             {
@@ -269,31 +203,8 @@ namespace BringMeHome.Services.Services
             animal.StatusID = request.StatusID;
             animal.HealthStatus = request.HealthStatus;
             animal.ShelterID = request.ShelterID;
-
-            if (request.Colors != null)
-            {
-                _context.AnimalColors.RemoveRange(animal.AnimalColors);
-                await _context.SaveChangesAsync();
-
-                animal.AnimalColors = request.Colors.Select(colorRequest => new Database.AnimalColor
-                {
-                    AnimalID = animal.AnimalID,
-                    ColorID = colorRequest.ColorID,
-                    IsPrimary = colorRequest.IsPrimary
-                }).ToList();
-            }
-
-            if (request.TemperamentIDs != null)
-            {
-                _context.AnimalTemperamentJunctions.RemoveRange(animal.AnimalTemperaments);
-                await _context.SaveChangesAsync();
-
-                animal.AnimalTemperaments = request.TemperamentIDs.Select(tempId => new AnimalTemperamentJunction
-                {
-                    AnimalID = animal.AnimalID,
-                    TemperamentID = tempId
-                }).ToList();
-            }
+            animal.ColorID = request.ColorID;
+            animal.TempermentID = request.TemperamentID;
 
             await _context.SaveChangesAsync();
 
@@ -307,28 +218,22 @@ namespace BringMeHome.Services.Services
                 AnimalID = animal.AnimalID,
                 Name = animal.Name,
                 Description = animal.Description,
-                SpeciesID = animal.Breed.SpeciesID,
-                SpeciesName = animal.Breed.Species.SpeciesName,
-                BreedID = animal.BreedID,
-                BreedName = animal.Breed.BreedName,
+                SpeciesID = animal.Breed?.SpeciesID ?? 0,
+                SpeciesName = animal.Breed?.Species?.SpeciesName, 
+                BreedID = animal.BreedID, 
+                BreedName = animal.Breed?.BreedName, 
                 Age = animal.Age,
                 Gender = animal.Gender,
                 Weight = animal.Weight,
                 DateArrived = animal.DateArrived,
-                StatusID = animal.StatusID,
+                StatusID = animal.StatusID, 
                 HealthStatus = animal.HealthStatus,
-                ShelterID = animal.ShelterID,
-                ShelterName = animal.Shelter?.Name,
-                Colors = animal.AnimalColors?.Select(ac => new ColorResponse
-                {
-                    ColorID = ac.ColorID,
-                    ColorName = ac.Color?.ColorName
-                }).ToList(),
-                Temperaments = animal.AnimalTemperaments?.Select(at => new AnimalTemperamentResponse
-                {
-                    TemperamentID = at.TemperamentID,
-                    Name = at.Temperament?.Name
-                }).ToList()
+                ShelterID = animal.ShelterID, 
+                ShelterName = animal.Shelter?.Name, 
+                ColorID = animal.ColorID ?? 0, 
+                ColorName = animal.Color?.ColorName, 
+                TempermentID = animal.TempermentID ?? 0, 
+                TemperamentName = animal.AnimalTemperament?.Name
             };
         }
     }

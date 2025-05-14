@@ -35,6 +35,12 @@ namespace BringMeHome.API.Controllers
             return color;
         }
 
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<ColorResponse>>> GetAll()
+        {
+            return await _colorService.GetAllAsync();
+        }
+
         [HttpPost]
         public async Task<ActionResult<ColorResponse>> Create(ColorRequest request)
         {

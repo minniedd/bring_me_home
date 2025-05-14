@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bringmehome_admin/screens/add_animal.dart';
 import 'package:bringmehome_admin/screens/applications_screen.dart';
 import 'package:bringmehome_admin/screens/available_animals_screen.dart';
 import 'package:bringmehome_admin/screens/login_screen.dart';
@@ -124,7 +125,8 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget>
               leading: Icon(Icons.add_box_rounded),
               title: Text('DODAJ OGLAS'),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const AddAnimalScreen()));
               },
             ),
             ListTile(

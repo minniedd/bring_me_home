@@ -13,7 +13,9 @@ namespace BringMeHome.Services.Interfaces
     public interface IBreedService
     {
         Task<PagedResult<BreedResponse>> GetAsync(BreedSearchObject search);
+        Task<List<BreedResponse>> GetAllAsync();
         Task<BreedResponse?> GetByIdAsync(int id);
+        Task<List<BreedResponse>> GetBreedBySpieces(int speciesId);
         Task<BreedResponse> CreateAsync(BreedRequest request);
         Task<BreedResponse?> UpdateAsync(int id, BreedRequest request);
         Task<bool> DeleteAsync(int id);

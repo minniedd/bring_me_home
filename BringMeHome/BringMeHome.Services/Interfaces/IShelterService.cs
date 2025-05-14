@@ -2,6 +2,7 @@
 using BringMeHome.Models.Requests;
 using BringMeHome.Models.Responses;
 using BringMeHome.Models.SearchObjects;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace BringMeHome.Services.Interfaces
     public interface IShelterService
     {
         Task<PagedResult<ShelterResponse>> GetAsync(ShelterSearchObject search);
+        Task<List<ShelterResponse>> GetAllAsync();
         Task<ShelterResponse?> GetByIdAsync(int id);
         Task<ShelterResponse> CreateAsync(ShelterRequest request);
         Task<ShelterResponse?> UpdateAsync(int id, ShelterRequest request);

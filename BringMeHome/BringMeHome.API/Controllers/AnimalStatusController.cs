@@ -35,6 +35,12 @@ namespace BringMeHome.API.Controllers
             return status;
         }
 
+        [HttpGet("all")]
+        public async Task<ActionResult<List<AnimalStatusResponse>>> GetAll()
+        {
+            return await _animalStatusService.GetAllAsync();
+        }
+
         [HttpPost]
         public async Task<ActionResult<AnimalStatusResponse>> Create(AnimalStatusRequest request)
         {

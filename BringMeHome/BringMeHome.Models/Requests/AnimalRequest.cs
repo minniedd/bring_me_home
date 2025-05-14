@@ -19,7 +19,7 @@ namespace BringMeHome.Models.Requests
         public string Description { get; set; }
         public string HealthStatus { get; set; }
         public int ShelterID { get; set; }
-        public List<AnimalColorRequest> Colors { get; set; } = new List<AnimalColorRequest>();
-        public List<int> TemperamentIDs { get; set; } = new List<int>();
+        public int ColorID { get; set; } 
+        public int TemperamentID { get; set; }
     }
 }

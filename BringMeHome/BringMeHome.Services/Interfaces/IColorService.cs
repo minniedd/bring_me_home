@@ -13,6 +13,7 @@ namespace BringMeHome.Services.Interfaces
     public interface IColorService
     {
         Task<PagedResult<ColorResponse>> GetAsync(ColorSearchObject search);
+        Task<List<ColorResponse>> GetAllAsync();
         Task<ColorResponse?> GetByIdAsync(int id);
         Task<ColorResponse> CreateAsync(ColorRequest request);
         Task<ColorResponse?> UpdateAsync(int id, ColorRequest request);

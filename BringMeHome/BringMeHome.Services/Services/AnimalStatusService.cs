@@ -133,6 +133,17 @@ namespace BringMeHome.Services.Services
             return MapToResponse(status);
         }
 
+        public async Task<List<AnimalStatusResponse>> GetAllAsync()
+        {
+            var query = _context.AnimalStatuses.AsQueryable();
+
+            var statuses = await query
+               .Select(r => MapToResponse(r))
+               .ToListAsync();
+
+            return statuses;
+        }
+
         private static AnimalStatusResponse MapToResponse(AnimalStatus animalStatus)
         {
             return new AnimalStatusResponse

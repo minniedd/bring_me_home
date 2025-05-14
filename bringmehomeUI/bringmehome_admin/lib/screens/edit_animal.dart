@@ -2,7 +2,7 @@ import 'package:bringmehome_admin/components/custom_button.dart';
 import 'package:bringmehome_admin/components/custom_text_field.dart';
 import 'package:bringmehome_admin/components/master_screen.dart';
 import 'package:bringmehome_admin/models/animal.dart';
-import 'package:bringmehome_admin/models/breed.dart'; // Make sure Breed model has breedID and breedName
+import 'package:bringmehome_admin/models/breed.dart';
 import 'package:bringmehome_admin/services/animal_provider.dart';
 import 'package:bringmehome_admin/services/breed_provider.dart';
 import 'package:flutter/material.dart';
@@ -205,7 +205,7 @@ class _EditAnimalDataScreenState extends State<EditAnimalDataScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
-      titleText: 'UREDI OGLAS',
+      titleText: 'EDIT ANIMAL INFORMATION',
       child: Center(
         child: Container(
           height: 500,
@@ -213,7 +213,7 @@ class _EditAnimalDataScreenState extends State<EditAnimalDataScreen> {
           decoration: BoxDecoration(
               color: Colors.white, borderRadius: BorderRadius.circular(20)),
           child: _isLoadingBreeds || _isSaving
-              ? Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : Row(
                   children: [
                     Padding(

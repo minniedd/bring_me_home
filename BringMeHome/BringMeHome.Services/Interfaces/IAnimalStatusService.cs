@@ -13,6 +13,7 @@ namespace BringMeHome.Services.Interfaces
     public interface IAnimalStatusService
     {
         Task<PagedResult<AnimalStatusResponse>> GetAsync(AnimalStatusSearchObject search);
+        Task<List<AnimalStatusResponse>> GetAllAsync();
         Task<AnimalStatusResponse?> GetByIdAsync(int id);
         Task<AnimalStatusResponse> CreateAsync(AnimalStatusRequest request);
         Task<AnimalStatusResponse?> UpdateAsync(int id, AnimalStatusRequest request);

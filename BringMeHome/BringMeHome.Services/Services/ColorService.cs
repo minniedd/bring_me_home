@@ -58,7 +58,7 @@ namespace BringMeHome.Services.Services
                 return false;
             }
 
-            var colorInUse = await _context.AnimalColors.AnyAsync(ur => ur.ColorID == id);
+            var colorInUse = await _context.Animals.AnyAsync(ur => ur.ColorID == id);
             if (colorInUse)
             {
                 throw new InvalidOperationException("Cannot delete color that is assigned to animal");
@@ -137,6 +137,17 @@ namespace BringMeHome.Services.Services
             await _context.SaveChangesAsync();
 
             return MapToResponse(color);
+        }
+
+        public async Task<List<ColorResponse>> GetAllAsync()
+        {
+            var query = _context.Colors.AsQueryable();
+
+            var colors = await query
+               .Select(r => MapToResponse(r))
+               .ToListAsync();
+
+            return colors;
         }
 
         private static ColorResponse MapToResponse(Color color)

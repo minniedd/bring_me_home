@@ -134,6 +134,17 @@ namespace BringMeHome.Services.Services
             return MapToResponse(temperament);
         }
 
+        public async Task<List<AnimalTemperamentResponse>>GetAllAsync()
+        {
+            var query = _context.AnimalTemperaments.AsQueryable();
+
+            var temperaments = await query
+                .Select(r => MapToResponse(r))
+                .ToListAsync();
+
+            return temperaments;
+        }
+
         private static AnimalTemperamentResponse MapToResponse(AnimalTemperament animalTemperament)
         {
             return new AnimalTemperamentResponse

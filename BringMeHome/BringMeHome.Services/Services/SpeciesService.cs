@@ -137,6 +137,17 @@ namespace BringMeHome.Services.Services
             return MapToResponse(species);
         }
 
+        public async Task<List<SpeciesResponse>> GetAllAsync()
+        {
+            var query = _context.Species.AsQueryable();
+
+            var species = await query
+               .Select(r => MapToResponse(r))
+               .ToListAsync();
+
+            return species;
+        }
+
         private static SpeciesResponse MapToResponse(Species species)
         {
             return new SpeciesResponse
