@@ -11,7 +11,8 @@ class AnimalApplicationsProvider extends BaseProvider<AnimalApplication> {
 
   Future<List<AnimalApplication>> getApplications() async {
     try {
-      final List<AnimalApplication> applications = (await super.get()) as List<AnimalApplication>;
+      final List<AnimalApplication> applications =
+          (await super.get()) as List<AnimalApplication>;
 
       return applications;
     } catch (e) {
@@ -28,6 +29,22 @@ class AnimalApplicationsProvider extends BaseProvider<AnimalApplication> {
       return applications;
     } catch (e) {
       print('Error fetching applications by animals ID $animalId: $e');
+      rethrow;
+    }
+  }
+
+  Future<AnimalApplication> reject(AnimalApplication request) async {
+    try {
+      return await put(endpointOverride: "Reject", request: request);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<AnimalApplication> approve(AnimalApplication request) async {
+    try {
+      return await put(endpointOverride: "Approve", request: request);
+    } catch (e) {
       rethrow;
     }
   }

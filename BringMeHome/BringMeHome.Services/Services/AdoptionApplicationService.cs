@@ -219,6 +219,53 @@ namespace BringMeHome.Services.Services
             return applications.Select(MapToResponse).ToList();
         }
 
+        public Task<AdoptionApplicationResponse> ApproveAsync(AdoptionApplicationRequest request)
+        {
+            var application = _context.AdoptionApplications
+                .Include(aa => aa.User)
+                .Include(aa => aa.Animal)
+                .Include(aa => aa.Status)
+                .Include(aa => aa.ReviewedBy)
+                .Include(aa => aa.Reason)
+                .FirstOrDefault(aa => aa.ApplicationID == request.ApplicationID);
+
+            if (application == null)
+            {
+                throw new Exception($"Adoption application with ID {request.ApplicationID} not found.");
+            }
+
+            application.StatusID = 4;
+            application.ReviewedByStaffID = request.ReviewedByStaffID;
+            application.ReviewDate = DateTime.UtcNow;
+            application.Notes = request.Notes;
+
+            _context.SaveChanges();
+            return Task.FromResult(MapToResponse(application));
+        }
+
+        public Task<AdoptionApplicationResponse> RejectAsync(AdoptionApplicationRequest request)
+        {
+            var application = _context.AdoptionApplications
+                .Include(aa => aa.User)
+                .Include(aa => aa.Animal)
+                .Include(aa => aa.Status)
+                .Include(aa => aa.ReviewedBy)
+                .Include(aa => aa.Reason)
+                .FirstOrDefault(aa => aa.ApplicationID == request.ApplicationID);
+
+            if (application == null)
+            {
+                throw new Exception($"Adoption application with ID {request.ApplicationID} not found.");
+            }
+
+            application.StatusID = 3;
+            application.ReviewedByStaffID = request.ReviewedByStaffID;
+            application.ReviewDate = DateTime.UtcNow;
+            application.Notes = request.Notes;
+
+            _context.SaveChanges();
+            return Task.FromResult(MapToResponse(application));
+        }
 
         private static AdoptionApplicationResponse MapToResponse(AdoptionApplication adoptionApplication)
         {
@@ -237,7 +284,7 @@ namespace BringMeHome.Services.Services
                 IsAnimalAllowed = adoptionApplication.IsAnimalAllowed,
                 ReasonId = adoptionApplication.ReasonID,
                 ReasonName = adoptionApplication.Reason?.ReasonType,
-                User = adoptionApplication.User != null ? new UserResponse 
+                User = adoptionApplication.User != null ? new UserResponse
                 {
                     FirstName = adoptionApplication.User.FirstName,
                     LastName = adoptionApplication.User.LastName,
@@ -253,9 +300,8 @@ namespace BringMeHome.Services.Services
                     Age = adoptionApplication.Animal.Age,
                     ShelterName = adoptionApplication.Animal.Shelter?.Name,
                     BreedName = adoptionApplication.Animal.Breed?.BreedName,
-                    SpeciesName = adoptionApplication.Animal.Breed.Species.SpeciesName,
+                    SpeciesName = adoptionApplication.Animal.Breed?.Species?.SpeciesName,
                     Gender = adoptionApplication.Animal.Gender
-                                                             
                 } : null,
                 StatusName = adoptionApplication.Status?.StatusName
             };

@@ -1,5 +1,8 @@
 import 'package:bringmehome_admin/components/master_screen.dart';
 import 'package:bringmehome_admin/models/application.dart';
+import 'package:bringmehome_admin/models/staff.dart';
+import 'package:bringmehome_admin/services/animal_applications_provider.dart';
+import 'package:bringmehome_admin/services/staff_provider.dart';
 import 'package:flutter/material.dart';
 
 class ApplicationDetailsScreen extends StatefulWidget {
@@ -12,6 +15,163 @@ class ApplicationDetailsScreen extends StatefulWidget {
 }
 
 class _ApplicationDetailsScreenState extends State<ApplicationDetailsScreen> {
+  final TextEditingController _notesController = TextEditingController();
+  List<Staff> _staffList = [];
+  Staff? _selectedStaff;
+  bool _isLoading = false;
+  final AnimalApplicationsProvider _applicationsProvider =
+      AnimalApplicationsProvider();
+  final StaffProvider _staffProvider = StaffProvider();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStaffMembers();
+  }
+
+  Future<void> _loadStaffMembers() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final staffList = await _staffProvider.getStaff();
+      setState(() {
+        _staffList = staffList;
+        if (staffList.isNotEmpty) {
+          _selectedStaff = staffList.first;
+        }
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load staff members: $e')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _approveApplication() async {
+    if (_selectedStaff == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Please select a staff member for review')),
+      );
+      return;
+    }
+    if (_notesController.text.trim().isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Please enter review notes before approving')),
+      );
+      return;
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final updatedApplication = AnimalApplication(
+        applicationID: widget.animalApplication.applicationID,
+        userID: widget.animalApplication.userID,
+        animalID: widget.animalApplication.animalID,
+        reviewedBy: _selectedStaff,
+        notes: _notesController.text.trim(),
+        statusID: widget.animalApplication.statusID,
+      );
+
+      await _applicationsProvider.approve(updatedApplication);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Application approved successfully')),
+      );
+
+      if (!mounted) return;
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to approve application: $e')),
+      );
+    } finally {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _rejectApplication() async {
+    if (_selectedStaff == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Please select a staff member for review')),
+      );
+      return;
+    }
+    if (_notesController.text.trim().isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text(
+                'Please enter rejection reason in notes before rejecting')),
+      );
+      return;
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final updatedApplication = AnimalApplication(
+        applicationID: widget.animalApplication.applicationID,
+        userID: widget.animalApplication.userID,
+        animalID: widget.animalApplication.animalID,
+        reviewedBy: _selectedStaff,
+        notes: _notesController.text.trim(),
+        statusID: widget.animalApplication.statusID,
+      );
+
+      await _applicationsProvider.reject(updatedApplication);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Application rejected successfully')),
+      );
+
+      if (!mounted) return;
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to reject application: $e')),
+      );
+    } finally {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _notesController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final application = widget.animalApplication;
@@ -49,7 +209,8 @@ class _ApplicationDetailsScreenState extends State<ApplicationDetailsScreen> {
                   const Divider(height: 20, thickness: 1),
                   _buildDetailRow(
                       'ApplicationID:', application.applicationID.toString()),
-                  _buildDetailRow('Status:', application.statusName ?? 'N/A'),
+                  _buildDetailRow(
+                      'Status:', application.statusName ?? 'Unknown'),
                   _buildDetailRow(
                     'Application Date:',
                     application.applicationDate != null
@@ -57,13 +218,14 @@ class _ApplicationDetailsScreenState extends State<ApplicationDetailsScreen> {
                             .toLocal()
                             .toString()
                             .split(' ')[0]
-                        : 'N/A',
+                        : 'Unknown',
                   ),
                   _buildDetailRow('Living situation:',
-                      application.livingSituation ?? 'N/A'),
+                      application.livingSituation ?? 'Unknown'),
                   _buildDetailRow('Is Animal Allowed:',
-                      application.isAnimalAllowed ?? 'N/A'),
-                  _buildDetailRow('Reason:', application.reasonName ?? 'N/A'),
+                      application.isAnimalAllowed ?? 'Unknown'),
+                  _buildDetailRow(
+                      'Reason:', application.reasonName ?? 'Unknown'),
                   const SizedBox(height: 30),
                   Text(
                     'Animal Details',
@@ -71,21 +233,21 @@ class _ApplicationDetailsScreenState extends State<ApplicationDetailsScreen> {
                   ),
                   const Divider(height: 20, thickness: 1),
                   _buildDetailRow(
-                      'Animal Name:', application.animal?.name ?? 'N/A'),
+                      'Animal Name:', application.animal?.name ?? 'Unknown'),
                   _buildDetailRow('Animal Temperment:',
-                      application.animal?.tempermentName ?? 'N/A'),
+                      application.animal?.tempermentName ?? 'Unknown'),
                   _buildDetailRow('Animal Weight:',
-                      application.animal?.weight.toString() ?? 'N/A'),
+                      application.animal?.weight.toString() ?? 'Unknown'),
                   _buildDetailRow('Animal Age:',
-                      application.animal?.age.toString() ?? 'N/A'),
+                      application.animal?.age.toString() ?? 'Unknown'),
                   _buildDetailRow('Animal Species:',
-                      application.animal?.speciesName ?? 'N/A'),
-                  _buildDetailRow(
-                      'Animal Breed:', application.animal?.breedName ?? 'N/A'),
-                  _buildDetailRow(
-                      'Animal Gender:', application.animal?.gender ?? 'N/A'),
+                      application.animal?.speciesName ?? 'Unknown'),
+                  _buildDetailRow('Animal Breed:',
+                      application.animal?.breedName ?? 'Unknown'),
+                  _buildDetailRow('Animal Gender:',
+                      application.animal?.gender ?? 'Unknown'),
                   _buildDetailRow('Animal Shelter:',
-                      application.animal?.shelterName ?? 'N/A'),
+                      application.animal?.shelterName ?? 'Unknown'),
                   const SizedBox(height: 30),
                   Text(
                     'Applicant Details',
@@ -93,42 +255,125 @@ class _ApplicationDetailsScreenState extends State<ApplicationDetailsScreen> {
                   ),
                   const Divider(height: 20, thickness: 1),
                   _buildDetailRow(
-                      'Full name:', application.userFullName ?? 'N/A'),
-                  _buildDetailRow('Email:', application.user?.email ?? 'N/A'),
+                      'Full name:', application.userFullName ?? 'Unknown'),
                   _buildDetailRow(
-                      'Address:', application.user?.address ?? 'N/A'),
-                  _buildDetailRow('City:', application.user?.city ?? 'N/A'),
+                      'Email:', application.user?.email ?? 'Unknown'),
+                  _buildDetailRow(
+                      'Address:', application.user?.address ?? 'Unknown'),
+                  _buildDetailRow('City:', application.user?.city ?? 'Unknown'),
                   _buildDetailRow('Telephone number:',
-                      application.user?.phoneNumber ?? 'N/A'),
+                      application.user?.phoneNumber ?? 'Unknown'),
+                  const SizedBox(height: 40),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          width: 150,
+                          child: Text(
+                            'Reviewed By:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _isLoading
+                              ? const CircularProgressIndicator()
+                              : DropdownButtonFormField<Staff>(
+                                  value: _selectedStaff,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                  items: _staffList.map((Staff staff) {
+                                    return DropdownMenuItem<Staff>(
+                                      value: staff,
+                                      child: Text(
+                                          '${staff.user?.firstName} ${staff.user?.lastName}'),
+                                    );
+                                  }).toList(),
+                                  onChanged: (Staff? newValue) {
+                                    setState(() {
+                                      _selectedStaff = newValue;
+                                    });
+                                  },
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Notes:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TextField(
+                          controller: _notesController,
+                          maxLines: 5,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Enter notes about this application...',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 40),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton(
-                        onPressed: () {
-                          // implement reject
-                          print('Reject button pressed');
-                        },
+                        onPressed: _isLoading ? null : _rejectApplication,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 24, vertical: 12),
                         ),
-                        child: const Text('Reject Application'),
+                        child: _isLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text('Reject Application'),
                       ),
                       ElevatedButton(
-                        onPressed: () {
-                          // implement accept for visit
-                          print('Accept for Visit button pressed');
-                        },
+                        onPressed: _isLoading ? null : _approveApplication,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 24, vertical: 12),
                         ),
-                        child: const Text('Accept For Visit'),
+                        child: _isLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text('Accept For Visit'),
                       ),
                     ],
                   ),

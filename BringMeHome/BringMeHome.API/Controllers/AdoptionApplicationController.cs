@@ -61,6 +61,24 @@ namespace BringMeHome.API.Controllers
             return animal;
         }
 
+        [HttpPut("Reject")]
+        public async Task<ActionResult<AdoptionApplicationResponse>> Reject(AdoptionApplicationRequest request)
+        {
+            var updatedBreed = await _adoptionApplicationService.RejectAsync(request);
+            if (updatedBreed == null)
+                return NotFound();
+            return updatedBreed;
+        }
+
+        [HttpPut("Approve")]
+        public async Task<ActionResult<AdoptionApplicationResponse>> Approve(AdoptionApplicationRequest request)
+        {
+            var updatedBreed = await _adoptionApplicationService.ApproveAsync(request);
+            if (updatedBreed == null)
+                return NotFound();
+            return updatedBreed;
+        }
+
         [HttpPost]
         public async Task<ActionResult<AdoptionApplicationResponse>> Create(AdoptionApplicationRequest request)
         {

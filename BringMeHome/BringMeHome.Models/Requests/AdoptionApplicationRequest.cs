@@ -11,6 +11,7 @@ namespace BringMeHome.Models.Requests
 {
     public class AdoptionApplicationRequest
     {
+        public int ApplicationID { get; set; }
         public int UserID { get; set; }
         public int AnimalID { get; set; }
         public DateTime ApplicationDate { get; set; }

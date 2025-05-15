@@ -30,6 +30,7 @@ builder.Services.AddTransient<IShelterService, ShelterService>();
 builder.Services.AddTransient<IUserAnimalFavoritesService, UserAnimalFavoritesService>();
 builder.Services.AddTransient<IReviewService, ReviewService>();
 builder.Services.AddTransient<IApplicationStatusService, ApplicationStatusService>();
+builder.Services.AddTransient<IStaffService, StaffService > ();
 
 // Configure database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

@@ -1,5 +1,6 @@
 import 'package:bringmehome_admin/models/animal.dart';
 import 'package:bringmehome_admin/models/application_status.dart';
+import 'package:bringmehome_admin/models/staff.dart';
 import 'package:bringmehome_admin/models/user.dart';
 
 class AnimalApplication {
@@ -9,7 +10,7 @@ class AnimalApplication {
   final int animalID;
   final DateTime? applicationDate; 
   final int statusID; 
-  final String? notes; 
+  late String? notes; 
   final String? livingSituation;
   final String? isAnimalAllowed; 
   final int? reasonId;
@@ -19,7 +20,7 @@ class AnimalApplication {
   final Animal? animal;
   final ApplicationStatus? status;
   final String? statusName;
-  final User? reviewedBy; 
+  late Staff? reviewedBy; 
 
   AnimalApplication.create({
     required this.userID,
@@ -38,6 +39,7 @@ class AnimalApplication {
     this.animal,
     this.userFullName,
     this.reasonName,
+    
   });
 
 
@@ -65,7 +67,7 @@ class AnimalApplication {
       user: userJson != null ? User.fromJson(userJson as Map<String, dynamic>) : null,
       animal: animalJson != null ? Animal.fromJson(animalJson as Map<String, dynamic>) : null,
       status: statusJson != null ? ApplicationStatus.fromJson(statusJson as Map<String, dynamic>) : null,
-       reviewedBy: reviewedByJson != null ? User.fromJson(reviewedByJson as Map<String, dynamic>) : null, 
+       reviewedBy: reviewedByJson != null ? Staff.fromJson(reviewedByJson as Map<String, dynamic>) : null, 
     );
   }
 

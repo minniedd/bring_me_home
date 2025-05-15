@@ -199,6 +199,46 @@ abstract class BaseProvider<T> with ChangeNotifier {
     }
   }
 
+  Future<T> put(
+      {required String endpointOverride, required dynamic request}) async {
+    var url =
+        "$_baseUrl$_endpoint/${endpointOverride.startsWith('/') ? endpointOverride.substring(1) : endpointOverride}";
+
+    if (kDebugMode) {
+      print('Request URL (put custom): $url');
+    }
+
+    var uri = Uri.parse(url);
+    var headers = createHeaders();
+
+    var jsonRequest = jsonEncode(request);
+    if (kDebugMode) {
+      print('Request body (put custom): $jsonRequest');
+    }
+
+    try {
+      var response = await http.put(uri, headers: headers, body: jsonRequest);
+
+      if (kDebugMode) {
+        print('Response status (put custom): ${response.statusCode}');
+        print('Response body (put custom): ${response.body}');
+      }
+
+      if (isValidResponse(response)) {
+        var data = jsonDecode(response.body);
+        return fromJson(data);
+      } else {
+        throw Exception(
+            "Failed to complete PUT request: ${response.statusCode}");
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error in BaseProvider.put custom for $url: $e');
+      }
+      rethrow;
+    }
+  }
+
   Future<bool> delete(int id) async {
     var url = "$_baseUrl$_endpoint/$id";
     var uri = Uri.parse(url);

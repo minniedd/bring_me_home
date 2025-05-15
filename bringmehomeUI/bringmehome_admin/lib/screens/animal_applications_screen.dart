@@ -25,6 +25,12 @@ class _AnimalApplicationsScreenState extends State<AnimalApplicationsScreen> {
     _applicationsFuture = _fetchApplications();
   }
 
+  void _refreshApplications() {
+    setState(() {
+      _applicationsFuture = _fetchApplications();
+    });
+  }
+
   Future<List<AnimalApplication>> _fetchApplications() async {
     if (widget.animal.animalID != null) {
       try {
@@ -42,7 +48,7 @@ class _AnimalApplicationsScreenState extends State<AnimalApplicationsScreen> {
   Widget build(BuildContext context) {
     return MasterScreenWidget(
       titleText:
-          'ZAHTJEVI ZA ${widget.animal.name?.toUpperCase() ?? 'UNKNOWN ANIMAL'}',
+          'APPLICATIONS FOR ${widget.animal.name?.toUpperCase() ?? 'UNKNOWN ANIMAL'}',
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -95,22 +101,25 @@ class _AnimalApplicationsScreenState extends State<AnimalApplicationsScreen> {
           Icons.star,
           color: Color.fromRGBO(149, 117, 205, 1),
         ),
-        title: Text('Podnositelj: ${application.userFullName ?? 'Unknown'}'),
+        title: Text('Applicant: ${application.userFullName ?? 'Unknown'}'),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Status: ${application.statusName ?? 'Unknown'}'),
             Text(
-                'Datum Prijave: ${application.applicationDate != null ? application.applicationDate!.toLocal().toString().split(' ')[0] : 'Unknown'}'),
+                'Application Date: ${application.applicationDate != null ? application.applicationDate!.toLocal().toString().split(' ')[0] : 'Unknown'}'),
           ],
         ),
-        onTap: () {
-          Navigator.push(
+        onTap: () async {
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => ApplicationDetailsScreen(animalApplication: application),
             ),
           );
+          if (result == true) {
+            _refreshApplications();
+          }
         },
       ),
     );
