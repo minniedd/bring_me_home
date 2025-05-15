@@ -195,12 +195,38 @@ namespace BringMeHome.Services.Services
 
         }
 
+        public async Task<List<AdoptionApplicationResponse>> GetAppointmentsByAnimal(int animalId)
+        {
+            var applications = await _context.AdoptionApplications
+                .Where(s => s.AnimalID == animalId)
+                .Include(aa => aa.User)
+                    .ThenInclude(u => u.City)
+                .Include(aa => aa.Animal)
+                    .ThenInclude(a => a.Breed)
+                        .ThenInclude(b => b.Species)
+                .Include(aa => aa.Animal)
+                .Include(aa => aa.Animal)
+                    .ThenInclude(a => a.Shelter) 
+                .Include(aa => aa.Animal)
+                    .ThenInclude(a => a.Color)
+                .Include(aa => aa.Animal)
+                    .ThenInclude(a => a.AnimalTemperament) 
+                .Include(aa => aa.Status) 
+                .Include(aa => aa.ReviewedBy) 
+                .Include(aa => aa.Reason) 
+                .ToListAsync();
+
+            return applications.Select(MapToResponse).ToList();
+        }
+
+
         private static AdoptionApplicationResponse MapToResponse(AdoptionApplication adoptionApplication)
         {
             return new AdoptionApplicationResponse
             {
                 ApplicationID = adoptionApplication.ApplicationID,
                 UserID = adoptionApplication.UserID,
+                UserFullName = adoptionApplication.User?.FirstName + " " + adoptionApplication.User?.LastName,
                 AnimalID = adoptionApplication.AnimalID,
                 ApplicationDate = adoptionApplication.ApplicationDate,
                 StatusID = adoptionApplication.StatusID,
@@ -211,12 +237,24 @@ namespace BringMeHome.Services.Services
                 IsAnimalAllowed = adoptionApplication.IsAnimalAllowed,
                 ReasonId = adoptionApplication.ReasonID,
                 ReasonName = adoptionApplication.Reason?.ReasonType,
+                User = adoptionApplication.User != null ? new UserResponse 
+                {
+                    FirstName = adoptionApplication.User.FirstName,
+                    LastName = adoptionApplication.User.LastName,
+                    Email = adoptionApplication.User.Email,
+                    PhoneNumber = adoptionApplication.User.PhoneNumber,
+                    Address = adoptionApplication.User.Address,
+                    City = adoptionApplication.User.City?.CityName ?? "Unknown"
+                } : null,
                 Animal = adoptionApplication.Animal != null ? new AnimalResponse
                 {
                     AnimalID = adoptionApplication.Animal.AnimalID,
                     Name = adoptionApplication.Animal.Name,
                     Age = adoptionApplication.Animal.Age,
                     ShelterName = adoptionApplication.Animal.Shelter?.Name,
+                    BreedName = adoptionApplication.Animal.Breed?.BreedName,
+                    SpeciesName = adoptionApplication.Animal.Breed.Species.SpeciesName,
+                    Gender = adoptionApplication.Animal.Gender
                                                              
                 } : null,
                 StatusName = adoptionApplication.Status?.StatusName

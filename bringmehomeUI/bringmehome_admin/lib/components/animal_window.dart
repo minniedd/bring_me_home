@@ -42,11 +42,11 @@ class AnimalWindowWidget extends StatelessWidget {
                   ),
                   Expanded(
                     child: Text(
-                      "ZAHTJEVI ZA SUGAR!",
+                      'Applications for $animalName',
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.w900),
-                    overflow: TextOverflow.ellipsis, // Truncate text if necessary
+                    overflow: TextOverflow.ellipsis,
                     maxLines: 2,
                     ),
                   )
@@ -57,7 +57,7 @@ class AnimalWindowWidget extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 100, right: 100),
-                child: CustomButton(buttonText: "buttonText", onTap: () {}),
+                child: CustomButton(buttonText: "SHOW MORE", onTap: onTap),
               )
             ],
           ),

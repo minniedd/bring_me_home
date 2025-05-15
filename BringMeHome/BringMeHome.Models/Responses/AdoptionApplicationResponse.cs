@@ -10,6 +10,7 @@ namespace BringMeHome.Models.Responses
     {
         public int ApplicationID { get; set; }
         public int UserID { get; set; }
+        public string? UserFullName { get; set; }
         public int AnimalID { get; set; }
         public DateTime ApplicationDate { get; set; }
         public int StatusID { get; set; }
@@ -22,5 +23,6 @@ namespace BringMeHome.Models.Responses
         public string? ReasonName { get; set; }
         public AnimalResponse? Animal { get; set; }
         public string? StatusName { get; set; }
+        public UserResponse? User { get; set; }
     }
 }

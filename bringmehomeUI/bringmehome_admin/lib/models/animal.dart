@@ -17,6 +17,9 @@ class Animal {
   int? tempermentID;
   String? tempermentName;
   bool isFavorite;
+  int? speciesID;
+  String? speciesName;
+
 
   Animal({
     this.animalID,
@@ -37,6 +40,8 @@ class Animal {
     this.breedName,
     this.shelterName,
     this.isFavorite = false,
+    this.speciesID,
+    this.speciesName
   });
 
   factory Animal.fromJson(Map<String, dynamic> json) {
@@ -63,6 +68,8 @@ class Animal {
       tempermentID: json['tempermentID'] as int?,
       tempermentName: json['tempermentName'] as String?,
       isFavorite: json['isFavorite'] as bool? ?? false,
+      speciesID: json['speciesID'] as int?,
+      speciesName:json['speciesName'] as String?
     );
   }
 }

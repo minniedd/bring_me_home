@@ -66,7 +66,7 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget>
                   .colorScheme
                   .onSecondary, 
               onPressed: () {
-                Navigator.canPop(context);
+                Navigator.pop(context);
               },
               tooltip: 'Back',
             ),

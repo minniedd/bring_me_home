@@ -22,7 +22,7 @@ namespace BringMeHome.API.Controllers
         }
 
         [HttpGet("history")]
-        public async Task<ActionResult<PagedResult<AdoptionApplicationResponse>>> Get([FromQuery]AdoptionApplicationSearchObject? search = null)
+        public async Task<ActionResult<PagedResult<AdoptionApplicationResponse>>> GetHistory([FromQuery]AdoptionApplicationSearchObject? search = null)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
@@ -34,6 +34,14 @@ namespace BringMeHome.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        public async Task<ActionResult<PagedResult<AdoptionApplicationResponse>>> Get([FromQuery] AdoptionApplicationSearchObject? search = null)
+        {
+            var result = await _adoptionApplicationService.GetAsync(null, search);
+            return Ok(result);
+        }
+
+
         [HttpGet("{id}")]
         public async Task<ActionResult<AdoptionApplicationResponse>> GetById(int id)
         {
@@ -42,6 +50,15 @@ namespace BringMeHome.API.Controllers
             if (breed == null)
                 return NotFound();
             return breed;
+        }
+
+        [HttpGet("animal/{animalId}")]
+        public async Task<ActionResult<List<AdoptionApplicationResponse>>> GetByAnimalId(int animalId)
+        {
+            var animal = await _adoptionApplicationService.GetAppointmentsByAnimal(animalId);
+            if (animal == null)
+                return NotFound();
+            return animal;
         }
 
         [HttpPost]
