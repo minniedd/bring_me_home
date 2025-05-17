@@ -117,6 +117,17 @@ namespace BringMeHome.Services.Services
             return MapToResponse(city);
         }
 
+        public async Task<List<CityResponse>> GetAllAsync()
+        {
+            var query = _context.Cities.AsQueryable();
+
+            var cities = await query
+               .Select(r => MapToResponse(r))
+               .ToListAsync();
+
+            return cities;
+        }
+
         private static CityResponse MapToResponse(City city)
         {
             return new CityResponse

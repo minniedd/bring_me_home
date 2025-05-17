@@ -140,6 +140,9 @@ namespace BringMeHome.Services.Services
                 {
                     FirstName = staff.User.FirstName,
                     LastName = staff.User.LastName,
+                    Email = staff.User.Email,
+                    PhoneNumber = staff.User.PhoneNumber,
+                    Address = staff.User.Address,
                 } : null
             };
         }

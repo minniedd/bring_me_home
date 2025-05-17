@@ -3,6 +3,7 @@ using BringMeHome.Models.Requests;
 using BringMeHome.Models.Responses;
 using BringMeHome.Models.SearchObjects;
 using BringMeHome.Services.Interfaces;
+using BringMeHome.Services.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,6 +34,12 @@ namespace BringMeHome.API.Controllers
             if (city == null)
                 return NotFound();
             return city;
+        }
+
+        [HttpGet("all")]
+        public async Task<ActionResult<List<CityResponse>>> GetAll()
+        {
+            return await _cityService.GetAllAsync();
         }
 
         [HttpPost]

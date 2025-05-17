@@ -13,6 +13,7 @@ namespace BringMeHome.Services.Interfaces
     public interface ICityService
     {
         Task<PagedResult<CityResponse>> GetAsync(CitySearchObject search);
+        Task<List<CityResponse>> GetAllAsync();
         Task<CityResponse?> GetByIdAsync(int id);
         Task<CityResponse> CreateAsync(CityRequest request);
         Task<CityResponse?> UpdateAsync(int id, CityRequest request);
