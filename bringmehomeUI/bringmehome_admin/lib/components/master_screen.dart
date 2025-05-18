@@ -4,6 +4,7 @@ import 'package:bringmehome_admin/screens/add_animal.dart';
 import 'package:bringmehome_admin/screens/applications_screen.dart';
 import 'package:bringmehome_admin/screens/available_animals_screen.dart';
 import 'package:bringmehome_admin/screens/login_screen.dart';
+import 'package:bringmehome_admin/screens/review_list_screen.dart';
 import 'package:bringmehome_admin/screens/staff_list_screen.dart';
 import 'package:bringmehome_admin/screens/user_list_screen.dart';
 import 'package:bringmehome_admin/services/auth_provider.dart';
@@ -158,7 +159,8 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget>
               leading: Icon(Icons.star_rate_rounded),
               title: Text('RECENZIJE'),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const ReviewListScreen()));
               },
             ),
             ListTile(

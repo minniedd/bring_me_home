@@ -73,6 +73,7 @@ namespace BringMeHome.Services.Services
 
             var reviews = await query
             .Include(r => r.Shelter)
+            .Include(r => r.User)
             .ApplySort(search)
             .ApplyPagination(search)
             .Select(r => MapToResponse(r))
@@ -140,7 +141,13 @@ namespace BringMeHome.Services.Services
                 Rating = review.Rating,
                 Comment = review.Comment,
                 CreatedAt = review.CreatedAt,
-                UpdatedAt = review.UpdatedAt
+                UpdatedAt = review.UpdatedAt,
+                User = review.User != null ? new UserResponse
+                {
+                    Username = review.User.Username,
+                    FirstName = review.User.FirstName,
+                    LastName = review.User.LastName,
+                } : null
             };
         }
     }
