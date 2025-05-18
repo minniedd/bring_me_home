@@ -5,6 +5,7 @@ import 'package:bringmehome_admin/screens/applications_screen.dart';
 import 'package:bringmehome_admin/screens/available_animals_screen.dart';
 import 'package:bringmehome_admin/screens/login_screen.dart';
 import 'package:bringmehome_admin/screens/staff_list_screen.dart';
+import 'package:bringmehome_admin/screens/user_list_screen.dart';
 import 'package:bringmehome_admin/services/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -142,7 +143,8 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget>
               leading: Icon(Icons.person_3_outlined),
               title: Text('KORISNICI'),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const UserListScreen()));
               },
             ),
             ListTile(

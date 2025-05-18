@@ -58,6 +58,7 @@ class _StaffListScreenState extends State<StaffListScreen> {
                   });
                 },
               ),
+              const SizedBox(height: 16.0),
               FutureBuilder<List<Staff>>(
                 future: _staffFuture,
                 builder: (context, snapshot) {
@@ -120,25 +121,25 @@ class _StaffListScreenState extends State<StaffListScreen> {
                                 Row(
                                   children: [
                                     IconButton(
-                                  onPressed: () {
-                                    _deleteStaffMember(staffMember.staffID);
-                                  },
-                                  icon: const Icon(
-                                    Icons.edit,
-                                    color: Colors.blue,
-                                    size: 20,
-                                  ),
-                                ),
-                                IconButton(
-                                  onPressed: () {
-                                    _deleteStaffMember(staffMember.staffID);
-                                  },
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                    size: 20,
-                                  ),
-                                ),
+                                      onPressed: () {
+                                        _deleteStaffMember(staffMember.staffID);
+                                      },
+                                      icon: const Icon(
+                                        Icons.edit,
+                                        color: Colors.blue,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        _deleteStaffMember(staffMember.staffID);
+                                      },
+                                      icon: const Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                        size: 20,
+                                      ),
+                                    ),
                                   ],
                                 )
                               ],

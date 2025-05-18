@@ -62,6 +62,12 @@ namespace BringMeHome.Services.Database
                 .HasIndex(u => u.Username)
                 .IsUnique();
 
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.UserRoles)         
+                .WithOne(ur => ur.User)           
+                .HasForeignKey(ur => ur.UserId)  
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Animal entity configuration
 
             modelBuilder.Entity<Animal>()
@@ -136,8 +142,7 @@ namespace BringMeHome.Services.Database
             modelBuilder.Entity<UserRole>()
                 .HasOne(ur => ur.User)
                 .WithMany(u => u.UserRoles)
-                .HasForeignKey(ur => ur.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(ur => ur.UserId);
 
             modelBuilder.Entity<UserRole>()
                 .HasOne(ur => ur.Role)

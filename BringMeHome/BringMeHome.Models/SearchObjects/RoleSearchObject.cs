@@ -8,6 +8,6 @@ namespace BringMeHome.Models.SearchObjects
 {
     public class RoleSearchObject:BaseSearchObject
     {
-        public string RoleName { get; set; }
+        public string? RoleName { get; set; }
     }
 }

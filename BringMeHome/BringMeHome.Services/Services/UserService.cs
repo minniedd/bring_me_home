@@ -113,6 +113,23 @@ namespace BringMeHome.Services.Services
             };
         }
 
+        public async Task<List<UserResponse>> GetAdopters()
+        {
+            var adopters = await _context.Users
+                .Include(u => u.UserRoles)
+                .Where(u => u.UserRoles.Any(r => r.Role.RoleName == "Adopter"))
+                .ToListAsync();
+
+            var response = new List<UserResponse>();
+            foreach (var adopter in adopters)
+            {
+                var userResponse = MapToResponse(adopter);
+                response.Add(userResponse);
+            }
+
+            return response;
+        }
+
         public async Task<UserResponse?> GetByIdAsync(int id)
         {
             var user = await _context.Users.FindAsync(id);

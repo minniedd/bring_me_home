@@ -142,7 +142,7 @@ namespace BringMeHome.Services.Services
             return MapToResponse(role);
         }
 
-        private RoleResponse MapToResponse(Role role)
+        private static RoleResponse MapToResponse(Role role)
         {
             return new RoleResponse
             {

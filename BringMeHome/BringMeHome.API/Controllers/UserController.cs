@@ -36,6 +36,17 @@ namespace BringMeHome.API.Controllers
             return user;
         }
 
+        [HttpGet("adopters")]
+        public async Task<ActionResult<List<UserResponse>>> GetAdopters()
+        {
+            var adopters = await _userService.GetAdopters();
+
+            if (adopters == null)
+                return NotFound();
+
+            return Ok(adopters);
+        }
+
         [HttpPost]
         public async Task<ActionResult<UserResponse>> Create(UserRequest request)
         {

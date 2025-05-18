@@ -13,6 +13,7 @@ namespace BringMeHome.Services.Interfaces
     public interface IUserService
     {
         Task<PagedResult<UserResponse>> GetAsync(UserSearchObject search);
+        Task<List<UserResponse>> GetAdopters();
         Task<UserResponse?> GetByIdAsync(int id);
         Task<UserResponse> CreateAsync(UserRequest request);
         Task<UserResponse?> UpdateAsync(int id, UserRequest request);

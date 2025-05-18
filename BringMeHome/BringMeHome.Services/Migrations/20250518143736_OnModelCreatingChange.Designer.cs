@@ -4,6 +4,7 @@ using BringMeHome.Services.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BringMeHome.Services.Migrations
 {
     [DbContext(typeof(BringMeHomeDbContext))]
-    partial class BringMeHomeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250518143736_OnModelCreatingChange")]
+    partial class OnModelCreatingChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1325,7 +1328,7 @@ namespace BringMeHome.Services.Migrations
                     b.HasOne("BringMeHome.Services.Database.User", "User")
                         .WithMany("UserRoles")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Role");
