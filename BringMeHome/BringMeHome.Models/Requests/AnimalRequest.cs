@@ -17,7 +17,8 @@ namespace BringMeHome.Models.Requests
         public DateTime DateArrived { get; set; }
         public int StatusID { get; set; }
         public string Description { get; set; }
-        public string HealthStatus { get; set; }
+        public byte[]? AnimalImage { get; set; }
+        public string? HealthStatus { get; set; }
         public int ShelterID { get; set; }
         public int ColorID { get; set; } 
         public int TemperamentID { get; set; }

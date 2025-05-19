@@ -46,6 +46,7 @@ namespace BringMeHome.Services.Services
                 Username = request.Username,
                 Address = request.Address,
                 PhoneNumber = request.PhoneNumber,
+                UserImage = request.UserImage,
                 IsActive = request.IsActive,
                 CreatedAt = DateTime.UtcNow
             };
@@ -156,6 +157,7 @@ namespace BringMeHome.Services.Services
             user.LastName = request.LastName;
             user.Email = request.Email;
             user.Username = request.Username;
+            user.UserImage = request.UserImage;
             user.Address = request.Address;
             user.PhoneNumber = request.PhoneNumber;
             user.IsActive = request.IsActive;
@@ -183,6 +185,7 @@ namespace BringMeHome.Services.Services
                 Username = user.Username,
                 Address = user.Address,
                 PhoneNumber = user.PhoneNumber,
+                UserImage = user.UserImage,
                 IsActive = user.IsActive,
                 CreatedAt = user.CreatedAt,
                 LastLoginAt = user.LastLoginAt

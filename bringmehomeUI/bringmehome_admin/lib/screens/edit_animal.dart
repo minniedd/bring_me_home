@@ -1,5 +1,6 @@
 import 'package:bringmehome_admin/components/custom_button.dart';
 import 'package:bringmehome_admin/components/custom_text_field.dart';
+import 'package:bringmehome_admin/components/image_picker.dart';
 import 'package:bringmehome_admin/components/master_screen.dart';
 import 'package:bringmehome_admin/models/animal.dart';
 import 'package:bringmehome_admin/models/animal_status.dart';
@@ -61,6 +62,7 @@ class _EditAnimalDataScreenState extends State<EditAnimalDataScreen> {
   bool _isLoadingSpecies = true;
 
   bool _isSaving = false;
+  String? _base64Image;
 
   late TextEditingController _nameController;
   late TextEditingController _ageController;
@@ -95,6 +97,7 @@ class _EditAnimalDataScreenState extends State<EditAnimalDataScreen> {
       _dateArrivedController = TextEditingController();
     }
 
+    _base64Image = widget.animal.animalImage;
     _selectedBreedId = widget.animal.breedID;
     _selectedStatusId = widget.animal.statusID;
     _selectedShelterId = widget.animal.shelterID;
@@ -246,6 +249,7 @@ class _EditAnimalDataScreenState extends State<EditAnimalDataScreen> {
     }
   }
 
+
   void _confirmChanges() async {
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -278,6 +282,7 @@ class _EditAnimalDataScreenState extends State<EditAnimalDataScreen> {
       'colorId': _selectedColorId,
       'temperamentId': _selectedTempermentId,
       'speciesId': _selectedSpeciesId,
+      'animalImage': _base64Image, 
     };
 
     updateRequestData.removeWhere(
@@ -479,32 +484,13 @@ class _EditAnimalDataScreenState extends State<EditAnimalDataScreen> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Image.network(
-                                    'https://picsum.photos/250?image=9', // finish later
-                                    height: 200,
-                                    width: 200,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            Container(
-                                                height: 200,
-                                                width: 200,
-                                                color: Colors.grey[300],
-                                                child: const Icon(
-                                                    Icons.broken_image,
-                                                    size: 50)),
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                CustomButton(
-                                  buttonText: 'UPLOAD IMAGE',
-                                  onTap: () {
-                                    // implement image picking
+                                ImagePickerWidget(
+                                  initialImageBase64: widget.animal.animalImage,
+                                  onImageChanged: (newBase64) {
+                                    setState(() {
+                                      _base64Image = newBase64;
+                                    });
                                   },
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
                                 ),
                                 const SizedBox(height: 40),
                                 CustomButton(

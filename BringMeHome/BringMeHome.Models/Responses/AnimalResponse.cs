@@ -20,6 +20,7 @@ namespace BringMeHome.Models.Responses
         public DateTime DateArrived { get; set; }
         public int StatusID { get; set; }
         public string Description { get; set; }
+        public string? AnimalImage { get; set; } 
         public string HealthStatus { get; set; }
         public int ShelterID { get; set; }
         public string ShelterName { get; set; }

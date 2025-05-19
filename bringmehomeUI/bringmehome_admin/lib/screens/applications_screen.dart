@@ -136,11 +136,14 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                               }
                               final animal = _animalResult.result[index];
                               return AnimalWindowWidget(
+                                animalImageUrl: animal.animalImage,
                                 animalName: animal.name ?? 'Unknown',
                                 onTap: () async {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (context) => AnimalApplicationsScreen(animal: animal),
+                                      builder: (context) =>
+                                          AnimalApplicationsScreen(
+                                              animal: animal),
                                     ),
                                   );
                                 },

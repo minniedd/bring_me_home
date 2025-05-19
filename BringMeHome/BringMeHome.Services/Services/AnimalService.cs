@@ -44,6 +44,7 @@ namespace BringMeHome.Services.Services
                 ShelterID = request.ShelterID,
                 ColorID = request.ColorID,
                 TempermentID = request.TemperamentID,
+                AnimalImage = request.AnimalImage
             };
 
             await _context.Animals.AddAsync(animal);
@@ -205,6 +206,7 @@ namespace BringMeHome.Services.Services
             animal.ShelterID = request.ShelterID;
             animal.ColorID = request.ColorID;
             animal.TempermentID = request.TemperamentID;
+            animal.AnimalImage = request.AnimalImage;
 
             await _context.SaveChangesAsync();
 
@@ -218,6 +220,7 @@ namespace BringMeHome.Services.Services
                 AnimalID = animal.AnimalID,
                 Name = animal.Name,
                 Description = animal.Description,
+                AnimalImage = animal.AnimalImage != null ? Convert.ToBase64String(animal.AnimalImage) : null,
                 SpeciesID = animal.Breed?.SpeciesID ?? 0,
                 SpeciesName = animal.Breed?.Species?.SpeciesName, 
                 BreedID = animal.BreedID, 

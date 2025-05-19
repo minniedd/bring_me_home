@@ -95,7 +95,7 @@ class _AvailableAnimalsScreenState extends State<AvailableAnimalsScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
-      titleText: 'DOSTUPNE ŽIVOTINJE',
+      titleText: 'AVAILABLE ANIMALS',
       child: Center(
         child: SingleChildScrollView(
           controller: _scrollController,
@@ -130,6 +130,7 @@ class _AvailableAnimalsScreenState extends State<AvailableAnimalsScreen> {
                       }
                       final animal = _animalResult.result[index];
                       return AnimalContainer(
+                        animalImageUrl: animal.animalImage,
                         animalName: animal.name ?? 'Unknown',
                         buttonText: 'Edit',
                         onTap: () async {

@@ -32,6 +32,8 @@ namespace BringMeHome.Services.Database
 
         public string? Address { get; set; }
 
+        public byte[]? UserImage { get; set; }
+
         [MaxLength(20)]
         public string? PhoneNumber { get; set; }
 

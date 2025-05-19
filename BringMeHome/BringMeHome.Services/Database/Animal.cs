@@ -33,6 +33,8 @@ namespace BringMeHome.Services.Database
         [StringLength(1000)]
         public string Description { get; set; }
 
+        public byte[]? AnimalImage { get; set; }
+
         [StringLength(500)]
         public string HealthStatus { get; set; }
 

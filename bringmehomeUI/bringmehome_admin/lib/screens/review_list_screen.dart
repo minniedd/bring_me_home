@@ -163,12 +163,12 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                       child: ListTile(
                         shape:
                             RoundedRectangleBorder(borderRadius: borderRadius),
-                        tileColor: const Color.fromRGBO(149, 117, 205, 1),
+                        tileColor: const Color.fromRGBO(255, 255, 255, 1),
                         title: Text(
                           review.shelterName ?? 'Unknown Shelter',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: Color.fromRGBO(149, 117, 205, 1),
                           ),
                         ),
                         subtitle: Column(
@@ -177,14 +177,14 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                             Text(
                               'By: ${review.user?.firstName} ${review.user?.lastName}',
                               style: const TextStyle(
-                                color: Color.fromARGB(232, 255, 255, 255),
+                                color: Color.fromRGBO(154, 126, 202, 1),
                                 fontStyle: FontStyle.italic,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               review.comment,
-                              style: const TextStyle(color: Colors.white70),
+                              style: const TextStyle(color: Color.fromRGBO(82, 59, 121, 1)),
                             ),
                           ],
                         ),
@@ -194,7 +194,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                             Container(
                               padding: const EdgeInsets.all(8.0),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: const Color.fromRGBO(149, 117, 205, 1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
@@ -202,14 +202,14 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: Color.fromRGBO(149, 117, 205, 1),
+                                  color: Color.fromRGBO(255, 255, 255, 1),
                                 ),
                               ),
                             ),
                             const SizedBox(width: 8),
                             Container(
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: const Color.fromARGB(255, 205, 117, 117),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: IconButton(
@@ -234,7 +234,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                                           },
                                           child: const Text(
                                             'Delete',
-                                            style: TextStyle(color: Colors.red),
+                                            style: TextStyle(color: Colors.white),
                                           ),
                                         ),
                                       ],
@@ -243,7 +243,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                                 },
                                 icon: const Icon(
                                   Icons.delete,
-                                  color: Colors.red,
+                                  color: Colors.white,
                                   size: 20,
                                 ),
                                 tooltip: 'Delete Review',

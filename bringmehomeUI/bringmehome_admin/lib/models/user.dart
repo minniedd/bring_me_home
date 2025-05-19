@@ -9,6 +9,7 @@ class User {
   final DateTime? createdAt;
   final String? address;
   final String? city;
+  final String? userImage;
 
   User({
     required this.firstName,
@@ -21,6 +22,7 @@ class User {
     this.id,
     this.address,
     this.city,
+    this.userImage,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -37,6 +39,7 @@ class User {
           : null,
       address: json['address'] as String?,
       city: json['city'] as String?,
+      userImage: json['userImage'] as String?,
     );
   }
 
@@ -52,6 +55,7 @@ class User {
       'createdAt': createdAt?.toIso8601String(),
       'address': address,
       'city': city,
+      'userImage': userImage,
     };
   }
 }

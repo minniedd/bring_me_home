@@ -1,5 +1,6 @@
 import 'package:bringmehome_admin/components/custom_button.dart';
 import 'package:bringmehome_admin/components/custom_text_field.dart';
+import 'package:bringmehome_admin/components/image_picker.dart';
 import 'package:bringmehome_admin/components/master_screen.dart';
 import 'package:bringmehome_admin/models/animal_status.dart';
 import 'package:bringmehome_admin/models/breed.dart';
@@ -59,6 +60,7 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
   bool _isLoadingSpecies = true;
 
   bool _isSaving = false;
+  String? base64Image;
 
   late TextEditingController _nameController;
   late TextEditingController _ageController;
@@ -239,6 +241,7 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
       'shelterId': _selectedShelterId,
       'colorId': _selectedColorId,
       'temperamentId': _selectedTempermentId,
+      'animalImage': base64Image,
     };
 
     animalData.removeWhere(
@@ -369,32 +372,13 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Image.network(
-                                    'https://picsum.photos/250?image=9', // add later
-                                    height: 200,
-                                    width: 200,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            Container(
-                                                height: 200,
-                                                width: 200,
-                                                color: Colors.grey[300],
-                                                child: const Icon(
-                                                    Icons.broken_image,
-                                                    size: 50)),
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                CustomButton(
-                                  buttonText: 'UPLOAD IMAGE',
-                                  onTap: () {
-                                    // implement image picking
+                                ImagePickerWidget(
+                                  initialImageBase64: base64Image,
+                                  onImageChanged: (newBase64) {
+                                    setState(() {
+                                      base64Image = newBase64;
+                                    });
                                   },
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
                                 ),
                               ],
                             ),
@@ -473,7 +457,7 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
                                       controller: _weightController,
                                       labelText: 'Animal Weight (kg)',
                                       keyboardType:
-                                          TextInputType.numberWithOptions(
+                                          const TextInputType.numberWithOptions(
                                               decimal: true)),
                                   const SizedBox(height: 15),
                                   CustomTextField(
