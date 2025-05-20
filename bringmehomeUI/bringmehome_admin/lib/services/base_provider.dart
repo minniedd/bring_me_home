@@ -2,18 +2,18 @@ import 'dart:convert';
 import 'package:bringmehome_admin/models/search_result.dart';
 import 'package:bringmehome_admin/utils/util.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
 abstract class BaseProvider<T> with ChangeNotifier {
   static String? _baseUrl;
-  String _endpoint = "";
+  String _endpoint = ""; 
+  String get endpoint => _endpoint;
 
   static String? get baseUrl => _baseUrl;
 
-  BaseProvider(String endpoint) {
-    _endpoint = endpoint;
+  BaseProvider(String endpointParam) {
+    _endpoint = endpointParam;
     _baseUrl ??= const String.fromEnvironment("baseUrl",
         defaultValue: "https://localhost:44312/");
   }

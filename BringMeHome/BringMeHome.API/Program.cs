@@ -4,7 +4,9 @@ using BringMeHome.Services.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using QuestPDF.Infrastructure;
 using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +33,9 @@ builder.Services.AddTransient<IUserAnimalFavoritesService, UserAnimalFavoritesSe
 builder.Services.AddTransient<IReviewService, ReviewService>();
 builder.Services.AddTransient<IApplicationStatusService, ApplicationStatusService>();
 builder.Services.AddTransient<IStaffService, StaffService > ();
+builder.Services.AddTransient<IAppReportService, AppReportService>();
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 // Configure database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

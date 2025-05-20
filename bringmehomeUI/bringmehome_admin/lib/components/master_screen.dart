@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bringmehome_admin/screens/add_animal.dart';
+import 'package:bringmehome_admin/screens/app_report_screen.dart';
 import 'package:bringmehome_admin/screens/applications_screen.dart';
 import 'package:bringmehome_admin/screens/available_animals_screen.dart';
 import 'package:bringmehome_admin/screens/login_screen.dart';
@@ -152,7 +153,8 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget>
               leading: Icon(Icons.auto_graph_outlined),
               title: Text('IZVJEŠTAJI'),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const AnimalReportScreen()));
               },
             ),
             ListTile(
