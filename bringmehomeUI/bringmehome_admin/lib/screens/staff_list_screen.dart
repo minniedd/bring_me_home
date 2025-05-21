@@ -1,6 +1,7 @@
 import 'package:bringmehome_admin/components/master_screen.dart';
 import 'package:bringmehome_admin/models/staff.dart';
 import 'package:bringmehome_admin/screens/add_new_staff.dart';
+import 'package:bringmehome_admin/screens/edit_staff_screen.dart';
 import 'package:bringmehome_admin/services/staff_provider.dart';
 import 'package:flutter/material.dart';
 
@@ -77,71 +78,123 @@ class _StaffListScreenState extends State<StaffListScreen> {
                       itemBuilder: (context, index) {
                         final staffMember = staffMembers[index];
                         return Card(
+                          margin: const EdgeInsets.only(bottom: 8.0),
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(12.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  '${staffMember.user!.firstName} ${staffMember.user!.lastName}',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    '${staffMember.user?.firstName} ${staffMember.user?.lastName}',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
-                                Text(
-                                  staffMember.user?.email ?? 'No email',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    staffMember.user!.email,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                    ),
                                   ),
                                 ),
-                                Text(
-                                  staffMember.user?.phoneNumber ??
-                                      'No phone number',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    staffMember.user?.phoneNumber ??
+                                        'No phone number',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                    ),
                                   ),
                                 ),
-                                Text(
-                                  staffMember.user?.address ?? 'No address',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    staffMember.user?.address ?? 'No address',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                    ),
                                   ),
                                 ),
-                                Text(
-                                  staffMember.position,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    staffMember.position,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                    ),
                                   ),
                                 ),
                                 Row(
                                   children: [
                                     IconButton(
-                                      onPressed: () {
-                                        _deleteStaffMember(staffMember.staffID);
+                                      onPressed: () async {
+                                        final result = await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditStaffScreen(
+                                                    staff: staffMember),
+                                          ),
+                                        );
+                                        if (result == true) {
+                                          _loadStaffMembers();
+                                        }
                                       },
                                       icon: const Icon(
                                         Icons.edit,
                                         color: Colors.blue,
                                         size: 20,
                                       ),
+                                      tooltip: 'Edit Staff',
                                     ),
                                     IconButton(
                                       onPressed: () {
-                                        _deleteStaffMember(staffMember.staffID);
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            title:
+                                                const Text('Confirm Deletion'),
+                                            content: Text(
+                                                'Are you sure you want to delete ${staffMember.user?.firstName} ${staffMember.user?.lastName}?'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text('Cancel'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                  _deleteStaffMember(
+                                                      staffMember.staffID);
+                                                },
+                                                child: const Text(
+                                                  'Delete',
+                                                  style: TextStyle(
+                                                      color: Colors.red),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
                                       },
                                       icon: const Icon(
                                         Icons.delete,
                                         color: Colors.red,
                                         size: 20,
                                       ),
+                                      tooltip: 'Delete Staff',
                                     ),
                                   ],
-                                )
+                                ),
                               ],
                             ),
                           ),

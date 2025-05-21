@@ -100,8 +100,34 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
           controller: _scrollController,
           child: Column(
             children: [
-              Icon(Icons.filter_alt_rounded),
-              Text("Filter by"),
+              Container(
+                margin: const EdgeInsets.all(20),
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search by name',
+                    labelText: 'Search',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Colors.deepPurple.shade300,
+                      size: 35,
+                    ),
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              _searchController.clear();
+                              _handleSearch('');
+                            },
+                          )
+                        : null,
+                  ),
+                  onChanged: _handleSearch,
+                ),
+              ),
               Center(
                 child: SingleChildScrollView(
                   child: Padding(

@@ -260,7 +260,7 @@ class _ApplicationDetailsScreenState extends State<ApplicationDetailsScreen> {
                       'Email:', application.user?.email ?? 'Unknown'),
                   _buildDetailRow(
                       'Address:', application.user?.address ?? 'Unknown'),
-                  _buildDetailRow('City:', application.user?.city ?? 'Unknown'),
+                  _buildDetailRow('City:', application.user!.city?.cityName ?? 'Unknown'),
                   _buildDetailRow('Telephone number:',
                       application.user?.phoneNumber ?? 'Unknown'),
                   const SizedBox(height: 40),

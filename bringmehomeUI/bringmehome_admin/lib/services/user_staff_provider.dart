@@ -2,12 +2,13 @@ import 'package:bringmehome_admin/models/staff.dart';
 import 'package:bringmehome_admin/models/user.dart';
 import 'package:bringmehome_admin/services/staff_provider.dart';
 import 'package:bringmehome_admin/services/user_provider.dart';
+import 'package:flutter/foundation.dart';
 
-class StaffRegistrationService {
+class UserStaffProvider {
   final UserProvider _userProvider;
   final StaffProvider _staffProvider;
 
-  StaffRegistrationService({
+  UserStaffProvider({
     required UserProvider userProvider,
     required StaffProvider staffProvider,
   })  : _userProvider = userProvider,
@@ -42,6 +43,64 @@ class StaffRegistrationService {
       return staff;
     } catch (e) {
       print('Error registering staff with user: $e');
+      rethrow;
+    }
+  }
+
+  Future<Staff> updateStaffWithUser({
+    required int staffId,
+    required int userId,
+    User? user,
+    String? position,
+    String? department,
+    int? shelterID,
+    DateTime? hireDate,
+    String? status,
+    int? accessLevel,
+    String? password,
+  }) async {
+    try {
+      if (user != null || password != null) {
+        final userUpdateData = <String, dynamic>{};
+
+        if (user != null) {
+          userUpdateData.addAll(user.toJson());
+        }
+
+        if (password != null) {
+          userUpdateData['password'] = password;
+        }
+
+        if (userUpdateData.isNotEmpty) {
+          await _userProvider.update(userId, userUpdateData);
+        }
+      }
+
+      final staffUpdateData = <String, dynamic>{};
+
+      staffUpdateData['userID'] = userId; 
+      if (position != null) staffUpdateData['position'] = position;
+      if (department != null) staffUpdateData['department'] = department;
+      if (shelterID != null) staffUpdateData['shelterID'] = shelterID;
+      if (hireDate != null) {
+        staffUpdateData['hireDate'] = hireDate.toIso8601String();
+      }
+      if (status != null) staffUpdateData['status'] = status;
+      if (accessLevel != null) staffUpdateData['accessLevel'] = accessLevel;
+
+      Staff updatedStaff;
+      if (staffUpdateData.isNotEmpty) {
+        updatedStaff =
+            await _staffProvider.updateStaff(staffId, staffUpdateData);
+      } else {
+        updatedStaff = await _staffProvider.getStaffById(staffId);
+      }
+
+      return updatedStaff;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error updating staff with user: $e');
+      }
       rethrow;
     }
   }

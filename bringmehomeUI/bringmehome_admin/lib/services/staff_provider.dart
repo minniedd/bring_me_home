@@ -22,6 +22,16 @@ class StaffProvider extends BaseProvider<Staff> {
     }
   }
 
+  Future<Staff> getStaffById(int id) async {
+    try {
+      if (kDebugMode) print('Calling get for staff ID: $id');
+      return await super.getById(id);
+    } catch (e) {
+      if (kDebugMode) print('Error fetching staff ID $id: $e');
+      rethrow;
+    }
+  }
+
   Future<bool> deleteStaff(int id) async {
     try {
       if (kDebugMode) print('Calling delete for staff ID: $id');

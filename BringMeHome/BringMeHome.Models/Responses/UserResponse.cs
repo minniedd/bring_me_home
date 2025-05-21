@@ -20,5 +20,6 @@ namespace BringMeHome.Models.Responses
         public DateTime CreatedAt { get; set; }
         public DateTime? LastLoginAt { get; set; }
         public string? PhoneNumber { get; set; }
+        public int? CityID { get; set; }
     }
 }

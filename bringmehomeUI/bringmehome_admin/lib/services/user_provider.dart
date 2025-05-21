@@ -27,8 +27,9 @@ class UserProvider extends BaseProvider<User> {
     }
   }
 
+  @override 
   Future<User> getById(int id) async {
-    return await getById(id);
+    return await super.getById(id);
   }
 
   Future<bool> deleteUser(int id) async {

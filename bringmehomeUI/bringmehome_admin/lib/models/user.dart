@@ -1,3 +1,5 @@
+import 'package:bringmehome_admin/models/city.dart';
+
 class User {
   final int? id;
   final String firstName;
@@ -8,8 +10,10 @@ class User {
   final bool isActive;
   final DateTime? createdAt;
   final String? address;
-  final String? city;
   final String? userImage;
+  final int? cityID;
+  final City? city;
+
 
   User({
     required this.firstName,
@@ -22,6 +26,7 @@ class User {
     this.id,
     this.address,
     this.city,
+    this.cityID,
     this.userImage,
   });
 
@@ -38,8 +43,11 @@ class User {
           ? DateTime.parse(json['createdAt'] as String)
           : null,
       address: json['address'] as String?,
-      city: json['city'] as String?,
       userImage: json['userImage'] as String?,
+      cityID: json['cityID'] as int?,
+      city: json['city'] != null
+          ? City.fromJson(json['city'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -56,6 +64,7 @@ class User {
       'address': address,
       'city': city,
       'userImage': userImage,
+      'cityID': cityID,
     };
   }
 }
