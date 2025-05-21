@@ -55,6 +55,7 @@ class _AnimalReportScreenState extends State<AnimalReportScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
+      backButton: true,
       titleText: 'App Report'.toUpperCase(),
       child: Center(
         child: SingleChildScrollView(

@@ -58,6 +58,7 @@ class _UserListScreenState extends State<UserListScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
+      backButton: true,
       titleText: 'USER LIST',
       child: Padding(
         padding: const EdgeInsets.all(16.0),

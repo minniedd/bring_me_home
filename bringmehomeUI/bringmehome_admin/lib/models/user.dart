@@ -1,5 +1,3 @@
-import 'package:bringmehome_admin/models/city.dart';
-
 class User {
   final int? id;
   final String firstName;
@@ -12,7 +10,7 @@ class User {
   final String? address;
   final String? userImage;
   final int? cityID;
-  final City? city;
+  final String? city;
 
 
   User({
@@ -45,9 +43,7 @@ class User {
       address: json['address'] as String?,
       userImage: json['userImage'] as String?,
       cityID: json['cityID'] as int?,
-      city: json['city'] != null
-          ? City.fromJson(json['city'] as Map<String, dynamic>)
-          : null,
+      city: json['city'] as String?,
     );
   }
 

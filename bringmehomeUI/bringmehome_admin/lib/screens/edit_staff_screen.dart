@@ -84,7 +84,7 @@ class _EditStaffScreenState extends State<EditStaffScreen> {
     setState(() {
       _isLoading = true;
       _isLoadingCity = true;
-      _isLoadingShelters = true; 
+      _isLoadingShelters = true;
     });
     try {
       _currentUser = await UserProvider().getById(widget.staff.userID);
@@ -110,10 +110,9 @@ class _EditStaffScreenState extends State<EditStaffScreen> {
             _selectedCityId = null;
           }
         } else {
-          _selectedCityId = null; 
+          _selectedCityId = null;
         }
       }
-
     } catch (e) {
       if (mounted) {
         if (kDebugMode) print('Error loading data: $e');
@@ -126,8 +125,8 @@ class _EditStaffScreenState extends State<EditStaffScreen> {
     } finally {
       if (mounted) {
         setState(() {
-          _isLoadingCity = false; 
-          _isLoadingShelters = false; 
+          _isLoadingCity = false;
+          _isLoadingShelters = false;
           _isLoading = false;
         });
       }
@@ -162,8 +161,11 @@ class _EditStaffScreenState extends State<EditStaffScreen> {
           lastName: _lastNameController.text,
           email: _emailController.text,
           username: _usernameController.text,
-          phoneNumber: _phoneController.text.isNotEmpty ? _phoneController.text : null,
-          address: _addressController.text.isNotEmpty ? _addressController.text : null,
+          phoneNumber:
+              _phoneController.text.isNotEmpty ? _phoneController.text : null,
+          address: _addressController.text.isNotEmpty
+              ? _addressController.text
+              : null,
           cityID: _selectedCityId,
           isActive: _currentUser!.isActive,
           createdAt: _currentUser!.createdAt,
@@ -216,6 +218,7 @@ class _EditStaffScreenState extends State<EditStaffScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
+      backButton: true,
       titleText: 'Edit Staff'.toUpperCase(),
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -471,9 +474,12 @@ class _EditStaffScreenState extends State<EditStaffScreen> {
                       value: _accessLevel,
                       isExpanded: true,
                       items: const [
-                        DropdownMenuItem(value: 1, child: Text('Level 1 - Basic')),
-                        DropdownMenuItem(value: 2, child: Text('Level 2 - Standard')),
-                        DropdownMenuItem(value: 3, child: Text('Level 3 - Admin')),
+                        DropdownMenuItem(
+                            value: 1, child: Text('Level 1 - Basic')),
+                        DropdownMenuItem(
+                            value: 2, child: Text('Level 2 - Standard')),
+                        DropdownMenuItem(
+                            value: 3, child: Text('Level 3 - Admin')),
                       ],
                       onChanged: (value) {
                         setState(() {

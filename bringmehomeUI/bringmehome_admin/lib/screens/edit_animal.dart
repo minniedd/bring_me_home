@@ -249,7 +249,6 @@ class _EditAnimalDataScreenState extends State<EditAnimalDataScreen> {
     }
   }
 
-
   void _confirmChanges() async {
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -282,7 +281,7 @@ class _EditAnimalDataScreenState extends State<EditAnimalDataScreen> {
       'colorId': _selectedColorId,
       'temperamentId': _selectedTempermentId,
       'speciesId': _selectedSpeciesId,
-      'animalImage': _base64Image, 
+      'animalImage': _base64Image,
     };
 
     updateRequestData.removeWhere(
@@ -462,6 +461,7 @@ class _EditAnimalDataScreenState extends State<EditAnimalDataScreen> {
         _isSaving;
 
     return MasterScreenWidget(
+      backButton: true,
       titleText: 'EDIT ANIMAL INFORMATION',
       child: Center(
         child: Container(

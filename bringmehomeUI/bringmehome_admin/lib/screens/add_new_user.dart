@@ -83,8 +83,8 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
 
       if (success) {
         // navigation
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Registration successful! Please login.')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Registration successful! Please login.')));
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const UserListScreen()),
         );
@@ -107,6 +107,7 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
+      backButton: true,
       titleText: 'ADD NEW USER',
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())

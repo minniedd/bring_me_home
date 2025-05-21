@@ -47,6 +47,7 @@ class _AnimalApplicationsScreenState extends State<AnimalApplicationsScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
+      backButton: true,
       titleText:
           'APPLICATIONS FOR ${widget.animal.name?.toUpperCase() ?? 'UNKNOWN ANIMAL'}',
       child: SingleChildScrollView(
@@ -114,7 +115,8 @@ class _AnimalApplicationsScreenState extends State<AnimalApplicationsScreen> {
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ApplicationDetailsScreen(animalApplication: application),
+              builder: (context) =>
+                  ApplicationDetailsScreen(animalApplication: application),
             ),
           );
           if (result == true) {

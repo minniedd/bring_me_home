@@ -345,6 +345,7 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
+      backButton: true,
       titleText: 'ADD ANIMAL INFORMATION',
       child: Center(
         child: Container(

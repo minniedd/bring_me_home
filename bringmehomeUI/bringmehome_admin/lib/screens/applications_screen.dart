@@ -95,7 +95,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
-        titleText: 'ZAHTJEVI',
+        backButton: true,
+        titleText: 'applications'.toUpperCase(),
         child: SingleChildScrollView(
           controller: _scrollController,
           child: Column(

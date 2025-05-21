@@ -16,19 +16,17 @@ class AnimalApplicationsProvider extends BaseProvider<AnimalApplication> {
 
       return applications;
     } catch (e) {
-      print('Error fetching applications using getList: $e');
       rethrow;
     }
   }
 
-  Future<List<AnimalApplication>> getApplicationByAnimal(int animalId) async {
+   Future<List<AnimalApplication>> getApplicationByAnimal(int animalId) async {
     try {
       final List<AnimalApplication> applications = await super.getAll(
         endpointOverride: "animal/$animalId",
       );
       return applications;
     } catch (e) {
-      print('Error fetching applications by animals ID $animalId: $e');
       rethrow;
     }
   }

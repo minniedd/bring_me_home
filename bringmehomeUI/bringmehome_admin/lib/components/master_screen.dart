@@ -16,8 +16,9 @@ import 'package:window_manager/window_manager.dart';
 class MasterScreenWidget extends StatefulWidget {
   final Widget? child;
   final String? titleText;
+  final bool? backButton;
 
-  MasterScreenWidget({required this.child, required this.titleText, Key? key})
+  MasterScreenWidget({required this.child, required this.titleText, Key? key, this.backButton})
       : super(key: key);
 
   @override
@@ -64,16 +65,13 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget>
         backgroundColor: Theme.of(context).colorScheme.secondary,
         title: Row(
           children: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.arrow_back),
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSecondary, 
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              tooltip: 'Back',
-            ),
+            if (widget.backButton == true)
+              IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.of(context).maybePop();
+                },
+              ),
             const SizedBox(width: 10,),
             Text(
               widget.titleText ?? "",
@@ -101,7 +99,7 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget>
                 color: Theme.of(context).colorScheme.primary,
               ),
               child: Text(
-                'Drawer Header',
+                'Bring Me Home'.toUpperCase(),
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -110,7 +108,7 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget>
             ),
             ListTile(
               leading: Icon(Icons.pets),
-              title: Text('DOSTUPNE ŽIVOTINJE'),
+              title: Text('available animals'.toUpperCase()),
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const AvailableAnimalsScreen()));
@@ -118,7 +116,7 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget>
             ),
             ListTile(
               leading: Icon(Icons.paste_sharp),
-              title: Text('ZAHTJEVI'),
+              title: Text('animal applications'.toUpperCase()),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.of(context).push(MaterialPageRoute(
@@ -127,7 +125,7 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget>
             ),
             ListTile(
               leading: Icon(Icons.add_box_rounded),
-              title: Text('DODAJ OGLAS'),
+              title: Text('add animal'.toUpperCase()),
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const AddAnimalScreen()));
@@ -135,7 +133,7 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget>
             ),
             ListTile(
               leading: Icon(Icons.person_2_sharp),
-              title: Text('ZAPOSLENICI'),
+              title: Text('staff'.toUpperCase()),
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const StaffListScreen()));
@@ -143,7 +141,7 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget>
             ),
             ListTile(
               leading: Icon(Icons.person_3_outlined),
-              title: Text('KORISNICI'),
+              title: Text('users'.toUpperCase()),
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const UserListScreen()));
@@ -151,7 +149,7 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget>
             ),
             ListTile(
               leading: Icon(Icons.auto_graph_outlined),
-              title: Text('IZVJEŠTAJI'),
+              title: Text('reports'.toUpperCase()),
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const AnimalReportScreen()));
@@ -159,7 +157,7 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget>
             ),
             ListTile(
               leading: Icon(Icons.star_rate_rounded),
-              title: Text('RECENZIJE'),
+              title: Text('reviews'.toUpperCase()),
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const ReviewListScreen()));

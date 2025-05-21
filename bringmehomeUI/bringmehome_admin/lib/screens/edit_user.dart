@@ -25,25 +25,26 @@ class _EditUserScreenState extends State<EditUserScreen> {
   late TextEditingController _isActiveController;
 
   @override
-void initState() {
-  super.initState();
-     _firstNameController = TextEditingController();
-     _lastNameController = TextEditingController();
-     _emailController = TextEditingController();
-     _usernameController = TextEditingController();
-     _phoneNumberController = TextEditingController();
-     _addressController = TextEditingController();
-     _isActiveController = TextEditingController();
+  void initState() {
+    super.initState();
+    _firstNameController = TextEditingController();
+    _lastNameController = TextEditingController();
+    _emailController = TextEditingController();
+    _usernameController = TextEditingController();
+    _phoneNumberController = TextEditingController();
+    _addressController = TextEditingController();
+    _isActiveController = TextEditingController();
 
-
-  _firstNameController = TextEditingController(text: widget.user.firstName);
-  _lastNameController = TextEditingController(text: widget.user.lastName);
-  _emailController = TextEditingController(text: widget.user.email);
-  _usernameController = TextEditingController(text: widget.user.username);
-  _phoneNumberController = TextEditingController(text: widget.user.phoneNumber ?? '');
-  _addressController = TextEditingController(text: widget.user.address ?? '');
-  _isActiveController = TextEditingController(text: widget.user.isActive.toString());
-}
+    _firstNameController = TextEditingController(text: widget.user.firstName);
+    _lastNameController = TextEditingController(text: widget.user.lastName);
+    _emailController = TextEditingController(text: widget.user.email);
+    _usernameController = TextEditingController(text: widget.user.username);
+    _phoneNumberController =
+        TextEditingController(text: widget.user.phoneNumber ?? '');
+    _addressController = TextEditingController(text: widget.user.address ?? '');
+    _isActiveController =
+        TextEditingController(text: widget.user.isActive.toString());
+  }
 
   @override
   void dispose() {
@@ -86,8 +87,11 @@ void initState() {
       'lastName': _lastNameController.text,
       'email': _emailController.text,
       'username': _usernameController.text,
-      'phoneNumber': _phoneNumberController.text.isEmpty ? null : _phoneNumberController.text,
-      'address': _addressController.text.isEmpty ? null : _addressController.text,
+      'phoneNumber': _phoneNumberController.text.isEmpty
+          ? null
+          : _phoneNumberController.text,
+      'address':
+          _addressController.text.isEmpty ? null : _addressController.text,
       'isActive': _isActiveController.text.toLowerCase() == "true",
     };
 
@@ -103,7 +107,8 @@ void initState() {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('User "${result.firstName} ${result.lastName}" has been updated successfully!'),
+          content: Text(
+              'User "${result.firstName} ${result.lastName}" has been updated successfully!'),
           backgroundColor: Colors.green,
         ),
       );
@@ -130,6 +135,7 @@ void initState() {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
+      backButton: true,
       titleText: "Edit User",
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

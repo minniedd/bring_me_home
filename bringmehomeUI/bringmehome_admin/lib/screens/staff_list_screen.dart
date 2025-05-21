@@ -39,6 +39,7 @@ class _StaffListScreenState extends State<StaffListScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
+      backButton: true,
       titleText: 'STAFF LIST',
       child: SingleChildScrollView(
         child: Padding(

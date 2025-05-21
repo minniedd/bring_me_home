@@ -15,6 +15,8 @@ class AnimalApplication {
   final String? isAnimalAllowed; 
   final int? reasonId;
   final String? reasonName;
+  final int? reviewedByStaffID; 
+  final DateTime? reviewDate;
 
   final User? user; 
   final Animal? animal;
@@ -39,19 +41,18 @@ class AnimalApplication {
     this.animal,
     this.userFullName,
     this.reasonName,
-    
+    this.reviewedByStaffID,
+    this.reviewDate,
   });
-
 
   factory AnimalApplication.fromJson(Map<String, dynamic> json) {
     final userJson = json['user'];
     final animalJson = json['animal'];
-    final statusJson = json['status'];
     final reviewedByJson = json['reviewedBy']; 
 
     return AnimalApplication(
-      applicationID: json['applicationID'] as int, 
-      userID: json['userID'] as int, 
+      applicationID: json['applicationID'] as int?,
+      userID: json['userID'] as int,
       userFullName: json['userFullName'] as String?,
       animalID: json['animalID'] as int,
       applicationDate: json['applicationDate'] != null
@@ -62,12 +63,18 @@ class AnimalApplication {
       livingSituation: json['livingSituation'] as String?,
       isAnimalAllowed: json['isAnimalAllowed'] as String?,
       statusName: json['statusName'] as String?,
-      reasonId:json['reasonId'] as int?,
-      reasonName:json['reasonName'] as String?,
-      user: userJson != null ? User.fromJson(userJson as Map<String, dynamic>) : null,
-      animal: animalJson != null ? Animal.fromJson(animalJson as Map<String, dynamic>) : null,
-      status: statusJson != null ? ApplicationStatus.fromJson(statusJson as Map<String, dynamic>) : null,
-       reviewedBy: reviewedByJson != null ? Staff.fromJson(reviewedByJson as Map<String, dynamic>) : null, 
+      reasonId: json['reasonId'] as int?,
+      reasonName: json['reasonName'] as String?,
+      reviewedByStaffID: json['reviewedByStaffID'] as int?, 
+      reviewDate: json['reviewDate'] != null
+          ? DateTime.parse(json['reviewDate'] as String)
+          : null,
+      user: (userJson is Map<String, dynamic>) ? User.fromJson(userJson) : null,
+      animal: (animalJson is Map<String, dynamic>) ? Animal.fromJson(animalJson) : null,
+      status: json['statusName'] != null
+          ? ApplicationStatus(statusID: json['statusID'] as int, statusName: json['statusName'] as String)
+          : null,
+      reviewedBy: (reviewedByJson is Map<String, dynamic>) ? Staff.fromJson(reviewedByJson) : null,
     );
   }
 
@@ -88,6 +95,8 @@ class AnimalApplication {
       this.status,
       this.reviewedBy,
       this.reasonName,
+      this.reviewedByStaffID, 
+      this.reviewDate,
   });
 
   Map<String, dynamic> toJson() {
@@ -98,12 +107,14 @@ class AnimalApplication {
       'animalID': animalID,
       if(applicationDate != null) 'applicationDate': applicationDate!.toIso8601String(), 
       'statusID': statusID,
-      if(statusName != null) 'statusName': statusName,      
+      if(statusName != null) 'statusName': statusName,       
       'notes': notes,
       'livingSituation': livingSituation,
       'isAnimalAllowed': isAnimalAllowed,
       'reasonId': reasonId, 
       'reasonName':reasonName,
+      if(reviewedByStaffID != null) 'reviewedByStaffID': reviewedByStaffID, 
+      if(reviewDate != null) 'reviewDate': reviewDate!.toIso8601String(),
     };
   }
 }

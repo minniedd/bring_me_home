@@ -158,6 +158,7 @@ class _AddNewStaffScreenState extends State<AddNewStaffScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
+      backButton: true,
       titleText: 'Add new staff'.toUpperCase(),
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())

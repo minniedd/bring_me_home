@@ -91,24 +91,25 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
     _loadReviews(reset: true);
   }
 
-  void _deleteReview(int id) { 
-  _reviewProvider.deleteReview(id).then((_) {
-    _loadReviews(reset: true);
-    ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text('Review deleted successfully!')),
-    );
-  }).catchError((error) {
-    print('Error deleting review: $error');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to delete review: ${error.toString()}')),
-    );
-  });
-}
+  void _deleteReview(int id) {
+    _reviewProvider.deleteReview(id).then((_) {
+      _loadReviews(reset: true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Review deleted successfully!')),
+      );
+    }).catchError((error) {
+      print('Error deleting review: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete review: ${error.toString()}')),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: MasterScreenWidget(
+        backButton: true,
         titleText: 'REVIEWS',
         child: _errorMessage != null
             ? Center(child: Text(_errorMessage!))
@@ -184,7 +185,8 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                             const SizedBox(height: 4),
                             Text(
                               review.comment,
-                              style: const TextStyle(color: Color.fromRGBO(82, 59, 121, 1)),
+                              style: const TextStyle(
+                                  color: Color.fromRGBO(82, 59, 121, 1)),
                             ),
                           ],
                         ),
@@ -234,7 +236,8 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                                           },
                                           child: const Text(
                                             'Delete',
-                                            style: TextStyle(color: Colors.white),
+                                            style:
+                                                TextStyle(color: Colors.white),
                                           ),
                                         ),
                                       ],
