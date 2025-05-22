@@ -172,6 +172,7 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
+      settingsIcon: true,
       titleText: "HOME",
       child: Container(
         margin: const EdgeInsets.all(10),
@@ -243,8 +244,7 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const AddReviewScreen(),
+                                  builder: (context) => const AddReviewScreen(),
                                 ),
                               );
                             },

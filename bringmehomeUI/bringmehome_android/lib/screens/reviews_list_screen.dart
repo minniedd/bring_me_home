@@ -95,11 +95,11 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: MasterScreenWidget(
+        settingsIcon: true,
         titleText: 'REVIEWS',
         child: _errorMessage != null
             ? Center(child: Text(_errorMessage!))
             : ListView.builder(
-                // Use ListView.builder as the main scrollable
                 controller: _scrollController,
                 padding: const EdgeInsets.all(8.0),
                 itemCount: _reviewResult.result.length +
@@ -135,8 +135,6 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                       ),
                     );
                   }
-
-                  // Adjust index for the list items
                   final reviewIndex = index - 1;
 
                   if (reviewIndex >= _reviewResult.result.length) {

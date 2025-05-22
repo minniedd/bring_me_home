@@ -8,7 +8,10 @@ class User {
   final bool isActive;
   final DateTime? createdAt;
   final String? address;
+  final String? userImage;
+  final int? cityID;
   final String? city;
+
 
   User({
     required this.firstName,
@@ -21,6 +24,8 @@ class User {
     this.id,
     this.address,
     this.city,
+    this.cityID,
+    this.userImage,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -36,6 +41,8 @@ class User {
           ? DateTime.parse(json['createdAt'] as String)
           : null,
       address: json['address'] as String?,
+      userImage: json['userImage'] as String?,
+      cityID: json['cityID'] as int?,
       city: json['city'] as String?,
     );
   }
@@ -52,6 +59,8 @@ class User {
       'createdAt': createdAt?.toIso8601String(),
       'address': address,
       'city': city,
+      'userImage': userImage,
+      'cityID': cityID,
     };
   }
 }

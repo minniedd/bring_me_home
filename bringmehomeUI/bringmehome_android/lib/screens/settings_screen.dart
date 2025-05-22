@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:learning_app/providers/auth_provider.dart';
 import 'package:learning_app/screens/login_screen.dart';
+import 'package:learning_app/screens/user_profile_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -31,7 +32,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       body: Column(
         children: [
-          const SizedBox(height: 10,),
+          const SizedBox(height:10),
           Padding(
             padding: const EdgeInsets.all(10),
             child: ListTile(
@@ -39,12 +40,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 borderRadius: BorderRadius.circular(5),
               ),
               tileColor: Colors.purple.shade300,
-              title: Text("Log Out",style: GoogleFonts.poppins(fontWeight:FontWeight.bold,color:Colors.white),),
+              title: Text(
+                "Your account",
+                style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const UserProfileScreen(),
+                  ),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: ListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+              tileColor: Colors.purple.shade300,
+              title: Text(
+                "Log Out",
+                style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold, color: Colors.white),
+              ),
               onTap: () {
                 logOut();
               },
             ),
-          )
+          ),
         ],
       ),
     );

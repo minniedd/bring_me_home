@@ -10,8 +10,10 @@ import 'package:learning_app/screens/settings_screen.dart';
 class MasterScreenWidget extends StatefulWidget {
   final Widget? child;
   final String? titleText;
+  final bool? settingsIcon;
 
-  const MasterScreenWidget({this.child, this.titleText, super.key});
+  const MasterScreenWidget(
+      {this.child, this.titleText, super.key, this.settingsIcon});
 
   @override
   State<MasterScreenWidget> createState() => _MasterScreenWidgetState();
@@ -41,9 +43,8 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
         );
         break;
       case 4:
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const HistoryApplicationScreen())
-        );
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => const HistoryApplicationScreen()));
         break;
     }
   }
@@ -53,14 +54,16 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          GestureDetector(onTap: (){
-            Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const SettingsScreen())
-        );
-          },child: const Padding(
-            padding: EdgeInsets.only(right: 15),
-            child: Icon(Icons.settings_rounded),
-          ))
+          if (widget.settingsIcon == true)
+            GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const SettingsScreen()));
+                },
+                child: const Padding(
+                  padding: EdgeInsets.only(right: 15),
+                  child: Icon(Icons.settings_rounded),
+                ))
         ],
         centerTitle: true,
         title: Text(
@@ -87,14 +90,9 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
             icon: Icon(Icons.attach_money),
             label: 'Donacije',
           ),
+          BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Recenzije'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.star), 
-            label: 'Recenzije'
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history), 
-            label: 'Historija'
-          ),
+              icon: Icon(Icons.history), label: 'Historija'),
         ],
       ),
       body: widget.child!,

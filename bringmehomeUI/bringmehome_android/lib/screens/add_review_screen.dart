@@ -196,6 +196,7 @@ class _AddReviewScreenState extends State<AddReviewScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
+      settingsIcon: true,
       titleText: 'ADD REVIEW',
       child: _isLoadingUser
           ? const Center(child: CircularProgressIndicator())

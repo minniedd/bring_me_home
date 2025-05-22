@@ -286,6 +286,7 @@ class _DonationScreenState extends State<DonationScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
+      settingsIcon: true,
       titleText: 'DONATE',
       child: Padding(
         padding: const EdgeInsets.all(16.0),

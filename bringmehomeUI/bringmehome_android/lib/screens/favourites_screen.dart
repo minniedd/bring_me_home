@@ -69,6 +69,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
+      settingsIcon: true,
       titleText: "FAVOURITES",
       child: Container(
         margin: const EdgeInsets.all(10),
@@ -83,7 +84,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                     itemBuilder: (context, index) {
                       final animal = _favoriteAnimals[index];
                       return Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
+                        padding: const EdgeInsets.only(bottom: 10),
                         child: AnimalWindow(
                           animalName: animal.name ?? 'Unknown',
                           animalAge: animal.age?.toString() ?? 'Unknown',

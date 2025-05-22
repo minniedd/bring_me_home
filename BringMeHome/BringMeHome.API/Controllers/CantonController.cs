@@ -3,6 +3,7 @@ using BringMeHome.Models.Requests;
 using BringMeHome.Models.Responses;
 using BringMeHome.Models.SearchObjects;
 using BringMeHome.Services.Interfaces;
+using BringMeHome.Services.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,6 +34,12 @@ namespace BringMeHome.API.Controllers
             if (canton == null)
                 return NotFound();
             return canton;
+        }
+
+        [HttpGet("all")]
+        public async Task<ActionResult<List<CantonResponse>>> GetAll()
+        {
+            return await _cantonService.GetAllAsync();
         }
 
         [HttpPost]

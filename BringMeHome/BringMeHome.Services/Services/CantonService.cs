@@ -127,6 +127,17 @@ namespace BringMeHome.Services.Services
             return MapToResponse(canton);
         }
 
+        public async Task<List<CantonResponse>> GetAllAsync()
+        {
+            var query = _context.Cantons.AsQueryable();
+
+            var cantons = await query
+               .Select(r => MapToResponse(r))
+               .ToListAsync();
+
+            return cantons;
+        }
+
         private static CantonResponse MapToResponse(Canton canton)
         {
             return new CantonResponse

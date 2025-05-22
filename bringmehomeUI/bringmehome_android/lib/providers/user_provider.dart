@@ -1,33 +1,17 @@
 import 'dart:convert';
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:learning_app/models/user.dart';
 import 'package:learning_app/providers/base_provider.dart';
 import 'package:learning_app/services/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProvider extends BaseProvider<User> {
-  final Dio _dio;
-  final String _baseUrl = "http://10.0.2.2:5115/api";
   User? _currentUser;
   static const String _userStorageKey = 'current_user';
 
   User? get currentUser => _currentUser;
 
-  UserProvider()
-      : _dio = Dio(),
-        super("api/User") {
-    _dio.options.headers["Content-Type"] = "application/json";
-    _dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        final token = await AuthService.getAccessToken();
-        if (token != null) {
-          options.headers["Authorization"] = "Bearer $token";
-        }
-        return handler.next(options);
-      },
-    ));
-  }
+  UserProvider() : super("api/User");
 
   @override
   User fromJson(data) {
@@ -37,34 +21,65 @@ class UserProvider extends BaseProvider<User> {
     return User.fromJson(data);
   }
 
+  Future<Map<String, String>> _createAuthHeaders() async {
+    final token = await AuthService.getAccessToken();
+    var headers = {
+      "Content-Type": "application/json",
+    };
+
+    if (token != null) {
+      headers["Authorization"] = "Bearer $token";
+    }
+
+    return headers;
+  }
+
   Future<User?> getUserProfile() async {
     try {
       final token = await AuthService.getAccessToken();
-      if (token == null) return null;
+      if (token == null) {
+        return null;
+      }
 
-      final response = await _dio.get('$_baseUrl/User');
+      final userId = AuthService.getUserIdFromToken(token);
+      if (userId == null) {
+        return null;
+      }
+
+      var url = "${BaseProvider.baseUrl}$endpoint/$userId";
+      var uri = Uri.parse(url);
+      var headers = await _createAuthHeaders();
+
+      var response = await http.get(uri, headers: headers);
+
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        AuthService.logout();
+        throw Exception("Authentication failed. Please log in again.");
+      }
 
       if (response.statusCode != 200) {
-        final errorMessage = response.data?['message'] ?? "Failed to get user profile";
+        String errorMessage = "Failed to get user profile";
+        try {
+          var data = jsonDecode(response.body);
+          errorMessage = data['message'] ?? errorMessage;
+        } catch (_) {}
         throw Exception(errorMessage);
       }
 
-      if (response.data is! Map<String, dynamic> || response.data['items'] is! List) {
-        throw Exception("Unexpected API response format");
+      var data = jsonDecode(response.body);
+
+      if (data == null || data is! Map<String, dynamic>) {
+        throw Exception("Unexpected API response format: Expected a JSON object for user profile.");
       }
 
-      final items = response.data['items'] as List;
-      if (items.isEmpty) throw Exception("User data not found");
-
-      _currentUser = fromJson(items.first);
+      _currentUser = fromJson(data);
       await _saveUserToStorage(_currentUser!);
       notifyListeners();
       return _currentUser;
-    } on DioException catch (e) {
-      throw Exception(e.message ?? "Failed to get user profile");
+    } catch (e) {
+      rethrow;
     }
   }
-
 
   Future<User?> loadCurrentUser() async {
     if (_currentUser != null) return _currentUser;
@@ -85,13 +100,13 @@ class UserProvider extends BaseProvider<User> {
           _currentUser = User.fromJson(userData);
           notifyListeners();
           return _currentUser;
-        } catch (_) {
+        } catch (e) {
           await _clearStoredUser();
         }
       }
 
       return await getUserProfile();
-    } catch (_) {
+    } catch (e) {
       _currentUser = null;
       notifyListeners();
       return null;
@@ -105,27 +120,19 @@ class UserProvider extends BaseProvider<User> {
   }
 
   Future<void> _saveUserToStorage(User user) async {
-    if (kDebugMode) print("UserProvider: Saving user to storage");
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       Map<String, dynamic> userMap = user.toJson();
       String userJson = jsonEncode(userMap);
       await prefs.setString(_userStorageKey, userJson);
-      if (kDebugMode) print("UserProvider: User data saved successfully.");
-    } catch (e) {
-      if (kDebugMode) print("UserProvider: Error saving user data: $e");
-    }
+    } catch (e) {}
   }
 
   Future<void> _clearStoredUser() async {
-    if (kDebugMode) print("UserProvider: Clearing stored user data");
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.remove(_userStorageKey);
-      if (kDebugMode) print("UserProvider: Stored user data cleared.");
-    } catch (e) {
-      if (kDebugMode) print("UserProvider: Error clearing user data: $e");
-    }
+    } catch (e) {}
   }
 
   Future<User> updateProfile(Map<String, dynamic> userData) async {
@@ -134,21 +141,32 @@ class UserProvider extends BaseProvider<User> {
         throw Exception("No logged in user");
       }
 
-      final response = await _dio.put(
-        '$_baseUrl/User/${_currentUser!.id}',
-        data: userData,
-      );
+      var url = "${BaseProvider.baseUrl}$endpoint/${_currentUser!.id}";
+      var uri = Uri.parse(url);
+      var headers = await _createAuthHeaders();
+
+      var jsonRequest = jsonEncode(userData);
+      var response = await http.put(uri, headers: headers, body: jsonRequest);
 
       if (response.statusCode != 200) {
-        throw Exception(response.data?['message'] ?? "Failed to update profile");
+        String errorMessage = "Failed to update profile";
+        try {
+          var data = jsonDecode(response.body);
+          errorMessage = data['message'] ?? errorMessage;
+        } catch (_) {}
+        throw Exception(errorMessage);
       }
 
-      _currentUser = fromJson(response.data);
+      var data = jsonDecode(response.body);
+      if (data is! Map<String, dynamic>) {
+        throw Exception("Unexpected API response format: Expected a JSON object for updated user.");
+      }
+      _currentUser = fromJson(data);
       await _saveUserToStorage(_currentUser!);
       notifyListeners();
       return _currentUser!;
-    } on DioException catch (e) {
-      throw Exception(e.message ?? "Failed to update profile");
+    } catch (e) {
+      rethrow;
     }
   }
 }

@@ -13,6 +13,7 @@ namespace BringMeHome.Services.Interfaces
     public interface ICantonService
     {
         Task<PagedResult<CantonResponse>> GetAsync(CantonSearchObject search);
+        Task<List<CantonResponse>> GetAllAsync();
         Task<CantonResponse?> GetByIdAsync(int id);
         Task<CantonResponse> CreateAsync(CantonRequest request);
         Task<CantonResponse?> UpdateAsync(int id, CantonRequest request);

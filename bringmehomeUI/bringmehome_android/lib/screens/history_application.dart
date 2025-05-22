@@ -49,6 +49,7 @@ class _HistoryApplicationScreenState extends State<HistoryApplicationScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
+      settingsIcon: true,
       titleText: "HISTORY",
       child: Container(
         margin: const EdgeInsets.all(10),
@@ -66,7 +67,8 @@ class _HistoryApplicationScreenState extends State<HistoryApplicationScreen> {
                         children: [
                           AnimalWindow(
                             animalName: animal.animal?.name ?? 'Unknown',
-                            animalAge: animal.animal?.age?.toString() ?? 'Unknown',
+                            animalAge:
+                                animal.animal?.age?.toString() ?? 'Unknown',
                             shelterCity: '${animal.animal?.shelterName}',
                             isFavorite: true,
                             onTap: () {
