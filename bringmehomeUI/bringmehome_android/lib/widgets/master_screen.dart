@@ -23,8 +23,9 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
   void _navigateToScreen(int index) {
     switch (index) {
       case 0:
-        Navigator.of(context).push(
+       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const AnimalListScreen()),
+          (Route<dynamic> route) => false,
         );
         break;
       case 1:
