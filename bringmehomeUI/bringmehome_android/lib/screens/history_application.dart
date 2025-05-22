@@ -101,6 +101,26 @@ class _HistoryApplicationScreenState extends State<HistoryApplicationScreen> {
                               ),
                             ),
                           ),
+                          if (animal.notes != null) ...[
+                            Container(
+                              decoration: const BoxDecoration(
+                                color: Color.fromRGBO(215, 162, 139, 1),
+                                borderRadius: BorderRadius.only(
+                                  bottomRight: Radius.circular(12),
+                                  bottomLeft: Radius.circular(12),
+                                ),
+                              ),
+                              padding: const EdgeInsets.only(
+                                  left: 100, right: 100, top: 10, bottom: 10),
+                              child: Text(
+                                "${animal.notes}",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
                           const SizedBox(height: 16),
                         ],
                       );
