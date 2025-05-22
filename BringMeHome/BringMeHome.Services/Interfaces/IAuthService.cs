@@ -13,7 +13,7 @@ namespace BringMeHome.Services.Interfaces
 {
     public interface IAuthService
     {
-        Task<User?> RegisterAsync(UserRequest request);
+        Task<UserRegistrationResponse?> RegisterAsync(UserRequest request);
         Task<TokenResponse?> LoginAsync(UserDto request);
         Task<TokenResponse?> RefreshTokenAsync(RefreshTokenRequest request);
     }

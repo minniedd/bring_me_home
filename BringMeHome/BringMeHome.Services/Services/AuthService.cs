@@ -55,7 +55,7 @@ namespace BringMeHome.Services.Services
             };
         }
 
-        public async Task<User?> RegisterAsync(UserRequest request)
+        public async Task<UserRegistrationResponse?> RegisterAsync(UserRequest request)
         {
             if (await _dbContext.Users.AnyAsync(u => u.Username == request.Username))
             {
@@ -91,14 +91,27 @@ namespace BringMeHome.Services.Services
                 user.UserRoles.Add(new UserRole
                 {
                     Role = adopterRole,
-                    RoleId = adopterRole.RoleID
+                    RoleId = adopterRole.RoleID,
+                    User = user 
                 });
             }
 
             await _dbContext.Users.AddAsync(user);
             await _dbContext.SaveChangesAsync();
 
-            return user;
+            var userResponse = new UserRegistrationResponse
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Username = user.Username,
+                PhoneNumber = user.PhoneNumber,
+                IsActive = user.IsActive,
+                Roles = user.UserRoles?.Select(ur => ur.Role.RoleName).ToList() ?? new List<string>()
+            };
+
+            return userResponse;
         }
 
         private async Task<User?> ValidateRefreshTokenAsync(int userId, string refreshToken)
