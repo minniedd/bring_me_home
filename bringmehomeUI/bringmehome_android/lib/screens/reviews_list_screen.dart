@@ -159,23 +159,30 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                           color: Colors.white,
                         ),
                       ),
-                      subtitle: Text(
-                        review.comment,
-                        style: const TextStyle(color: Colors.white70),
-                      ),
-                      trailing: Container(
-                        padding: const EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          '${review.rating}/5',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromRGBO(149, 117, 205, 1),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'By: ${review.user?.firstName} ${review.user?.lastName}',
+                            style: const TextStyle(
+                              color: Color.fromRGBO(255, 255, 255, 1),
+                              fontStyle: FontStyle.italic,
+                            ),
                           ),
+                          const SizedBox(height: 4),
+                          Text(
+                            review.comment,
+                            style: const TextStyle(
+                                color: Color.fromRGBO(82, 59, 121, 1)),
+                          ),
+                        ],
+                      ),
+                      trailing: Text(
+                        '${review.rating}/5',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromRGBO(255, 255, 255, 1),
                         ),
                       ),
                     ),

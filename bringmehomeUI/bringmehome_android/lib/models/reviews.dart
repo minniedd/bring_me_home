@@ -1,3 +1,5 @@
+import 'package:learning_app/models/user.dart';
+
 class Review {
   int? reviewID;
   int? userID;
@@ -7,6 +9,7 @@ class Review {
   String comment;
   DateTime? createdAt;
   DateTime? updatedAt;
+  final User? user; 
 
   Review({
     this.reviewID,
@@ -17,6 +20,7 @@ class Review {
     required this.comment,
     this.createdAt,
     this.updatedAt,
+    this.user,
   });
 
   factory Review.fromJson(Map<String, dynamic> json) {
@@ -31,6 +35,7 @@ class Review {
           json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       updatedAt:
           json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      user: json['user'] != null ? User.fromJson(json['user']) : null,
     );
   }
 
