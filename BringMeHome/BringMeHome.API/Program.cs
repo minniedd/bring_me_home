@@ -35,6 +35,12 @@ builder.Services.AddTransient<IReviewService, ReviewService>();
 builder.Services.AddTransient<IApplicationStatusService, ApplicationStatusService>();
 builder.Services.AddTransient<IStaffService, StaffService > ();
 builder.Services.AddTransient<IAppReportService, AppReportService>();
+builder.Services.AddScoped<MlRecommendationService>();
+builder.Services.AddHostedService<MlModelRetrainingService>();
+
+// logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 QuestPDF.Settings.License = LicenseType.Community;
 
@@ -42,8 +48,16 @@ QuestPDF.Settings.License = LicenseType.Community;
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDatabaseServices(connectionString);
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        if (builder.Environment.IsDevelopment())
+        {
+            options.JsonSerializerOptions.WriteIndented = true;
+        }
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

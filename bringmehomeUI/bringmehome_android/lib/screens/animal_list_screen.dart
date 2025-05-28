@@ -8,9 +8,11 @@ import 'package:learning_app/models/species.dart';
 import 'package:learning_app/providers/animal_provider.dart';
 import 'package:learning_app/providers/canton_provider.dart';
 import 'package:learning_app/providers/species_provider.dart';
+import 'package:learning_app/providers/ml_recommendation_provider.dart';
 import 'package:learning_app/screens/add_review_screen.dart';
 import 'package:learning_app/screens/animal_screen.dart';
 import 'package:learning_app/widgets/master_screen.dart';
+import 'package:learning_app/services/auth_service.dart';
 
 class AnimalListScreen extends StatefulWidget {
   const AnimalListScreen({super.key});
@@ -23,21 +25,33 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
   final AnimalProvider _animalProvider = AnimalProvider();
   final SpeciesProvider _speciesProvider = SpeciesProvider();
   final CantonProvider _cantonProvider = CantonProvider();
+  final MlRecommendationProvider _mlRecommendationProvider = MlRecommendationProvider();
   final ScrollController _scrollController = ScrollController();
+  
   SearchResult<Animal> _animalResult = SearchResult<Animal>();
+  List<Animal> _recommendedAnimals = [];
+  
   bool _isLoading = false;
   bool _hasMore = true;
   String? _errorMessage;
   final TextEditingController _searchController = TextEditingController();
   final AnimalSearchObject _searchObject = AnimalSearchObject();
+  
   List<Species> _availableSpecies = [];
   bool _isLoadingSpecies = false;
   int? _selectedSpeciesId;
+  
   List<Canton> _availableCantons = [];
   bool _isLoadingCantons = false;
   int? _selectedCantonId;
+  
   bool _showSpeciesFilters = false;
   bool _showCantonFilters = false;
+  bool _showRecommendationFilters = false;
+  
+  bool _isLoadingRecommendations = false;
+  bool _showRecommendationsOnly = false;
+  String? _recommendationErrorMessage;
 
   @override
   void initState() {
@@ -45,6 +59,7 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
     _loadAnimals();
     _loadSpecies();
     _loadCantons();
+    _loadRecommendations();
     _scrollController.addListener(_scrollListener);
   }
 
@@ -58,7 +73,9 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
   void _scrollListener() {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
-      _loadMoreAnimals();
+      if (!_showRecommendationsOnly) {
+        _loadMoreAnimals();
+      }
     }
   }
 
@@ -169,6 +186,58 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
     _loadAnimals(reset: true);
   }
 
+  Future<void> _loadRecommendations() async {
+    setState(() {
+      _isLoadingRecommendations = true;
+      _recommendationErrorMessage = null;
+    });
+
+    try {
+      final token = await AuthService.getAccessToken();
+      if (token == null) {
+        setState(() {
+          _isLoadingRecommendations = false;
+          _recommendationErrorMessage = 'User not logged in';
+        });
+        return;
+      }
+
+      final userId = AuthService.getUserIdFromToken(token);
+      if (userId == null) {
+        setState(() {
+          _isLoadingRecommendations = false;
+          _recommendationErrorMessage = 'Could not get user ID';
+        });
+        return;
+      }
+
+      final recommendations = await _mlRecommendationProvider.getRecommendations(userId, count: 10);
+      setState(() {
+        _recommendedAnimals = recommendations;
+        _isLoadingRecommendations = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoadingRecommendations = false;
+        _recommendationErrorMessage = 'Failed to load recommendations: ${e.toString()}';
+      });
+    }
+  }
+
+  void _toggleRecommendationView(bool showRecommendations) {
+    setState(() {
+      _showRecommendationsOnly = showRecommendations;
+    });
+  }
+
+  List<Animal> _getDisplayedAnimals() {
+    if (_showRecommendationsOnly) {
+      return _recommendedAnimals;
+    } else {
+      return _animalResult.result;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
@@ -273,9 +342,9 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
+              
+              // ml rec section
               Card(
                 elevation: 2,
                 shape: RoundedRectangleBorder(
@@ -284,27 +353,37 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                 child: Column(
                   children: [
                     ListTile(
-                      title: Text(
-                        'Filter by Species',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple.shade700,
-                        ),
+                      title: Row(
+                        children: [
+                          Icon(
+                            Icons.pets_rounded,
+                            color: Colors.deepPurple.shade700,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Recommendations',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.deepPurple.shade700,
+                            ),
+                          ),
+                        ],
                       ),
                       trailing: Icon(
-                        _showSpeciesFilters
+                        _showRecommendationFilters
                             ? Icons.expand_less
                             : Icons.expand_more,
                         color: Colors.deepPurple.shade300,
                       ),
                       onTap: () {
                         setState(() {
-                          _showSpeciesFilters = !_showSpeciesFilters;
+                          _showRecommendationFilters = !_showRecommendationFilters;
                         });
                       },
                     ),
-                    if (_showSpeciesFilters) ...[
-                      if (_isLoadingSpecies)
+                    if (_showRecommendationFilters) ...[
+                      if (_isLoadingRecommendations)
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
@@ -313,77 +392,107 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                             ),
                           ),
                         )
+                      else if (_recommendationErrorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            _recommendationErrorMessage!,
+                            style: TextStyle(color: Colors.red.shade600),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
                       else
                         Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 8),
-                          child: SizedBox(
-                            height: 50,
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
+                          child: Column(
+                            children: [
+                              Row(
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
+                                  Expanded(
                                     child: FilterChip(
                                       avatar: Icon(
-                                        Icons.all_inclusive,
-                                        color: _selectedSpeciesId == null
+                                        Icons.apps,
+                                        color: !_showRecommendationsOnly
                                             ? Colors.white
                                             : Colors.deepPurple.shade300,
                                         size: 18,
                                       ),
-                                      label: const Text("All"),
-                                      selected: _selectedSpeciesId == null,
+                                      label: const Text("All Animals"),
+                                      selected: !_showRecommendationsOnly,
                                       selectedColor: Colors.deepPurple.shade400,
                                       labelStyle: TextStyle(
-                                        color: _selectedSpeciesId == null
+                                        color: !_showRecommendationsOnly
                                             ? Colors.white
                                             : Colors.black87,
-                                        fontWeight: _selectedSpeciesId == null
+                                        fontWeight: !_showRecommendationsOnly
                                             ? FontWeight.bold
                                             : FontWeight.normal,
                                       ),
                                       backgroundColor: Colors.grey.shade200,
                                       onSelected: (bool selected) {
                                         if (selected) {
-                                          _selectSpecies(null);
+                                          _toggleRecommendationView(false);
                                         }
                                       },
                                     ),
                                   ),
-                                  ..._availableSpecies.map((species) {
-                                    return Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 8.0),
-                                      child: FilterChip(
-                                        label: Text(species.speciesName),
-                                        selected: _selectedSpeciesId ==
-                                            species.speciesID,
-                                        selectedColor:
-                                            Colors.deepPurple.shade400,
-                                        labelStyle: TextStyle(
-                                          color: _selectedSpeciesId ==
-                                                  species.speciesID
-                                              ? Colors.white
-                                              : Colors.black87,
-                                          fontWeight: _selectedSpeciesId ==
-                                                  species.speciesID
-                                              ? FontWeight.bold
-                                              : FontWeight.normal,
-                                        ),
-                                        backgroundColor: Colors.grey.shade200,
-                                        onSelected: (bool selected) {
-                                          if (selected) {
-                                            _selectSpecies(species.speciesID);
-                                          }
-                                        },
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: FilterChip(
+                                      avatar: Icon(
+                                        Icons.favorite,
+                                        color: _showRecommendationsOnly
+                                            ? Colors.white
+                                            : Colors.deepPurple.shade300,
+                                        size: 18,
                                       ),
-                                    );
-                                  }),
+                                      label: Text("For You (${_recommendedAnimals.length})"),
+                                      selected: _showRecommendationsOnly,
+                                      selectedColor: Colors.deepPurple.shade400,
+                                      labelStyle: TextStyle(
+                                        color: _showRecommendationsOnly
+                                            ? Colors.white
+                                            : Colors.black87,
+                                        fontWeight: _showRecommendationsOnly
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                      ),
+                                      backgroundColor: Colors.grey.shade200,
+                                      onSelected: (bool selected) {
+                                        if (selected) {
+                                          _toggleRecommendationView(true);
+                                        }
+                                      },
+                                    ),
+                                  ),
                                 ],
                               ),
-                            ),
+                              if (_showRecommendationsOnly && _recommendedAnimals.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.info_outline,
+                                        size: 16,
+                                        color: Colors.deepPurple.shade600,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Expanded(
+                                        child: Text(
+                                          "These animals are recommended based on your preferences",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.deepPurple.shade600,
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                       const SizedBox(height: 8),
@@ -392,141 +501,273 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  children: [
-                    ListTile(
-                      title: Text(
-                        'Filter by Canton',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple.shade700,
-                        ),
-                      ),
-                      trailing: Icon(
-                        _showCantonFilters
-                            ? Icons.expand_less
-                            : Icons.expand_more,
-                        color: Colors.deepPurple.shade300,
-                      ),
-                      onTap: () {
-                        setState(() {
-                          _showCantonFilters = !_showCantonFilters;
-                        });
-                      },
-                    ),
-                    if (_showCantonFilters) ...[
-                      if (_isLoadingCantons)
-                        Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: CircularProgressIndicator(
-                              color: Colors.deepPurple.shade300,
-                            ),
+
+              // to hide filters when recs are shown
+              if (!_showRecommendationsOnly) ...[
+                Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        title: Text(
+                          'Filter by Species',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepPurple.shade700,
                           ),
-                        )
-                      else
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          child: SizedBox(
-                            height: 50,
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: FilterChip(
-                                      avatar: Icon(
-                                        Icons.all_inclusive,
-                                        color: _selectedCantonId == null
-                                            ? Colors.white
-                                            : Colors.deepPurple.shade300,
-                                        size: 18,
-                                      ),
-                                      label: const Text("All"),
-                                      selected: _selectedCantonId == null,
-                                      selectedColor: Colors.deepPurple.shade400,
-                                      labelStyle: TextStyle(
-                                        color: _selectedCantonId == null
-                                            ? Colors.white
-                                            : Colors.black87,
-                                        fontWeight: _selectedCantonId == null
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
-                                      ),
-                                      backgroundColor: Colors.grey.shade200,
-                                      onSelected: (bool selected) {
-                                        if (selected) {
-                                          _selectCantons(null);
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                  ..._availableCantons.map((cantons) {
-                                    return Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 8.0),
+                        ),
+                        trailing: Icon(
+                          _showSpeciesFilters
+                              ? Icons.expand_less
+                              : Icons.expand_more,
+                          color: Colors.deepPurple.shade300,
+                        ),
+                        onTap: () {
+                          setState(() {
+                            _showSpeciesFilters = !_showSpeciesFilters;
+                          });
+                        },
+                      ),
+                      if (_showSpeciesFilters) ...[
+                        if (_isLoadingSpecies)
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: CircularProgressIndicator(
+                                color: Colors.deepPurple.shade300,
+                              ),
+                            ),
+                          )
+                        else
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            child: SizedBox(
+                              height: 50,
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 8.0),
                                       child: FilterChip(
-                                        label: Text(cantons.cantonName),
-                                        selected: _selectedCantonId ==
-                                            cantons.cantonID,
-                                        selectedColor:
-                                            Colors.deepPurple.shade400,
+                                        avatar: Icon(
+                                          Icons.all_inclusive,
+                                          color: _selectedSpeciesId == null
+                                              ? Colors.white
+                                              : Colors.deepPurple.shade300,
+                                          size: 18,
+                                        ),
+                                        label: const Text("All"),
+                                        selected: _selectedSpeciesId == null,
+                                        selectedColor: Colors.deepPurple.shade400,
                                         labelStyle: TextStyle(
-                                          color: _selectedCantonId ==
-                                                  cantons.cantonID
+                                          color: _selectedSpeciesId == null
                                               ? Colors.white
                                               : Colors.black87,
-                                          fontWeight: _selectedCantonId ==
-                                                  cantons.cantonID
+                                          fontWeight: _selectedSpeciesId == null
                                               ? FontWeight.bold
                                               : FontWeight.normal,
                                         ),
                                         backgroundColor: Colors.grey.shade200,
                                         onSelected: (bool selected) {
                                           if (selected) {
-                                            _selectCantons(cantons.cantonID);
+                                            _selectSpecies(null);
                                           }
                                         },
                                       ),
-                                    );
-                                  }),
-                                ],
+                                    ),
+                                    ..._availableSpecies.map((species) {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 8.0),
+                                        child: FilterChip(
+                                          label: Text(species.speciesName),
+                                          selected: _selectedSpeciesId ==
+                                              species.speciesID,
+                                          selectedColor:
+                                              Colors.deepPurple.shade400,
+                                          labelStyle: TextStyle(
+                                            color: _selectedSpeciesId ==
+                                                    species.speciesID
+                                                ? Colors.white
+                                                : Colors.black87,
+                                            fontWeight: _selectedSpeciesId ==
+                                                    species.speciesID
+                                                ? FontWeight.bold
+                                                : FontWeight.normal,
+                                          ),
+                                          backgroundColor: Colors.grey.shade200,
+                                          onSelected: (bool selected) {
+                                            if (selected) {
+                                              _selectSpecies(species.speciesID);
+                                            }
+                                          },
+                                        ),
+                                      );
+                                    }),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      const SizedBox(height: 8),
+                        const SizedBox(height: 8),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
+                const SizedBox(height: 10),
+
+                // canton
+                Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        title: Text(
+                          'Filter by Canton',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepPurple.shade700,
+                          ),
+                        ),
+                        trailing: Icon(
+                          _showCantonFilters
+                              ? Icons.expand_less
+                              : Icons.expand_more,
+                          color: Colors.deepPurple.shade300,
+                        ),
+                        onTap: () {
+                          setState(() {
+                            _showCantonFilters = !_showCantonFilters;
+                          });
+                        },
+                      ),
+                      if (_showCantonFilters) ...[
+                        if (_isLoadingCantons)
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: CircularProgressIndicator(
+                                color: Colors.deepPurple.shade300,
+                              ),
+                            ),
+                          )
+                        else
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            child: SizedBox(
+                              height: 50,
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 8.0),
+                                      child: FilterChip(
+                                        avatar: Icon(
+                                          Icons.all_inclusive,
+                                          color: _selectedCantonId == null
+                                              ? Colors.white
+                                              : Colors.deepPurple.shade300,
+                                          size: 18,
+                                        ),
+                                        label: const Text("All"),
+                                        selected: _selectedCantonId == null,
+                                        selectedColor: Colors.deepPurple.shade400,
+                                        labelStyle: TextStyle(
+                                          color: _selectedCantonId == null
+                                              ? Colors.white
+                                              : Colors.black87,
+                                          fontWeight: _selectedCantonId == null
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
+                                        ),
+                                        backgroundColor: Colors.grey.shade200,
+                                        onSelected: (bool selected) {
+                                          if (selected) {
+                                            _selectCantons(null);
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                    ..._availableCantons.map((cantons) {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 8.0),
+                                        child: FilterChip(
+                                          label: Text(cantons.cantonName),
+                                          selected: _selectedCantonId ==
+                                              cantons.cantonID,
+                                          selectedColor:
+                                              Colors.deepPurple.shade400,
+                                          labelStyle: TextStyle(
+                                            color: _selectedCantonId ==
+                                                    cantons.cantonID
+                                                ? Colors.white
+                                                : Colors.black87,
+                                            fontWeight: _selectedCantonId ==
+                                                    cantons.cantonID
+                                                ? FontWeight.bold
+                                                : FontWeight.normal,
+                                          ),
+                                          backgroundColor: Colors.grey.shade200,
+                                          onSelected: (bool selected) {
+                                            if (selected) {
+                                              _selectCantons(cantons.cantonID);
+                                            }
+                                          },
+                                        ),
+                                      );
+                                    }),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        const SizedBox(height: 8),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+              
               const SizedBox(height: 20),
-              if (_isLoading && _animalResult.result.isEmpty)
+
+              // animal list
+              if (_isLoading && _getDisplayedAnimals().isEmpty)
                 const Center(child: CircularProgressIndicator())
-              else if (_errorMessage != null)
+              else if (_errorMessage != null && !_showRecommendationsOnly)
                 Center(
                   child: Text(
                     _errorMessage!,
                     style: const TextStyle(color: Colors.red),
                   ),
                 )
-              else if (_animalResult.result.isEmpty)
-                const Center(child: Text('No animals found'))
+              else if (_getDisplayedAnimals().isEmpty)
+                Center(
+                  child: Text(
+                    _showRecommendationsOnly 
+                        ? 'No recommendations available. Try favoriting some animals first!'
+                        : 'No animals found'
+                  )
+                )
               else
                 ...List.generate(
-                  _animalResult.result.length + (_hasMore ? 1 : 0),
+                  _getDisplayedAnimals().length + (_hasMore && !_showRecommendationsOnly ? 1 : 0),
                   (index) {
-                    if (index >= _animalResult.result.length) {
+                    if (index >= _getDisplayedAnimals().length) {
                       return _buildLoader();
                     }
-                    final animal = _animalResult.result[index];
+
+                    final animal = _getDisplayedAnimals()[index];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 10),
                       child: AnimalWindow(
@@ -555,7 +796,7 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
   }
 
   Widget _buildLoader() {
-    return _hasMore
+    return _hasMore && !_showRecommendationsOnly
         ? const Padding(
             padding: EdgeInsets.all(8.0),
             child: Center(child: CircularProgressIndicator()),

@@ -84,7 +84,7 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
       if (success) {
         // navigation
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Registration successful! Please login.')));
+            content: Text('Added user successfully!'),));
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const UserListScreen()),
         );
