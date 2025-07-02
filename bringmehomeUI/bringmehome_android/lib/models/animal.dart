@@ -1,5 +1,6 @@
 import 'package:learning_app/models/response/animal_temperment_response.dart';
 import 'package:learning_app/models/response/color_response.dart';
+import 'package:learning_app/models/shelter.dart';
 
 class Animal {
   int? animalID;
@@ -18,6 +19,8 @@ class Animal {
   List<ColorResponse>? colors;
   List<AnimalTemperamentResponse>? temperaments;
   bool isFavorite;
+  String? animalImage;
+  final Shelter? shelter;
 
   Animal({
     this.animalID,
@@ -36,6 +39,8 @@ class Animal {
     this.breedName,
     this.shelterName,
     this.isFavorite = false,
+    this.animalImage,
+    this.shelter,
   });
 
   factory Animal.fromJson(Map<String, dynamic> json) {
@@ -66,6 +71,10 @@ class Animal {
               .toList() ??
           [],
       isFavorite: json['isFavorite'] as bool? ?? false,
+      animalImage: json['animalImage'] as String?,
+      shelter: json['shelter'] != null
+          ? Shelter.fromJson(json['shelter'] as Map<String, dynamic>)
+          : null,
     );
   }
 }

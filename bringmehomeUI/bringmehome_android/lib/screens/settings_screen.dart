@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:learning_app/providers/auth_provider.dart';
+import 'package:learning_app/providers/user_provider.dart';
 import 'package:learning_app/screens/login_screen.dart';
 import 'package:learning_app/screens/user_profile_screen.dart';
 
@@ -13,11 +14,17 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final AuthProvider _authProvider = AuthProvider();
+  final UserProvider _userProvider = UserProvider();
 
   logOut() async {
     await _authProvider.logout();
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+
+    await _userProvider.clearUserData(); 
+
+    if (mounted) {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+    }
   }
 
   @override

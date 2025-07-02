@@ -783,7 +783,7 @@ class _AnimalListScreenState extends State<AnimalListScreen> {
                                   AnimalScreen(animal: animal),
                             ),
                           );
-                        },
+                        }, animalImage: animal.animalImage,
                       ),
                     );
                   },

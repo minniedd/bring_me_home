@@ -86,6 +86,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 10),
                         child: AnimalWindow(
+                          animalImage: animal.animalImage,
                           animalName: animal.name ?? 'Unknown',
                           animalAge: animal.age?.toString() ?? 'Unknown',
                           shelterCity: '${animal.shelterName}',

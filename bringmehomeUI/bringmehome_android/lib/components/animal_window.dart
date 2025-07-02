@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 
@@ -9,6 +12,7 @@ class AnimalWindow extends StatelessWidget {
   final bool showLikeButton;
   final VoidCallback onTap;
   final Future<bool?> Function(bool)? onLikeTap;
+  final String? animalImage;
 
   const AnimalWindow({
     super.key,
@@ -17,9 +21,53 @@ class AnimalWindow extends StatelessWidget {
     required this.shelterCity,
     required this.onTap,
     this.isFavorite = false,
-    this.showLikeButton = true, 
+    this.showLikeButton = true,
     this.onLikeTap,
+    this.animalImage,
   });
+
+  Widget _buildImageWidget() {
+    if (animalImage != null && animalImage!.isNotEmpty) {
+      try {
+        String base64String = animalImage!;
+        if (base64String.contains(',')) {
+          base64String = base64String.split(',').last;
+        }
+
+        final Uint8List bytes = base64Decode(base64String);
+        return Image.memory(
+          bytes,
+          height: 150,
+          width: 100,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            print('Error loading image from memory: $error');
+            return Image.asset(
+              'assets/meowmeow.jpg',
+              height: 150,
+              width: 100,
+              fit: BoxFit.cover,
+            );
+          },
+        );
+      } catch (e) {
+        print('Error decoding base64: $e');
+        return Image.asset(
+          'assets/meowmeow.jpg',
+          height: 150,
+          width: 100,
+          fit: BoxFit.cover,
+        );
+      }
+    } else {
+      return Image.asset(
+        'assets/meowmeow.jpg',
+        height: 150,
+        width: 100,
+        fit: BoxFit.cover,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +89,12 @@ class AnimalWindow extends StatelessWidget {
                     Expanded(
                       flex: 40,
                       child: Padding(
-                          padding: const EdgeInsets.only(left: 10.0),
-                          child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.asset('assets/meowmeow.jpg'))),
+                        padding: const EdgeInsets.only(left: 10.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: _buildImageWidget(),
+                        ),
+                      ),
                     ),
                     Expanded(
                       flex: 60,
@@ -59,7 +109,8 @@ class AnimalWindow extends StatelessWidget {
                                   fontWeight: FontWeight.w700, fontSize: 30),
                             )),
                           ),
-                          Expanded(flex: 25, child: Text("$animalAge years old")),
+                          Expanded(
+                              flex: 25, child: Text("$animalAge years old")),
                           Expanded(flex: 25, child: Text(shelterCity)),
                         ],
                       ),

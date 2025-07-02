@@ -66,6 +66,7 @@ class _HistoryApplicationScreenState extends State<HistoryApplicationScreen> {
                       return Column(
                         children: [
                           AnimalWindow(
+                            animalImage: animal.animal?.animalImage,
                             animalName: animal.animal?.name ?? 'Unknown',
                             animalAge:
                                 animal.animal?.age?.toString() ?? 'Unknown',

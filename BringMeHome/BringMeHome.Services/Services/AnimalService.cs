@@ -236,7 +236,14 @@ namespace BringMeHome.Services.Services
                 ColorID = animal.ColorID ?? 0, 
                 ColorName = animal.Color?.ColorName, 
                 TempermentID = animal.TempermentID ?? 0, 
-                TemperamentName = animal.AnimalTemperament?.Name
+                TemperamentName = animal.AnimalTemperament?.Name,
+                shelter = animal.Shelter != null ? new ShelterResponse
+                {
+                    Name = animal.Shelter.Name,
+                    Address = animal.Shelter.Address,
+                    Phone = animal.Shelter.Phone,
+                    Email = animal.Shelter.Email,
+                } : null
             };
         }
     }

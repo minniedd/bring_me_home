@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:learning_app/components/my_button.dart';
 import 'package:learning_app/components/my_dialog.dart';
@@ -20,11 +23,13 @@ class AnimalScreen extends StatefulWidget {
 class _AnimalScreenState extends State<AnimalScreen> {
   final FavouritesProvider _favouriteProvider = FavouritesProvider();
   late bool _isFavorite;
+  String? _animalImage;
 
   @override
   void initState() {
     super.initState();
     _isFavorite = widget.animal.isFavorite;
+    _animalImage = widget.animal.animalImage;
     _refreshFavoriteStatus();
   }
 
@@ -36,6 +41,49 @@ class _AnimalScreenState extends State<AnimalScreen> {
             .any((animal) => animal.animalID == widget.animal.animalID);
         widget.animal.isFavorite = _isFavorite;
       });
+    }
+  }
+
+  Widget _buildImageWidget() {
+    if (_animalImage != null && _animalImage!.isNotEmpty) {
+      try {
+        String base64String = _animalImage!;
+        if (base64String.contains(',')) {
+          base64String = base64String.split(',').last;
+        }
+
+        final Uint8List bytes = base64Decode(base64String);
+        return Image.memory(
+          bytes,
+          height: 300,
+          width: double.infinity,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            print('Error loading image from memory: $error');
+            return Image.asset(
+              'assets/meowmeow.jpg',
+              height: 300,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            );
+          },
+        );
+      } catch (e) {
+        print('Error decoding base64: $e');
+        return Image.asset(
+          'assets/meowmeow.jpg',
+          height: 300,
+          width: double.infinity,
+          fit: BoxFit.cover,
+        );
+      }
+    } else {
+      return Image.asset(
+        'assets/meowmeow.jpg',
+        height: 300,
+        width: double.infinity,
+        fit: BoxFit.cover,
+      );
     }
   }
 
@@ -65,21 +113,10 @@ class _AnimalScreenState extends State<AnimalScreen> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                child: Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      _showMoreImagesDialog(context);
-                    },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: Image.asset(
-                        'assets/meowmeow.jpg',
-                        height: 200,
-                        width: 200,
-                        fit: BoxFit.fitHeight,
-                      ),
-                    ),
-                  ),
+                child: SizedBox(
+                  height: 300,
+                  width: double.infinity,
+                  child: _buildImageWidget(),
                 ),
               ),
               const SizedBox(
@@ -105,7 +142,12 @@ class _AnimalScreenState extends State<AnimalScreen> {
                           showDialog(
                               context: context,
                               builder: (context) {
-                                return const MyDialog();
+                                return MyDialog(
+                                  shelterName: widget.animal.shelter?.name ?? 'Nepoznato',
+                                  email: widget.animal.shelter?.email ?? 'Nepoznato',
+                                  phoneNumber: widget.animal.shelter?.phone ?? 'Nepoznato',
+                                  address: widget.animal.shelter?.address ?? 'Nepoznato',
+                                );
                               });
                         },
                         style: ElevatedButton.styleFrom(
@@ -272,6 +314,4 @@ class _AnimalScreenState extends State<AnimalScreen> {
       ),
     );
   }
-
-  void _showMoreImagesDialog(BuildContext context) {}
 }

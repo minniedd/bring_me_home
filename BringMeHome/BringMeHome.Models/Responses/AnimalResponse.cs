@@ -28,5 +28,6 @@ namespace BringMeHome.Models.Responses
         public string ColorName { get; set; }
         public int TempermentID { get; set; }
         public string TemperamentName { get; set; }
+        public ShelterResponse? shelter { get; set; }
     }
 }

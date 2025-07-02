@@ -2,20 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:learning_app/components/custom_text.dart';
 
 class MyDialog extends StatelessWidget {
-  const MyDialog({super.key});
+  final String shelterName;
+  final String email;
+  final String phoneNumber;
+  final String address;
+  const MyDialog({super.key, required this.shelterName, required this.email, required this.phoneNumber, required this.address});
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: Theme.of(context).colorScheme.primary,
-      content: const SizedBox(
+      content: SizedBox(
         height: 310,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            CustomText(textCustom: 'Sklonište: Sarajevo'),
-            CustomText(textCustom: 'E-mail: example@example.com'),
-            CustomText(textCustom: 'Broj telefona: 062 089 721'),
-            CustomText(textCustom: 'Adresa: Example 18'),
+            Expanded(child: CustomText(textCustom: shelterName)),
+            Expanded(child: CustomText(textCustom: email)),
+            Expanded(child: CustomText(textCustom: phoneNumber)),
+            Expanded(child: CustomText(textCustom: address)),
           ],
         ),
       ),
