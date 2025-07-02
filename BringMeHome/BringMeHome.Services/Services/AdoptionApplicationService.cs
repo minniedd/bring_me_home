@@ -33,7 +33,8 @@ namespace BringMeHome.Services.Services
                 HostName = _host,
                 UserName = _username,
                 Password = _password,
-                VirtualHost = _virtualhost
+                VirtualHost = _virtualhost,
+                AutomaticRecoveryEnabled = true 
             };
             var connection = factory.CreateConnection();
             _channel = connection.CreateModel();
@@ -90,11 +91,19 @@ namespace BringMeHome.Services.Services
         {
             try
             {
-                var adopter = await _context.Adopters.FindAsync(userId);
-                if (adopter?.User.Email == null) return;
+                Console.WriteLine($"Attempting to send adoption notification for user {userId}");
 
-                var message = $"Adoption application created for {adopter.User.Email}";
+                var adopter = await _context.Users.FindAsync(userId);
+                if (adopter?.Email == null)
+                {
+                    Console.WriteLine("Adopter or email not found");
+                    return;
+                }
+
+                var message = $"Adoption application created for {adopter.Email}";
                 var body = Encoding.UTF8.GetBytes(message);
+
+                Console.WriteLine($"Publishing message to RabbitMQ: {message}");
 
                 _channel.BasicPublish(
                     exchange: "",
@@ -102,7 +111,7 @@ namespace BringMeHome.Services.Services
                     basicProperties: null,
                     body: body);
 
-                Console.WriteLine($"Published message to RabbitMQ: {message}");
+                Console.WriteLine($"Successfully published message to RabbitMQ: {message}");
             }
             catch (Exception ex)
             {
@@ -115,34 +124,40 @@ namespace BringMeHome.Services.Services
             var query = _context.AdoptionApplications
                 .Include(aa => aa.User)
                 .Include(aa => aa.Animal)
-                    .ThenInclude(a => a.Breed)
-                        .ThenInclude(b => b.Species)
-                        .Include(aa => aa.Animal)
-                                .Include(aa => aa.Animal.Shelter)
-                                .Include(aa => aa.Animal.Color)
-                                .Include(aa => aa.Animal.AnimalTemperament)
-                                .Include(aa => aa.Status)
-                                .Include(aa => aa.ReviewedBy)
-                                .Include(aa => aa.Reason) 
+                .ThenInclude(a => a.Breed)
+                    .ThenInclude(b => b.Species)
+                .Include(aa => aa.Animal)
+                    .ThenInclude(a => a.Shelter)
+                .Include(aa => aa.Animal)
+                    .ThenInclude(a => a.Color)
+                .Include(aa => aa.Animal)
+                    .ThenInclude(a => a.AnimalTemperament)
+                .Include(aa => aa.Status)
+                .Include(aa => aa.ReviewedBy)
+                .Include(aa => aa.Reason)
+                .AsQueryable();
 
-            .AsQueryable();
+            if (userId.HasValue)
+            {
+                query = query.Where(aa => aa.UserID == userId.Value);
+            }
 
             if (!string.IsNullOrWhiteSpace(search.FTS))
             {
                 query = query.Where(r =>
                     r.User.Username.Contains(search.FTS) ||
                     r.Animal.Name.Contains(search.FTS)
-                    );
+                );
             }
 
             var totalCount = await query.CountAsync();
 
             var adoptionApplication = await query
-            .ApplySort(search)
-            .ApplyPagination(search)
-            .Select(r => MapToResponse(r))
-            .ToListAsync();
-            
+                .ApplySort(search)
+                .ApplyPagination(search)
+                .Select(r => MapToResponse(r))
+                .ToListAsync();
+
             return new PagedResult<AdoptionApplicationResponse>
             {
                 Items = adoptionApplication,

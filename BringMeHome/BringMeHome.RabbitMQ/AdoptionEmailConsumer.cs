@@ -4,6 +4,7 @@ using System.Text;
 using MailKit.Net.Smtp;
 using MimeKit;
 using Microsoft.Extensions.Configuration;
+using System.Text.RegularExpressions;
 
 namespace BringMeHome.RabbitMQ
 {
@@ -60,8 +61,16 @@ namespace BringMeHome.RabbitMQ
 
         private string ExtractEmailFromMessage(string message)
         {
-            var parts = message.Split(' ');
-            return parts.Length > 3 ? parts[3] : string.Empty;
+            try
+            {
+                var emailMatch = Regex.Match(message, @"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b");
+                return emailMatch.Success ? emailMatch.Value : string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error extracting email: {ex.Message}");
+                return string.Empty;
+            }
         }
     }
 }
