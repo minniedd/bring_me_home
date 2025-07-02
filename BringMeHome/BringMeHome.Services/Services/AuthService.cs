@@ -23,27 +23,36 @@ namespace BringMeHome.Services.Services
     {
         private readonly BringMeHomeDbContext _dbContext;
         private readonly IConfiguration _configuration;
+        private readonly IPasswordHasher<User> _passwordHasher;
 
-        public AuthService(BringMeHomeDbContext dbContext, IConfiguration configuration)
+        public AuthService(BringMeHomeDbContext dbContext, IConfiguration configuration, IPasswordHasher<User> passwordHasher)
         {
             _dbContext = dbContext;
             _configuration = configuration;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<TokenResponse?> LoginAsync(UserDto request)
         {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
+            var user = await _dbContext.Users
+                    .Include(u => u.UserRoles) 
+                    .ThenInclude(ur => ur.Role) 
+                    .FirstOrDefaultAsync(u => u.Username == request.Username);
 
             if (user is null)
             {
                 return null;
             }
-            if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, request.Password) == PasswordVerificationResult.Failed)
+
+            if (_passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password) == PasswordVerificationResult.Failed)
             {
                 return null;
             }
 
-            return await CreateTokenResponseAsync(user);
+            var tokenResponse = await CreateTokenResponseAsync(user);
+            await _dbContext.SaveChangesAsync();
+
+            return tokenResponse;
         }
 
         private async Task<TokenResponse> CreateTokenResponseAsync(User user)
@@ -81,8 +90,7 @@ namespace BringMeHome.Services.Services
                 UserRoles = new List<UserRole>()
             };
 
-            var hashedPassword = new PasswordHasher<User>().HashPassword(user, request.Password);
-            user.PasswordHash = hashedPassword;
+            user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
 
             var adopterRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleName == "Adopter");
 
@@ -137,16 +145,12 @@ namespace BringMeHome.Services.Services
             var refreshToken = GenerateRefreshToken();
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-            await _dbContext.SaveChangesAsync();
             return refreshToken;
         }
 
         private string CreateToken(User user)
         {
-            var userRoles = _dbContext.UserRoles
-                .Where(ur => ur.UserId == user.Id)
-                .Select(ur => ur.Role.RoleName)
-                .ToList();
+            var userRoles = user.UserRoles.Select(ur => ur.Role.RoleName).ToList();
 
             var claims = new List<Claim>
             {
@@ -159,16 +163,14 @@ namespace BringMeHome.Services.Services
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
-            // Change this line
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["AppSettings:Token"]!));
-
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
             var tokenDescriptor = new JwtSecurityToken(
                 issuer: _configuration["AppSettings:Issuer"],
                 audience: _configuration["AppSettings:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddDays(1),
+                expires: DateTime.UtcNow.AddDays(1),
                 signingCredentials: creds
             );
 

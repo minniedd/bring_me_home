@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BringMeHome.API", "BringMeHome.API\BringMeHome.API.csproj", "{866B6C06-4602-4987-AD1F-B6C52A749DFD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{02C757D5-6110-46F2-9DBD-3076F1DDC2F0} = {02C757D5-6110-46F2-9DBD-3076F1DDC2F0}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BringMeHome.Models", "BringMeHome.Models\BringMeHome.Models.csproj", "{53558172-7055-4018-B6F1-0AB7B73FE1B7}"
 EndProject

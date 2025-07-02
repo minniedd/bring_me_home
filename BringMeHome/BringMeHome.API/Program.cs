@@ -2,6 +2,7 @@ using BringMeHome.Services.Database;
 using BringMeHome.Services.Interfaces;
 using BringMeHome.Services.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using QuestPDF.Infrastructure;
@@ -37,6 +38,8 @@ builder.Services.AddTransient<IStaffService, StaffService > ();
 builder.Services.AddTransient<IAppReportService, AppReportService>();
 builder.Services.AddScoped<MlRecommendationService>();
 builder.Services.AddHostedService<MlModelRetrainingService>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
 
 // logging
 builder.Logging.ClearProviders();
