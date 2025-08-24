@@ -73,6 +73,7 @@ namespace BringMeHome.Services.Services
             var totalCount = await query.CountAsync();
 
             var events = await query
+             .Include(r => r.Shelter)
             .ApplySort(search)
             .ApplyPagination(search)
             .Select(r => MapToResponse(r))
@@ -123,7 +124,7 @@ namespace BringMeHome.Services.Services
             return MapToResponse(events);
         }
 
-        private EventResponse MapToResponse(Event status)
+        private static EventResponse MapToResponse(Event status)
         {
             return new EventResponse
             {
@@ -132,7 +133,8 @@ namespace BringMeHome.Services.Services
                 EventDate = status.EventDate,
                 Location = status.Location,
                 Description = status.Description,
-                ShelterID = status.ShelterID
+                ShelterID = status.ShelterID,
+                ShelterName = status.Shelter?.Name
             };
         }
     }
