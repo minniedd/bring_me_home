@@ -1,0 +1,102 @@
+version: '3.8'
+
+networks:
+  bringmehomenet:
+    driver: bridge
+
+volumes:
+  sql_data:
+  rabbitmq_data:
+  rabbitmq_logs:
+
+services:
+  bringmehome-rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    hostname: bringmehome-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "15692:15692"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=password123
+      - RABBITMQ_DEFAULT_VHOST=/
+    networks:
+      - bringmehomenet
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_logs:/var/log/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  bringmehome-sql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    restart: unless-stopped
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=AdminPassword123!
+      - MSSQL_PID=Developer
+    ports:
+      - 1433
+    expose:
+      - 1433
+    networks:
+      - bringmehomenet
+    volumes:
+      - sql_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "AdminPassword123!", "-Q", "SELECT 1", "-C"]
+      interval: 45s
+      timeout: 30s
+      retries: 5
+      start_period: 120s
+
+  bringmehome-api:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: BringMeHome.API/Dockerfile
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=bringmehome-sql;Database=BringMeHomeDB;User Id=sa;Password=AdminPassword123!;TrustServerCertificate=True;Connect Timeout=30;Pooling=true;Max Pool Size=100;Min Pool Size=10;Connection Lifetime=300;"
+      ASPNETCORE_ENVIRONMENT: Development
+      RABBITMQ_HOST: bringmehome-rabbitmq
+      RABBITMQ_USERNAME: admin
+      RABBITMQ_PASSWORD: password123
+      RABBITMQ_VIRTUALHOST:
+      RABBITMQ_PORT: 5672
+    ports:
+      - "5266:8080"
+    networks:
+      - bringmehomenet
+    depends_on:
+      bringmehome-sql:
+        condition: service_healthy
+      bringmehome-rabbitmq:
+        condition: service_healthy
+
+  bringmehome-mailingservice:
+    restart: unless-stopped
+    container_name: bringmehome-mailingservice
+    hostname: bringmehome-mailingservice
+    build:
+      context: .
+      dockerfile: BringMeHome.RabbitMQ/Dockerfile
+    environment:
+      - RABBITMQ_HOST=bringmehome-rabbitmq
+      - RABBITMQ_USERNAME=admin
+      - RABBITMQ_PASSWORD=password123
+      - RABBITMQ_VIRTUALHOST=/
+      - RABBITMQ_PORT=5672
+      - FromEmail=mailingbringmehome@gmail.com
+      - SmtpPass=qvtk pegg dqff ulsp
+      - SmtpUser=mailingbringmehome@gmail.com
+    depends_on:
+      bringmehome-rabbitmq:
+        condition: service_healthy
+    networks:
+      - bringmehomenet

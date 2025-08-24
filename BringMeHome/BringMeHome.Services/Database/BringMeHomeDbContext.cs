@@ -20,8 +20,6 @@ namespace BringMeHome.Services.Database
         public DbSet<Adopter> Adopters { get; set; }
         public DbSet<Staff> Staff { get; set; }
         public DbSet<AdoptionApplication> AdoptionApplications { get; set; }
-        public DbSet<Donation> Donations { get; set; }
-        public DbSet<Donor> Donors { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Role> Roles { get; set; }
@@ -34,10 +32,8 @@ namespace BringMeHome.Services.Database
         public DbSet<City> Cities { get; set; }
         public DbSet<Canton> Cantons { get; set; }
         public DbSet<Country> Countries { get; set; }
-        public DbSet<DonationType> DonationTypes { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<MedicalRecord> MedicalRecords { get; set; }
-        public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<Reason> Reasons { get; set; }
         public DbSet<UserAnimalFavorite> UserAnimalFavorites { get; set; }
         public DbSet<Review> Reviews { get; set; }
@@ -88,6 +84,10 @@ namespace BringMeHome.Services.Database
                 .HasForeignKey(a => a.StatusID)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Animal>()
+                .Property(a => a.Weight)
+                .HasPrecision(18, 2);
+
             // Shelter entity configuration
             modelBuilder.Entity<Shelter>()
                 .HasOne(s => s.City)
@@ -115,26 +115,6 @@ namespace BringMeHome.Services.Database
                 .HasForeignKey(aa => aa.AnimalID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-
-            // Donation entity configuration
-            modelBuilder.Entity<Donation>()
-                .HasOne(d => d.Donor)
-                .WithMany(dn => dn.Donations)
-                .HasForeignKey(d => d.DonorID)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Donation>()
-                .HasOne(d => d.DonationType)
-                .WithMany(dt => dt.Donations)
-                .HasForeignKey(d => d.DonationTypeID)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Donation>()
-                .HasOne(d => d.AcknowledgedBy)
-                .WithMany()
-                .HasForeignKey(d => d.AcknowledgedByStaffID)
-                .OnDelete(DeleteBehavior.Restrict);
-
             // UserRole entity configuration
             modelBuilder.Entity<UserRole>()
                 .HasKey(ur => new { ur.UserId, ur.RoleId });
@@ -157,10 +137,6 @@ namespace BringMeHome.Services.Database
             // MedicalRecord entity configuration
             modelBuilder.Entity<MedicalRecord>()
                 .HasKey(mr => mr.MedicalRecordID);
-
-            // Feedback entity configuration
-            modelBuilder.Entity<Feedback>()
-                .HasKey(f => f.FeedbackID);
         }
     }
 }

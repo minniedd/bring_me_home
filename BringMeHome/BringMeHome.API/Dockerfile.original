@@ -1,19 +1,15 @@
-# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
+USER app
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
-
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["BringMeHome.API/BringMeHome.API.csproj", "BringMeHome.API/"]
-COPY ["BringMeHome.Models/BringMeHome.Models.csproj", "BringMeHome.Models/"]
-COPY ["BringMeHome.Services/BringMeHome.Services.csproj", "BringMeHome.Services/"]
-COPY ["BringMeHome.RabbitMQ/BringMeHome.RabbitMQ.csproj", "BringMeHome.RabbitMQ/"]
 RUN dotnet restore "./BringMeHome.API/BringMeHome.API.csproj"
 COPY . .
 WORKDIR "/src/BringMeHome.API"
