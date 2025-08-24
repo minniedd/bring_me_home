@@ -1,7 +1,11 @@
+import 'dart:async';
+import 'dart:io';
 import 'package:bringmehome_admin/screens/available_animals_screen.dart';
 import 'package:bringmehome_admin/screens/sing_up.dart';
+import 'package:bringmehome_admin/services/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -26,17 +30,66 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _performLogin(BuildContext context) async {
+
+  if (mounted) {
     setState(() => _errorMessage = null);
-
-    // Validate form
-    if (_formKey.currentState == null || !_formKey.currentState!.validate()) {
-      return;
-    }
-
+  }
+  if (_formKey.currentState == null || !_formKey.currentState!.validate()) {
+    return;
+  }
+  if (mounted) {
     setState(() => _isLoading = true);
-
   }
 
+  try {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text;
+
+    final success = await authProvider.login(username, password);
+    if (!mounted) return;
+
+    if (success) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => const AvailableAnimalsScreen(),
+        ),
+      );
+    } else {
+      setState(() => _errorMessage = 'Invalid username or password');
+    }
+  } on SocketException catch (_) {
+    if (mounted) {
+      setState(() => _errorMessage = 'Network error. Please check your connection.');
+    }
+  } on FormatException catch (_) {
+    if (mounted) {
+      setState(() => _errorMessage = 'Invalid response from server. Please try again.');
+    }
+  } on ProviderNotFoundException catch (e) {
+    if (mounted) {
+      setState(() => _errorMessage = 'Application setup error. Please restart the app.');
+    }
+    debugPrint('Provider error: $e');
+  } on HttpException catch (e) {
+    if (mounted) {
+      setState(() => _errorMessage = 'Connection error: ${e.message}');
+    }
+  } on TimeoutException catch (_) {
+    if (mounted) {
+      setState(() => _errorMessage = 'Request timeout. Please try again.');
+    }
+  } catch (e) {
+    if (mounted) {
+      setState(() => _errorMessage = 'Login failed. Please try again.');
+    }
+    debugPrint('Login error: $e');
+  } finally {
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -140,23 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  setState(() {
-                                    _isLoading = true;
-                                  });
-                                  _performLogin(context);
-                                  Future.delayed(const Duration(seconds: 2),
-                                      () {
-                                    setState(() {
-                                      _isLoading = false;
-                                      Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const AvailableAnimalsScreen()));
-                                    });
-                                  });
-                                }
+                                _performLogin(context);
                               },
                               child: Padding(
                                 padding: const EdgeInsets.all(10),

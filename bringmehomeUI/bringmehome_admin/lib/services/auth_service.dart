@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthService {
   static const _storage = FlutterSecureStorage();
-  static const String _baseUrl = 'https://localhost:44312/api/Auth';
+  static const String _baseUrl = 'http://localhost:5266/api/Auth';
 
   // Login
   static Future<bool> login(String username, String password) async {

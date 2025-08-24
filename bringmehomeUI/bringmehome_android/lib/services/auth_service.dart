@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 
 class AuthService {
   static const _storage = FlutterSecureStorage();
-  static const String _baseUrl = 'http://10.0.2.2:5115/api/Auth';
+  static const String _baseUrl = 'http://10.0.2.2:5266/api/Auth';
 
   // login
   static Future<bool> login(String username, String password) async {
