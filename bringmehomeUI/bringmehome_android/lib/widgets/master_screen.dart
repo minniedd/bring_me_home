@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:learning_app/screens/animal_list_screen.dart';
 import 'package:learning_app/screens/donation_screen.dart';
+import 'package:learning_app/screens/event_list_screen.dart';
 import 'package:learning_app/screens/favourites_screen.dart';
 import 'package:learning_app/screens/history_application.dart';
 import 'package:learning_app/screens/reviews_list_screen.dart';
@@ -23,7 +24,7 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
   void _navigateToScreen(int index) {
     switch (index) {
       case 0:
-       Navigator.of(context).pushAndRemoveUntil(
+        Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const AnimalListScreen()),
           (Route<dynamic> route) => false,
         );
@@ -46,6 +47,11 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
       case 4:
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const HistoryApplicationScreen()));
+        break;
+      case 5:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const EventListScreen()),
+        );
         break;
     }
   }
@@ -85,15 +91,18 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
-            label: 'Omiljeni',
+            label: 'Favourites',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.attach_money),
-            label: 'Donacije',
+            label: 'Donations',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Recenzije'),
+          BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Reviews'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.history), label: 'Historija'),
+              icon: Icon(Icons.history), label: 'History'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.event), label: 'Events',
+          ),
         ],
       ),
       body: widget.child!,

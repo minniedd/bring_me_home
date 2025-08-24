@@ -52,6 +52,4 @@ class AnimalProvider extends BaseProvider<Animal> {
       rethrow;
     }
   }
-
-
 }

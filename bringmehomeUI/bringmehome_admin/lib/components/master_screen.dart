@@ -4,6 +4,7 @@ import 'package:bringmehome_admin/screens/add_animal.dart';
 import 'package:bringmehome_admin/screens/app_report_screen.dart';
 import 'package:bringmehome_admin/screens/applications_screen.dart';
 import 'package:bringmehome_admin/screens/available_animals_screen.dart';
+import 'package:bringmehome_admin/screens/event_list_screen.dart';
 import 'package:bringmehome_admin/screens/login_screen.dart';
 import 'package:bringmehome_admin/screens/review_list_screen.dart';
 import 'package:bringmehome_admin/screens/staff_list_screen.dart';
@@ -161,6 +162,14 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget>
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const ReviewListScreen()));
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.event_note_outlined),
+              title: Text('events'.toUpperCase()),
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const EventListScreen()));
               },
             ),
             ListTile(

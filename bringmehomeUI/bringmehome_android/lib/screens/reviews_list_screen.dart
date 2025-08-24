@@ -173,7 +173,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                           Text(
                             review.comment,
                             style: const TextStyle(
-                                color: Color.fromRGBO(82, 59, 121, 1)),
+                                color: Color.fromRGBO(224, 220, 231, 1)),
                           ),
                         ],
                       ),

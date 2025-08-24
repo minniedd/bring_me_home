@@ -4,7 +4,6 @@ using BringMeHome.Models.Responses;
 using BringMeHome.Models.SearchObjects;
 using BringMeHome.Services.Database;
 using BringMeHome.Services.Interfaces;
-using BringMeHome.Services.Migrations;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

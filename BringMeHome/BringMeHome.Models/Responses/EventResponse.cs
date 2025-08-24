@@ -14,5 +14,6 @@ namespace BringMeHome.Models.Responses
         public string Location { get; set; }
         public string Description { get; set; }
         public int ShelterID { get; set; }
+        public string? ShelterName { get; set; }
     }
 }

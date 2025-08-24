@@ -20,7 +20,7 @@ class AppReportProvider extends BaseProvider<AppReport> {
     try {
       final response = await http.get(
         uri,
-        headers: createHeaders(),
+        headers: await createHeaders(),
       );
 
       if (response.statusCode == 200) {
@@ -39,7 +39,7 @@ class AppReportProvider extends BaseProvider<AppReport> {
     try {
       final response = await http.post(
         uri,
-        headers: createHeaders(),
+        headers: await createHeaders(),
         body: jsonEncode(request.toJson()),
       );
 
