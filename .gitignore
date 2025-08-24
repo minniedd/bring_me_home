@@ -1249,7 +1249,6 @@ Temporary Items
 *.7z
 *.jar
 *.rar
-*.zip
 *.gz
 *.gzip
 *.tgz
