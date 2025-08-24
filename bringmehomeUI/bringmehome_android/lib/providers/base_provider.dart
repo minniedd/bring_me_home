@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:learning_app/models/search_result.dart';
-import 'package:learning_app/utils/util.dart';
+import 'package:learning_app/services/auth_service.dart';
 
 abstract class BaseProvider<T> with ChangeNotifier {
   static String? _baseUrl;
@@ -15,10 +15,10 @@ abstract class BaseProvider<T> with ChangeNotifier {
   BaseProvider(String endpointParam) {
     _endpoint = endpointParam;
     _baseUrl ??= const String.fromEnvironment("baseUrl",
-        defaultValue: "http://10.0.2.2:5115/");
+        defaultValue: "http://10.0.2.2:5266/");
   }
 
-  Future<SearchResult<T>> get(
+   Future<SearchResult<T>> get(
       {dynamic filter, String? endpointOverride}) async {
     var usedEndpoint = endpointOverride ?? _endpoint;
     var url = "$_baseUrl$usedEndpoint";
@@ -32,7 +32,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
       print('Request URL: $url');
     }
     var uri = Uri.parse(url);
-    var headers = createHeaders();
+    var headers = await createHeaders();
 
     try {
       var response = await http.get(uri, headers: headers);
@@ -103,7 +103,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
     }
 
     var uri = Uri.parse(url);
-    var headers = createHeaders();
+    var headers = await createHeaders(); 
 
     try {
       var response = await http.get(uri, headers: headers);
@@ -149,7 +149,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
   Future<T> getById(int id) async {
     var url = "$_baseUrl$_endpoint/$id";
     var uri = Uri.parse(url);
-    var headers = createHeaders();
+    var headers = await createHeaders();
 
     var response = await http.get(uri, headers: headers);
 
@@ -164,7 +164,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
   Future<T> insert(dynamic request) async {
     var url = "$_baseUrl$_endpoint";
     var uri = Uri.parse(url);
-    var headers = createHeaders();
+    var headers = await createHeaders();
 
     var jsonRequest = jsonEncode(request);
     var response = await http.post(uri, headers: headers, body: jsonRequest);
@@ -186,7 +186,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
   Future<T> update(int id, [dynamic request]) async {
     var url = "$_baseUrl$_endpoint/$id";
     var uri = Uri.parse(url);
-    var headers = createHeaders();
+    var headers = await createHeaders();
 
     var jsonRequest = jsonEncode(request);
     var response = await http.put(uri, headers: headers, body: jsonRequest);
@@ -209,7 +209,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
     }
 
     var uri = Uri.parse(url);
-    var headers = createHeaders();
+    var headers = await createHeaders();
 
     var jsonRequest = jsonEncode(request);
     if (kDebugMode) {
@@ -242,7 +242,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
   Future<bool> delete(int id) async {
     var url = "$_baseUrl$_endpoint/$id";
     var uri = Uri.parse(url);
-    var headers = createHeaders();
+    var headers = await createHeaders();
 
     var response = await http.delete(uri, headers: headers);
 
@@ -263,17 +263,16 @@ abstract class BaseProvider<T> with ChangeNotifier {
     }
   }
 
-  Map<String, String> createHeaders() {
-    String username = Authorization.username ?? "";
-    String password = Authorization.password ?? "";
-
-    String basicAuth =
-        "Basic ${base64Encode(utf8.encode('$username:$password'))}";
+  Future<Map<String, String>> createHeaders() async {
+    String? token = await AuthService.getAccessToken();
 
     var headers = {
       "Content-Type": "application/json",
-      "Authorization": basicAuth
     };
+
+    if (token != null) {
+      headers["Authorization"] = "Bearer $token";
+    }
 
     return headers;
   }

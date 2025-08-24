@@ -1,5 +1,6 @@
 ﻿using BringMeHome.Services.Database;
 using BringMeHome.Services.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,6 +8,7 @@ namespace BringMeHome.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MlRecommendationsController : ControllerBase
     {
         private readonly MlRecommendationService _mlRecommendationService;

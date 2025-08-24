@@ -1,16 +1,18 @@
 ﻿using BringMeHome.Models.Requests;
 using BringMeHome.Models.Responses;
 using BringMeHome.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection.Metadata;
 using QuestPDF.Fluent;
+using System.Reflection.Metadata;
 using Document = QuestPDF.Fluent.Document;
 
 namespace BringMeHome.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AppReportController : ControllerBase
     {
         private readonly IAppReportService _appReportService;

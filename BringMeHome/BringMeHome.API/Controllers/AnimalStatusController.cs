@@ -3,6 +3,7 @@ using BringMeHome.Models.Requests;
 using BringMeHome.Models.Responses;
 using BringMeHome.Models.SearchObjects;
 using BringMeHome.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace BringMeHome.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AnimalStatusController : ControllerBase
     {
         public readonly IAnimalStatusService _animalStatusService;

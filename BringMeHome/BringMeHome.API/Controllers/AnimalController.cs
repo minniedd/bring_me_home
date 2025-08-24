@@ -5,6 +5,7 @@ using BringMeHome.Models.Responses;
 using BringMeHome.Models.SearchObjects;
 using BringMeHome.Services.Interfaces;
 using BringMeHome.Services.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -13,6 +14,7 @@ namespace BringMeHome.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AnimalController : ControllerBase
     {
         private readonly IAnimalService _animalService;

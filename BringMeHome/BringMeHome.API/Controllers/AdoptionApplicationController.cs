@@ -2,8 +2,10 @@
 using BringMeHome.Models.Requests;
 using BringMeHome.Models.Responses;
 using BringMeHome.Models.SearchObjects;
+using BringMeHome.Services.Database;
 using BringMeHome.Services.Interfaces;
 using BringMeHome.Services.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -12,6 +14,7 @@ namespace BringMeHome.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AdoptionApplicationController : ControllerBase
     {
         private readonly IAdoptionApplicationService _adoptionApplicationService;
@@ -61,6 +64,7 @@ namespace BringMeHome.API.Controllers
             return animal;
         }
 
+        [Authorize(Roles = "Shelter Staff, Admin")]
         [HttpPut("Reject")]
         public async Task<ActionResult<AdoptionApplicationResponse>> Reject(AdoptionApplicationRequest request)
         {
@@ -70,6 +74,7 @@ namespace BringMeHome.API.Controllers
             return updatedBreed;
         }
 
+        [Authorize(Roles = "Shelter Staff, Admin")]
         [HttpPut("Approve")]
         public async Task<ActionResult<AdoptionApplicationResponse>> Approve(AdoptionApplicationRequest request)
         {

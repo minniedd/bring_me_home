@@ -3,6 +3,7 @@ using BringMeHome.Models.Requests;
 using BringMeHome.Models.Responses;
 using BringMeHome.Services.Database;
 using BringMeHome.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

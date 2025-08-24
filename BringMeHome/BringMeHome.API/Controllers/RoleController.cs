@@ -4,6 +4,7 @@ using BringMeHome.Models.Responses;
 using BringMeHome.Models.SearchObjects;
 using BringMeHome.Services.Interfaces;
 using BringMeHome.Services.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +12,7 @@ namespace BringMeHome.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RoleController : ControllerBase
     {
         public readonly IRoleService _roleService;
