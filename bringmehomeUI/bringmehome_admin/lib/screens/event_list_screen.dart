@@ -124,19 +124,40 @@ class _EventListScreenState extends State<EventListScreen> {
                         Expanded(
                           child: TextField(
                             controller: _searchController,
+                            style: const TextStyle(
+                                color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Search',
+                              labelStyle: const TextStyle(
+                                  color: Colors.white),
+                              hintStyle: const TextStyle(
+                                  color: Colors.white70),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                    color: Colors.white, width: 2),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                    color: Colors.white, width: 2),
+                              ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                    color: Colors.white, width: 2),
                               ),
-                              prefixIcon: Icon(
+
+                              prefixIcon: const Icon(
                                 Icons.search,
-                                color: Colors.deepPurple.shade300,
+                                color: Colors.white,
                                 size: 35,
                               ),
+
                               suffixIcon: _searchController.text.isNotEmpty
                                   ? IconButton(
-                                      icon: const Icon(Icons.clear),
+                                      icon: const Icon(Icons.clear,
+                                          color: Colors.white),
                                       onPressed: () {
                                         _searchController.clear();
                                         _handleSearch('');
@@ -165,7 +186,8 @@ class _EventListScreenState extends State<EventListScreen> {
                               });
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255, 142, 205, 117),
+                              backgroundColor:
+                                  const Color.fromARGB(255, 142, 205, 117),
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),

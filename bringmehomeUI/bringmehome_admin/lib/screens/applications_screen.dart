@@ -5,6 +5,7 @@ import 'package:bringmehome_admin/models/search_objects/animal_search_object.dar
 import 'package:bringmehome_admin/models/search_result.dart';
 import 'package:bringmehome_admin/screens/animal_applications_screen.dart';
 import 'package:bringmehome_admin/services/animal_provider.dart';
+import 'package:bringmehome_admin/services/animal_applications_provider.dart';
 import 'package:flutter/material.dart';
 
 class ApplicationsScreen extends StatefulWidget {
@@ -16,8 +17,12 @@ class ApplicationsScreen extends StatefulWidget {
 
 class _ApplicationsScreenState extends State<ApplicationsScreen> {
   final AnimalProvider _animalProvider = AnimalProvider();
+  final AnimalApplicationsProvider _applicationProvider =
+      AnimalApplicationsProvider();
   final ScrollController _scrollController = ScrollController();
   SearchResult<Animal> _animalResult = SearchResult<Animal>();
+  final Map<int, int> _applicationCounts = {};
+  final Map<int, bool> _loadingCounts = {};
   bool _isLoading = false;
   bool _hasMore = true;
   String? _errorMessage;
@@ -62,6 +67,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       setState(() {
         if (reset) {
           _animalResult = data;
+          _applicationCounts.clear();
+          _loadingCounts.clear();
         } else {
           _animalResult.result.addAll(data.result);
           _animalResult.count = data.count;
@@ -69,10 +76,42 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         _hasMore = data.result.length == _searchObject.pageSize;
         _isLoading = false;
       });
+
+      _loadApplicationCounts(data.result);
     } catch (e) {
       setState(() {
         _isLoading = false;
         _errorMessage = 'Failed to load animals: ${e.toString()}';
+      });
+    }
+  }
+
+  Future<void> _loadApplicationCounts(List<Animal> animals) async {
+    for (final animal in animals) {
+      if (animal.animalID != null &&
+          !_applicationCounts.containsKey(animal.animalID)) {
+        _loadApplicationCount(animal.animalID!);
+      }
+    }
+  }
+
+  Future<void> _loadApplicationCount(int animalId) async {
+    if (_loadingCounts[animalId] == true) return;
+
+    setState(() {
+      _loadingCounts[animalId] = true;
+    });
+
+    try {
+      final count = await _applicationProvider.getApplicationCount(animalId);
+      setState(() {
+        _applicationCounts[animalId] = count;
+        _loadingCounts[animalId] = false;
+      });
+    } catch (e) {
+      setState(() {
+        _applicationCounts[animalId] = 0;
+        _loadingCounts[animalId] = false;
       });
     }
   }
@@ -108,12 +147,26 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                   decoration: InputDecoration(
                     hintText: 'Search by name',
                     labelText: 'Search',
+                    hintStyle: const TextStyle(color: Colors.white),
+                    labelStyle: const TextStyle(color: Colors.white),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          const BorderSide(color: Colors.white, width: 2),
                     ),
-                    prefixIcon: Icon(
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          const BorderSide(color: Colors.white, width: 2),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          const BorderSide(color: Colors.white, width: 2),
+                    ),
+                    prefixIcon: const Icon(
                       Icons.search,
-                      color: Colors.deepPurple.shade300,
+                      color: Colors.white,
                       size: 35,
                     ),
                     suffixIcon: _searchController.text.isNotEmpty
@@ -162,21 +215,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                                 return _buildLoader();
                               }
                               final animal = _animalResult.result[index];
-                              return AnimalWindowWidget(
-                                animalImageUrl: animal.animalImage,
-                                animalName: animal.name ?? 'Unknown',
-                                onTap: () async {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          AnimalApplicationsScreen(
-                                              animal: animal),
-                                    ),
-                                  );
-                                },
-                                animalAge: '',
-                                shelterCity: '',
-                              );
+                              return _buildAnimalCard(animal);
                             },
                           ),
                       ],
@@ -187,6 +226,59 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
             ],
           ),
         ));
+  }
+
+  Widget _buildAnimalCard(Animal animal) {
+    final animalId = animal.animalID;
+    final isLoadingCount = _loadingCounts[animalId] == true;
+    final applicationCount = _applicationCounts[animalId];
+
+    return Stack(
+      children: [
+        AnimalWindowWidget(
+          animalImageUrl: animal.animalImage,
+          animalName: animal.name ?? 'Unknown',
+          onTap: () async {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => AnimalApplicationsScreen(animal: animal),
+              ),
+            );
+          },
+          animalAge: '',
+          shelterCity: '',
+        ),
+        if (animalId != null)
+          Positioned(
+            top: 8,
+            right: 8,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: isLoadingCount
+                  ? const SizedBox(
+                      width: 12,
+                      height: 12,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Text(
+                      '${applicationCount ?? 0}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+            ),
+          ),
+      ],
+    );
   }
 
   Widget _buildLoader() {

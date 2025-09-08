@@ -213,6 +213,8 @@ namespace BringMeHome.Services.Services
             return await GetByIdAsync(animal.AnimalID);
         }
 
+
+
         private static AnimalResponse MapToResponse(Animal animal)
         {
             return new AnimalResponse

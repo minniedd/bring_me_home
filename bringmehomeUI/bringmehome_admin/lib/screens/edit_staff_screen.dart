@@ -1,3 +1,4 @@
+import 'package:bringmehome_admin/components/image_picker.dart';
 import 'package:bringmehome_admin/components/master_screen.dart';
 import 'package:bringmehome_admin/models/city.dart';
 import 'package:bringmehome_admin/models/shelter.dart';
@@ -42,6 +43,7 @@ class _EditStaffScreenState extends State<EditStaffScreen> {
   late int _accessLevel;
   int? _selectedCityId;
   int? _selectedShelterId;
+  String? _selectedStatus;
 
   List<City> _cities = [];
   bool _isLoadingCity = true;
@@ -50,6 +52,7 @@ class _EditStaffScreenState extends State<EditStaffScreen> {
   bool _isLoadingShelters = true;
 
   User? _currentUser;
+  String? _imageBase64;
 
   @override
   void initState() {
@@ -78,6 +81,7 @@ class _EditStaffScreenState extends State<EditStaffScreen> {
     _hireDate = widget.staff.hireDate;
     _accessLevel = widget.staff.accessLevel;
     _selectedShelterId = widget.staff.shelterID;
+    _selectedStatus = widget.staff.status;
   }
 
   Future<void> _loadData() async {
@@ -98,6 +102,7 @@ class _EditStaffScreenState extends State<EditStaffScreen> {
         _usernameController.text = _currentUser!.username;
         _phoneController.text = _currentUser!.phoneNumber ?? '';
         _addressController.text = _currentUser!.address ?? '';
+        _imageBase64 = _currentUser!.userImage;
 
         if (_currentUser!.cityID != null) {
           final foundCity = _cities.firstWhere(
@@ -182,8 +187,9 @@ class _EditStaffScreenState extends State<EditStaffScreen> {
           department: _departmentController.text,
           shelterID: _selectedShelterId!,
           hireDate: _hireDate,
-          status: _statusController.text,
+          status: _selectedStatus ?? '',
           accessLevel: _accessLevel,
+          userImage: _imageBase64,
         );
 
         if (mounted) {
@@ -215,6 +221,67 @@ class _EditStaffScreenState extends State<EditStaffScreen> {
     }
   }
 
+  InputDecoration _getInputDecoration(String labelText,
+      {IconData? icon, bool isRequired = true}) {
+    return InputDecoration(
+      labelText: isRequired ? '$labelText *' : labelText,
+      floatingLabelBehavior: FloatingLabelBehavior.auto,
+      prefixIcon: icon != null ? Icon(icon, color: Colors.grey[600]) : null,
+      labelStyle: TextStyle(
+        color: Theme.of(context).colorScheme.primary,
+        fontWeight: FontWeight.w500,
+        fontSize: 16,
+        letterSpacing: 0.3,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.primary, width: 1.5),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.primary, width: 1.5),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide:
+            BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.red, width: 1.5),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.red, width: 2),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    );
+  }
+
+  Widget _buildSectionTitle(String title, {IconData? icon}) {
+    return Container(
+      margin: const EdgeInsets.only(top: 8, bottom: 16),
+      child: Row(
+        children: [
+          if (icon != null) ...[
+            Icon(icon, color: Theme.of(context).colorScheme.primary, size: 24),
+            const SizedBox(width: 8),
+          ],
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
@@ -223,279 +290,361 @@ class _EditStaffScreenState extends State<EditStaffScreen> {
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(20.0),
               child: Form(
                 key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Text(
-                      'User Information',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _firstNameController,
-                      decoration: const InputDecoration(
-                        labelText: 'First Name',
-                        border: OutlineInputBorder(),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 2,
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter first name';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _lastNameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Last Name',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter last name';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter email';
-                        }
-                        if (!value.contains('@') || !value.contains('.')) {
-                          return 'Please enter a valid email';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _usernameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter username';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _phoneController,
-                      decoration: const InputDecoration(
-                        labelText: 'Phone Number',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter phone number';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _addressController,
-                      decoration: const InputDecoration(
-                        labelText: 'Address',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter address';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    _isLoadingCity
-                        ? const Center(child: CircularProgressIndicator())
-                        : DropdownButtonFormField<int>(
-                            decoration: const InputDecoration(
-                              labelText: 'City',
-                              border: OutlineInputBorder(),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildSectionTitle('User Information',
+                            icon: Icons.person),
+                        TextFormField(
+                          controller: _firstNameController,
+                          decoration: _getInputDecoration('First Name',
+                              icon: Icons.person_outline),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter first name';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _lastNameController,
+                          decoration: _getInputDecoration('Last Name',
+                              icon: Icons.person_outline),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter last name';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _emailController,
+                          decoration: _getInputDecoration('Email',
+                              icon: Icons.email_outlined),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter email';
+                            }
+                            if (!value.contains('@') || !value.contains('.')) {
+                              return 'Please enter a valid email';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _usernameController,
+                          decoration: _getInputDecoration('Username',
+                              icon: Icons.account_circle_outlined),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter username';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                            controller: _phoneController,
+                            decoration: _getInputDecoration('Phone Number',
+                                icon: Icons.phone_outlined,
+                                isRequired: false),
+                            validator: null),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                            controller: _addressController,
+                            decoration: _getInputDecoration('Address',
+                                icon: Icons.home_outlined, isRequired: false),
+                            validator: null),
+                        const SizedBox(height: 16),
+                        _isLoadingCity
+                            ? const Center(child: CircularProgressIndicator())
+                            : DropdownButtonFormField<int>(
+                                decoration: _getInputDecoration('City',
+                                    icon: Icons.location_city_outlined),
+                                value: _selectedCityId,
+                                hint: const Text('Select City'),
+                                isExpanded: true,
+                                dropdownColor: Colors.white,
+                                items: _cities.map((City city) {
+                                  return DropdownMenuItem<int>(
+                                    value: city.cityID,
+                                    child: Text(city.cityName),
+                                  );
+                                }).toList(),
+                                onChanged: (int? value) {
+                                  setState(() {
+                                    _selectedCityId = value;
+                                  });
+                                },
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'Please select a city';
+                                  }
+                                  return null;
+                                },
+                              ),
+                        const SizedBox(height: 16),
+                        _isLoadingShelters
+                            ? const Center(child: CircularProgressIndicator())
+                            : DropdownButtonFormField<int>(
+                                decoration: _getInputDecoration('Shelter',
+                                    icon: Icons.home_work_outlined),
+                                value: _selectedShelterId,
+                                hint: const Text('Select Shelter'),
+                                isExpanded: true,
+                                dropdownColor: Colors.white,
+                                items: _shelters.map((Shelter shelter) {
+                                  return DropdownMenuItem<int>(
+                                    value: shelter.shelterID,
+                                    child: Text(shelter.name),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedShelterId = value!;
+                                  });
+                                },
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'Please select a shelter';
+                                  }
+                                  return null;
+                                },
+                              ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: true,
+                          decoration: _getInputDecoration(
+                            'New Password',
+                            icon: Icons.lock_outline,
+                            isRequired: false,
+                          ).copyWith(
+                            helperText: 'Leave blank if not changing',
+                          ),
+                          validator: (value) {
+                            if (value != null &&
+                                value.isNotEmpty &&
+                                value.length < 6) {
+                              return 'Password must be at least 6 characters';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                                color: Theme.of(context).colorScheme.primary,
+                                width: 1.5),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.image_outlined,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Profile Image',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Center(
+                                child: ImagePickerWidget(
+                                  initialImageBase64: _imageBase64,
+                                  onImageChanged: (newBase64) {
+                                    setState(() {
+                                      _imageBase64 = newBase64;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        _buildSectionTitle('Staff Information',
+                            icon: Icons.work_outline),
+                        TextFormField(
+                          controller: _positionController,
+                          decoration: _getInputDecoration('Position',
+                              icon: Icons.work_outline),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter position';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _departmentController,
+                          decoration: _getInputDecoration('Department',
+                              icon: Icons.business_outlined),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter department';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                                color: Theme.of(context).colorScheme.primary,
+                                width: 1.5),
+                          ),
+                          child: ListTile(
+                            leading: Icon(Icons.calendar_today,
+                                color: Colors.grey[600], size: 20),
+                            title: Text(
+                              'Hire Date *',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                letterSpacing: 0.3,
+                              ),
                             ),
-                            value: _selectedCityId,
-                            hint: const Text('Select City'),
-                            isExpanded: true,
-                            items: _cities.map((City city) {
-                              return DropdownMenuItem<int>(
-                                value: city.cityID,
-                                child: Text(city.cityName),
+                            subtitle: Text(
+                              '${_hireDate.year}-${_hireDate.month.toString().padLeft(2, '0')}-${_hireDate.day.toString().padLeft(2, '0')}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            trailing: Icon(Icons.edit,
+                                color: Theme.of(context).colorScheme.primary),
+                            onTap: () async {
+                              final DateTime? picked = await showDatePicker(
+                                context: context,
+                                initialDate: _hireDate,
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2100),
                               );
-                            }).toList(),
-                            onChanged: (int? value) {
-                              setState(() {
-                                _selectedCityId = value;
-                              });
-                            },
-                            validator: (value) {
-                              if (value == null) {
-                                return 'Please select a city';
+                              if (picked != null && picked != _hireDate) {
+                                setState(() {
+                                  _hireDate = picked;
+                                });
                               }
-                              return null;
                             },
                           ),
-                    const SizedBox(height: 12),
-                    _isLoadingShelters
-                        ? const Center(child: CircularProgressIndicator())
-                        : DropdownButtonFormField<int>(
-                            decoration: const InputDecoration(
-                              labelText: 'Shelter',
-                              border: OutlineInputBorder(),
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          decoration: _getInputDecoration('Status',
+                              icon: Icons.info_outline),
+                          value: _selectedStatus,
+                          dropdownColor: Colors.white,
+                          items: const [
+                            DropdownMenuItem(
+                                value: 'Active', child: Text('Active')),
+                            DropdownMenuItem(
+                                value: 'Inactive', child: Text('Inactive')),
+                            DropdownMenuItem(
+                                value: 'On Leave', child: Text('On Leave')),
+                            DropdownMenuItem(
+                                value: 'Terminated',
+                                child: Text('Terminated')),
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedStatus = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select status';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<int>(
+                          decoration: _getInputDecoration('Access Level',
+                              icon: Icons.security_outlined),
+                          value: _accessLevel,
+                          isExpanded: true,
+                          dropdownColor: Colors.white,
+                          items: const [
+                            DropdownMenuItem(
+                                value: 1, child: Text('Level 1 - Basic')),
+                            DropdownMenuItem(
+                                value: 2, child: Text('Level 2 - Standard')),
+                            DropdownMenuItem(
+                                value: 3, child: Text('Level 3 - Admin')),
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              _accessLevel = value!;
+                            });
+                          },
+                          validator: (value) {
+                             if (value == null) {
+                              return 'Please select an access level';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 32),
+                        ElevatedButton(
+                          onPressed: _submitForm,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 18.0),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            value: _selectedShelterId,
-                            hint: const Text('Select Shelter'),
-                            isExpanded: true,
-                            items: _shelters.map((Shelter shelter) {
-                              return DropdownMenuItem<int>(
-                                value: shelter.shelterID,
-                                child: Text(shelter.name),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedShelterId = value!;
-                              });
-                            },
-                            validator: (value) {
-                              if (value == null) {
-                                return 'Please select a shelter';
-                              }
-                              return null;
-                            },
+                            elevation: 3,
                           ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'New Password (leave blank if not changing)',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value != null &&
-                            value.isNotEmpty &&
-                            value.length < 6) {
-                          return 'Password must be at least 6 characters';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Staff Information',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _positionController,
-                      decoration: const InputDecoration(
-                        labelText: 'Position',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter position';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _departmentController,
-                      decoration: const InputDecoration(
-                        labelText: 'Department',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter department';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    ListTile(
-                      title: const Text('Hire Date'),
-                      subtitle: Text(
-                        '${_hireDate.year}-${_hireDate.month.toString().padLeft(2, '0')}-${_hireDate.day.toString().padLeft(2, '0')}',
-                      ),
-                      trailing: const Icon(Icons.calendar_today),
-                      onTap: () async {
-                        final DateTime? picked = await showDatePicker(
-                          context: context,
-                          initialDate: _hireDate,
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2100),
-                        );
-                        if (picked != null && picked != _hireDate) {
-                          setState(() {
-                            _hireDate = picked;
-                          });
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _statusController,
-                      decoration: const InputDecoration(
-                        labelText: 'Status',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter status';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<int>(
-                      decoration: const InputDecoration(
-                        labelText: 'Access Level',
-                        border: OutlineInputBorder(),
-                      ),
-                      value: _accessLevel,
-                      isExpanded: true,
-                      items: const [
-                        DropdownMenuItem(
-                            value: 1, child: Text('Level 1 - Basic')),
-                        DropdownMenuItem(
-                            value: 2, child: Text('Level 2 - Standard')),
-                        DropdownMenuItem(
-                            value: 3, child: Text('Level 3 - Admin')),
+                          child: const Text(
+                            'Update Staff',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ],
-                      onChanged: (value) {
-                        setState(() {
-                          _accessLevel = value!;
-                        });
-                      },
                     ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: _submitForm,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      ),
-                      child: const Text('Update Staff'),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),

@@ -282,6 +282,13 @@ namespace BringMeHome.Services.Services
             return Task.FromResult(MapToResponse(application));
         }
 
+        public async Task<int> GetApplicationCountAsync(int animalId)
+        {
+            return await _context.AdoptionApplications
+                .Where(a => a.AnimalID == animalId)
+                .CountAsync();
+        }
+
         private static AdoptionApplicationResponse MapToResponse(AdoptionApplication adoptionApplication)
         {
             return new AdoptionApplicationResponse

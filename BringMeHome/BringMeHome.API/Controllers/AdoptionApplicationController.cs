@@ -123,5 +123,12 @@ namespace BringMeHome.API.Controllers
 
             return updatedBreed;
         }
+
+        [HttpGet("GetApplicationCount/{animalId}")]
+        public async Task<ActionResult<int>> GetApplicationCount(int animalId)
+        {
+            var count = await _adoptionApplicationService.GetApplicationCountAsync(animalId);
+            return Ok(count);
+        }
     }
 }

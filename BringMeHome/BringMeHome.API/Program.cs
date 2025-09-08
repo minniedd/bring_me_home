@@ -153,14 +153,14 @@ using (var scope = app.Services.CreateScope())
                 new Canton { CantonName = "Unsko-sanski kanton", CantonCode = "USK", Country = country },
                 new Canton { CantonName = "Posavski kanton", CantonCode = "PK", Country = country },
                 new Canton { CantonName = "Tuzlanski kanton", CantonCode = "TK", Country = country },
-                new Canton { CantonName = "Zenièko-dobojski kanton", CantonCode = "ZDK", Country = country },
+                new Canton { CantonName = "Zenicko-dobojski kanton", CantonCode = "ZDK", Country = country },
                 new Canton { CantonName = "Bosansko-podrinjski kanton", CantonCode = "BPK", Country = country },
                 new Canton { CantonName = "Srednjobosanski kanton", CantonCode = "SBK", Country = country },
-                new Canton { CantonName = "Hercegovaèko-neretvanski kanton", CantonCode = "HNK", Country = country },
-                new Canton { CantonName = "Zapadnohercegovaèki kanton", CantonCode = "ZHK", Country = country },
+                new Canton { CantonName = "Hercegovacko-neretvanski kanton", CantonCode = "HNK", Country = country },
+                new Canton { CantonName = "Zapadnohercegovacki kanton", CantonCode = "ZHK", Country = country },
                 new Canton { CantonName = "Kanton Sarajevo", CantonCode = "KS", Country = country },
                 new Canton { CantonName = "Kanton 10", CantonCode = "K10", Country = country },
-                new Canton { CantonName = "Brèko distrikt", CantonCode = "BD", Country = country }
+                new Canton { CantonName = "Brcko distrikt", CantonCode = "BD", Country = country }
             );
             dbContext.SaveChanges();
         }
@@ -169,40 +169,40 @@ using (var scope = app.Services.CreateScope())
         {
             var cantons = dbContext.Cantons.ToDictionary(c => c.CantonCode!, c => c);
             dbContext.Cities.AddRange(
-                 new City { CityName = "Bihaæ", Canton = cantons["USK"] },
+                 new City { CityName = "Bihac", Canton = cantons["USK"] },
                  new City { CityName = "Cazin", Canton = cantons["USK"] },
-                 new City { CityName = "Velika Kladuša", Canton = cantons["USK"] },
+                 new City { CityName = "Velika Kladusa", Canton = cantons["USK"] },
                  new City { CityName = "Bosanska Krupa", Canton = cantons["USK"] },
-                 new City { CityName = "Orašje", Canton = cantons["PK"] },
+                 new City { CityName = "Orasje", Canton = cantons["PK"] },
                  new City { CityName = "Domaljevac", Canton = cantons["PK"] },
-                 new City { CityName = "Odžak", Canton = cantons["PK"] },
+                 new City { CityName = "Odzak", Canton = cantons["PK"] },
                  new City { CityName = "Tuzla", Canton = cantons["TK"] },
-                 new City { CityName = "Živinice", Canton = cantons["TK"] },
+                 new City { CityName = "Zivinice", Canton = cantons["TK"] },
                  new City { CityName = "Lukavac", Canton = cantons["TK"] },
                  new City { CityName = "Srebrenik", Canton = cantons["TK"] },
                  new City { CityName = "Zenica", Canton = cantons["ZDK"] },
                  new City { CityName = "Doboj Jug", Canton = cantons["ZDK"] },
-                 new City { CityName = "Zavidoviæi", Canton = cantons["ZDK"] },
+                 new City { CityName = "Zavidovici", Canton = cantons["ZDK"] },
                  new City { CityName = "Visoko", Canton = cantons["ZDK"] },
-                 new City { CityName = "Goražde", Canton = cantons["BPK"] },
-                 new City { CityName = "Foèa-Ustikolina", Canton = cantons["BPK"] },
-                 new City { CityName = "Pale-Praèa", Canton = cantons["BPK"] },
+                 new City { CityName = "Gorazde", Canton = cantons["BPK"] },
+                 new City { CityName = "Foca-Ustikolina", Canton = cantons["BPK"] },
+                 new City { CityName = "Pale-Praca", Canton = cantons["BPK"] },
                  new City { CityName = "Travnik", Canton = cantons["SBK"] },
                  new City { CityName = "Bugojno", Canton = cantons["SBK"] },
                  new City { CityName = "Vitez", Canton = cantons["SBK"] },
                  new City { CityName = "Jajce", Canton = cantons["SBK"] },
                  new City { CityName = "Mostar", Canton = cantons["HNK"] },
-                 new City { CityName = "Èapljina", Canton = cantons["HNK"] },
+                 new City { CityName = "Capljina", Canton = cantons["HNK"] },
                  new City { CityName = "Konjic", Canton = cantons["HNK"] },
                  new City { CityName = "Jablanica", Canton = cantons["HNK"] },
-                 new City { CityName = "Široki Brijeg", Canton = cantons["ZHK"] },
+                 new City { CityName = "Siroki Brijeg", Canton = cantons["ZHK"] },
                  new City { CityName = "Grude", Canton = cantons["ZHK"] },
-                 new City { CityName = "Posušje", Canton = cantons["ZHK"] },
-                 new City { CityName = "Ljubuški", Canton = cantons["ZHK"] },
+                 new City { CityName = "Posusje", Canton = cantons["ZHK"] },
+                 new City { CityName = "Ljubuski", Canton = cantons["ZHK"] },
                  new City { CityName = "Sarajevo", Canton = cantons["KS"] },
-                 new City { CityName = "Ilidža", Canton = cantons["KS"] },
-                 new City { CityName = "Vogošæa", Canton = cantons["KS"] },
-                 new City { CityName = "Hadžiæi", Canton = cantons["KS"] },
+                 new City { CityName = "Ilidza", Canton = cantons["KS"] },
+                 new City { CityName = "Vogosca", Canton = cantons["KS"] },
+                 new City { CityName = "Hadzici", Canton = cantons["KS"] },
                  new City { CityName = "Livno", Canton = cantons["K10"] },
                  new City { CityName = "Tomislavgrad", Canton = cantons["K10"] },
                  new City { CityName = "Drvar", Canton = cantons["K10"] },
@@ -311,16 +311,16 @@ using (var scope = app.Services.CreateScope())
         {
             var cities = dbContext.Cities.ToDictionary(c => c.CityName, c => c);
             dbContext.Shelters.AddRange(
-                new Shelter { Name = "Šapa Spas Animal Shelter", Address = "Ulica Branilaca 45", City = cities["Sarajevo"], ZipCode = "71000", Phone = "+387 33 123 456", Email = "info@sapaspas.ba", Capacity = 75, CurrentOccupancy = 0, OperatingHours = "Mon-Fri: 9:00-17:00, Sat: 10:00-15:00, Sun: Closed" },
-                new Shelter { Name = "Bihaæ Pet Haven", Address = "Bosanska 112", City = cities["Bihaæ"], ZipCode = "77000", Phone = "+387 37 222 333", Email = "contact@bihachaven.ba", Capacity = 40, CurrentOccupancy = 0, OperatingHours = "Daily: 8:00-19:00" },
+                new Shelter { Name = "Sapa Spas Animal Shelter", Address = "Ulica Branilaca 45", City = cities["Sarajevo"], ZipCode = "71000", Phone = "+387 33 123 456", Email = "info@sapaspas.ba", Capacity = 75, CurrentOccupancy = 0, OperatingHours = "Mon-Fri: 9:00-17:00, Sat: 10:00-15:00, Sun: Closed" },
+                new Shelter { Name = "Bihac Pet Haven", Address = "Bosanska 112", City = cities["Bihac"], ZipCode = "77000", Phone = "+387 37 222 333", Email = "contact@bihachaven.ba", Capacity = 40, CurrentOccupancy = 0, OperatingHours = "Daily: 8:00-19:00" },
                 new Shelter { Name = "Mostar Animal Rescue", Address = "Kneza Domagoja 18", City = cities["Mostar"], ZipCode = "88000", Phone = "+387 36 555 789", Email = "rescue@mostaranimals.ba", Capacity = 120, CurrentOccupancy = 0, OperatingHours = "Mon-Sat: 8:30-18:00, Sun: 10:00-14:00" },
-                new Shelter { Name = "Tuzla Cat Sanctuary", Address = "Maršala Tita 22", City = cities["Tuzla"], ZipCode = "75000", Phone = "+387 35 987 654", Email = "cats@tuzlasanctuary.ba", Capacity = 60, CurrentOccupancy = 0, OperatingHours = "Mon-Fri: 10:00-16:00, Weekends: By appointment" },
-                new Shelter { Name = "Zenica Wildlife Rehabilitation Center", Address = "Travnièka cesta 83", City = cities["Zenica"], ZipCode = "72000", Phone = "+387 32 444 777", Email = "wildlife@zenicacenter.ba", Capacity = 100, CurrentOccupancy = 0, OperatingHours = "24/7 for emergencies, Visiting hours: 11:00-15:00 daily" },
-                new Shelter { Name = "Ilidža Paws Rescue", Address = "Rustempašina 29", City = cities["Ilidža"], ZipCode = "71210", Phone = "+387 33 876 543", Email = "rescue@ilidzapaws.ba", Capacity = 45, CurrentOccupancy = 0, OperatingHours = "Mon-Fri: 9:00-18:00, Sat: 9:00-16:00, Sun: Closed" },
+                new Shelter { Name = "Tuzla Cat Sanctuary", Address = "Marsala Tita 22", City = cities["Tuzla"], ZipCode = "75000", Phone = "+387 35 987 654", Email = "cats@tuzlasanctuary.ba", Capacity = 60, CurrentOccupancy = 0, OperatingHours = "Mon-Fri: 10:00-16:00, Weekends: By appointment" },
+                new Shelter { Name = "Zenica Wildlife Rehabilitation Center", Address = "Travnicka cesta 83z", City = cities["Zenica"], ZipCode = "72000", Phone = "+387 32 444 777", Email = "wildlife@zenicacenter.ba", Capacity = 100, CurrentOccupancy = 0, OperatingHours = "24/7 for emergencies, Visiting hours: 11:00-15:00 daily" },
+                new Shelter { Name = "Ilidza Paws Rescue", Address = "Rustempasina 29", City = cities["Ilidza"], ZipCode = "71210", Phone = "+387 33 876 543", Email = "rescue@ilidzapaws.ba", Capacity = 45, CurrentOccupancy = 0, OperatingHours = "Mon-Fri: 9:00-18:00, Sat: 9:00-16:00, Sun: Closed" },
                 new Shelter { Name = "Travnik Animal Haven", Address = "Bosanska 87", City = cities["Travnik"], ZipCode = "72270", Phone = "+387 30 511 223", Email = "info@travnikhaven.ba", Capacity = 35, CurrentOccupancy = 0, OperatingHours = "Mon-Sat: 8:00-16:30, Sun: 10:00-13:00" },
                 new Shelter { Name = "Livno Wildlife Sanctuary", Address = "Splitska 15", City = cities["Livno"], ZipCode = "80101", Phone = "+387 34 202 303", Email = "contact@livnowildlife.ba", Capacity = 80, CurrentOccupancy = 0, OperatingHours = "Daily: 7:30-20:00" },
-                new Shelter { Name = "Konjic Shelter for Strays", Address = "Trg državnosti 44", City = cities["Konjic"], ZipCode = "88400", Phone = "+387 36 712 832", Email = "help@konjicstrays.ba", Capacity = 55, CurrentOccupancy = 0, OperatingHours = "Mon-Fri: 8:30-17:00, Weekends: 9:00-15:00" },
-                new Shelter { Name = "Vitez Pet Rescue Center", Address = "Stjepana Radiæa 103", City = cities["Vitez"], ZipCode = "72250", Phone = "+387 30 718 920", Email = "rescue@vitezpets.ba", Capacity = 65, CurrentOccupancy = 0, OperatingHours = "Mon-Thu: 9:00-17:00, Fri-Sat: 9:00-19:00, Sun: 12:00-16:00" }
+                new Shelter { Name = "Konjic Shelter for Strays", Address = "Trg dravnosti 44", City = cities["Konjic"], ZipCode = "88400", Phone = "+387 36 712 832", Email = "help@konjicstrays.ba", Capacity = 55, CurrentOccupancy = 0, OperatingHours = "Mon-Fri: 8:30-17:00, Weekends: 9:00-15:00" },
+                new Shelter { Name = "Vitez Pet Rescue Center", Address = "Stjepana Radica 103", City = cities["Vitez"], ZipCode = "72250", Phone = "+387 30 718 920", Email = "rescue@vitezpets.ba", Capacity = 65, CurrentOccupancy = 0, OperatingHours = "Mon-Thu: 9:00-17:00, Fri-Sat: 9:00-19:00, Sun: 12:00-16:00" }
             );
             dbContext.SaveChanges();
         }
@@ -350,9 +350,9 @@ using (var scope = app.Services.CreateScope())
         if (!dbContext.Users.Any())
         {
             var cities = dbContext.Cities.ToDictionary(c => c.CityName, c => c);
-            var user1 = CreateUser(1, "Admin", "Admin", "admin@skloniste.ba", "admin", "admin123456", cities["Goražde"].CityID);
-            var user2 = CreateUser(2, "Zaposlenik", "Zaposlenikoviæ", "zaposlenik@skloniste.ba", "zaposlenik", "zaposlenik123", cities["Sarajevo"].CityID);
-            var user3 = CreateUser(3, "Petar", "Petroviæ", "petar@gmail.com", "petar", "petar123", cities["Tuzla"].CityID);
+            var user1 = CreateUser(1, "Admin", "Admin", "admin@skloniste.ba", "admin", "admin123456", cities["Gorazde"].CityID);
+            var user2 = CreateUser(2, "Zaposlenik", "Zaposlenikovic", "zaposlenik@skloniste.ba", "zaposlenik", "zaposlenik123", cities["Sarajevo"].CityID);
+            var user3 = CreateUser(3, "Petar", "Petrovic", "petar@gmail.com", "petar", "petar123", cities["Tuzla"].CityID);
 
             dbContext.Users.AddRange(user1, user2, user3);
             dbContext.SaveChanges();
@@ -368,7 +368,7 @@ using (var scope = app.Services.CreateScope())
         if (!dbContext.Staff.Any())
         {
             var staffUser = dbContext.Users.Single(u => u.Username == "zaposlenik");
-            var shelter = dbContext.Shelters.Single(s => s.Name == "Šapa Spas Animal Shelter");
+            var shelter = dbContext.Shelters.Single(s => s.Name == "Sapa Spas Animal Shelter");
             dbContext.Staff.Add(new Staff { User = staffUser, Position = "Veterinarian", Department = "Medical Wing", Shelter = shelter, HireDate = DateTime.Now.AddYears(-2), Status = "Active", AccessLevel = 2 });
             dbContext.SaveChanges();
         }
@@ -390,16 +390,16 @@ using (var scope = app.Services.CreateScope())
             var temperaments = dbContext.AnimalTemperaments.ToDictionary(t => t.Name, t => t);
 
             dbContext.Animals.AddRange(
-                new Animal { Name = "Rex", Breed = breeds["Labrador Retriever"], Age = 5, Gender = "Male", Weight = 30.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["Available"], Description = "Friendly and energetic Labrador Retriever", HealthStatus = "Healthy", Shelter = shelters["Šapa Spas Animal Shelter"], Color = colors["Blue"], AnimalTemperament = temperaments["Social"] },
-                new Animal { Name = "Bella", Breed = breeds["Golden Retriever"], Age = 3, Gender = "Female", Weight = 28.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["Processing"], Description = "Loving Golden Retriever, great with families", HealthStatus = "Healthy, vaccinated", Shelter = shelters["Bihaæ Pet Haven"], Color = colors["Yellow"], AnimalTemperament = temperaments["Social"] },
-                new Animal { Name = "Anakin", Breed = breeds["German Shepherd"], Age = 4, Gender = "Male", Weight = 35.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["Available"], Description = "Anakin is a majestic and powerful German Shepherd...", HealthStatus = "Healthy", Shelter = shelters["Mostar Animal Rescue"], Color = null, AnimalTemperament = null },
-                new Animal { Name = "Luna", Breed = breeds["Bulldog"], Age = 1, Gender = "Female", Weight = 25.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["Pending"], Description = "Charming Bulldog with a gentle disposition", HealthStatus = "Healthy", Shelter = shelters["Tuzla Cat Sanctuary"], Color = null, AnimalTemperament = null },
-                new Animal { Name = "Charlie", Breed = breeds["Poodle"], Age = 3, Gender = "Male", Weight = 24.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["Quarantine"], Description = "Playful Poodle, loves to socialize", HealthStatus = "Healthy, vaccinated", Shelter = shelters["Zenica Wildlife Rehabilitation Center"], Color = null, AnimalTemperament = null },
-                new Animal { Name = "Milo", Breed = breeds["Beagle"], Age = 2, Gender = "Male", Weight = 18.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["Medical Treatment"], Description = "Beagle, loves to explore and follow scents", HealthStatus = "Under medical treatment", Shelter = shelters["Ilidža Paws Rescue"], Color = colors["Brown"], AnimalTemperament = temperaments["Curious"] },
-                new Animal { Name = "Sadie", Breed = breeds["Yorkshire Terrier"], Age = 1, Gender = "Female", Weight = 5.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["Processing"], Description = "Cute and energetic Yorkshire Terrier", HealthStatus = "Healthy", Shelter = shelters["Travnik Animal Haven"], Color = null, AnimalTemperament = null },
-                new Animal { Name = "Rocky", Breed = breeds["Rottweiler"], Age = 4, Gender = "Male", Weight = 40.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["On Hold"], Description = "Rottweiler with guarding instincts", HealthStatus = "Healthy", Shelter = shelters["Livno Wildlife Sanctuary"], Color = null, AnimalTemperament = null },
+                new Animal { Name = "Rex", Breed = breeds["Labrador Retriever"], Age = 5, Gender = "Male", Weight = 30.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["Available"], Description = "Friendly and energetic Labrador Retriever", HealthStatus = "Healthy", Shelter = shelters["Sapa Spas Animal Shelter"], Color = colors["Blue"], AnimalTemperament = temperaments["Social"] },
+                new Animal { Name = "Bella", Breed = breeds["Golden Retriever"], Age = 3, Gender = "Female", Weight = 28.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["Processing"], Description = "Loving Golden Retriever, great with families", HealthStatus = "Healthy, vaccinated", Shelter = shelters["Bihac Pet Haven"], Color = colors["Yellow"], AnimalTemperament = temperaments["Social"] },
+                new Animal { Name = "Anakin", Breed = breeds["German Shepherd"], Age = 4, Gender = "Male", Weight = 35.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["Available"], Description = "Anakin is a majestic and powerful German Shepherd...", HealthStatus = "Healthy", Shelter = shelters["Mostar Animal Rescue"], Color = colors["Brown"], AnimalTemperament = temperaments["Curious"] },
+                new Animal { Name = "Luna", Breed = breeds["Bulldog"], Age = 1, Gender = "Female", Weight = 25.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["Pending"], Description = "Charming Bulldog with a gentle disposition", HealthStatus = "Healthy", Shelter = shelters["Tuzla Cat Sanctuary"], Color = colors["Brown"], AnimalTemperament = temperaments["Social"] },
+                new Animal { Name = "Charlie", Breed = breeds["Poodle"], Age = 3, Gender = "Male", Weight = 24.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["Quarantine"], Description = "Playful Poodle, loves to socialize", HealthStatus = "Healthy, vaccinated", Shelter = shelters["Zenica Wildlife Rehabilitation Center"], Color = colors["Brown"], AnimalTemperament = temperaments["Social"] },
+                new Animal { Name = "Milo", Breed = breeds["Beagle"], Age = 2, Gender = "Male", Weight = 18.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["Medical Treatment"], Description = "Beagle, loves to explore and follow scents", HealthStatus = "Under medical treatment", Shelter = shelters["Ilidza Paws Rescue"], Color = colors["Brown"], AnimalTemperament = temperaments["Curious"] },
+                new Animal { Name = "Sadie", Breed = breeds["Yorkshire Terrier"], Age = 1, Gender = "Female", Weight = 5.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["Processing"], Description = "Cute and energetic Yorkshire Terrier", HealthStatus = "Healthy", Shelter = shelters["Travnik Animal Haven"], Color = colors["Brown"], AnimalTemperament = temperaments["Social"] },
+                new Animal { Name = "Rocky", Breed = breeds["Rottweiler"], Age = 4, Gender = "Male", Weight = 40.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["On Hold"], Description = "Rottweiler with guarding instincts", HealthStatus = "Healthy", Shelter = shelters["Livno Wildlife Sanctuary"], Color = colors["Brown"], AnimalTemperament = temperaments["Curious"] },
                 new Animal { Name = "Zoey", Breed = breeds["Boxer"], Age = 2, Gender = "Female", Weight = 30.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["Not Available"], Description = "Boxer with playful nature", HealthStatus = "Healthy", Shelter = shelters["Konjic Shelter for Strays"], Color = colors["Brown"], AnimalTemperament = temperaments["Curious"] },
-                new Animal { Name = "Misty", Breed = breeds["Persian"], Age = 3, Gender = "Female", Weight = 5.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["Pending"], Description = "Persian cat with calm demeanor", HealthStatus = "Healthy", Shelter = shelters["Vitez Pet Rescue Center"], Color = null, AnimalTemperament = null }
+                new Animal { Name = "Misty", Breed = breeds["Persian"], Age = 3, Gender = "Female", Weight = 5.00m, DateArrived = DateTime.Parse("2025-04-15"), Status = statuses["Pending"], Description = "Persian cat with calm demeanor", HealthStatus = "Healthy", Shelter = shelters["Vitez Pet Rescue Center"], Color = colors["Brown"], AnimalTemperament = temperaments["Social"] }
             );
             dbContext.SaveChanges();
         }
@@ -455,8 +455,8 @@ using (var scope = app.Services.CreateScope())
             var user = dbContext.Users.Single(u => u.Username == "petar");
             var shelters = dbContext.Shelters.ToDictionary(s => s.Name, s => s);
             dbContext.Reviews.AddRange(
-                new Review { Shelter = shelters["Šapa Spas Animal Shelter"], User = user, Rating = 5, Comment = "Great shelter with caring staff!", CreatedAt = DateTime.Now.AddDays(-5) },
-                new Review { Shelter = shelters["Bihaæ Pet Haven"], User = user, Rating = 4, Comment = "Good selection of animals, friendly staff.", CreatedAt = DateTime.Now.AddDays(-3) },
+                new Review { Shelter = shelters["Sapa Spas Animal Shelter"], User = user, Rating = 5, Comment = "Great shelter with caring staff!", CreatedAt = DateTime.Now.AddDays(-5) },
+                new Review { Shelter = shelters["Bihac Pet Haven"], User = user, Rating = 4, Comment = "Good selection of animals, friendly staff.", CreatedAt = DateTime.Now.AddDays(-3) },
                 new Review { Shelter = shelters["Mostar Animal Rescue"], User = user, Rating = 5, Comment = "Amazing place! The staff really care about the animals.", CreatedAt = DateTime.Now.AddDays(-1) }
             );
             dbContext.SaveChanges();
@@ -464,7 +464,7 @@ using (var scope = app.Services.CreateScope())
 
         if (!dbContext.Events.Any())
         {
-            var shelter = dbContext.Shelters.Single(s => s.Name == "Šapa Spas Animal Shelter");
+            var shelter = dbContext.Shelters.Single(s => s.Name == "Sapa Spas Animal Shelter");
             dbContext.Events.Add(new Event { EventName = "Open Door Day!", EventDate = DateTime.Now.AddDays(30), Location = "Sarajevo", Description = "Visit us and our animals", Shelter = shelter });
             dbContext.SaveChanges();
         }

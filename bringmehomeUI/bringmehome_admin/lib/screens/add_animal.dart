@@ -342,6 +342,94 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
     );
   }
 
+  String? _validateName(String? value) {
+    if (value == null || value.trim().isEmpty) return 'Name is required';
+    if (value.trim().length > 100) return 'Name must be 100 characters or less';
+    return null;
+  }
+
+  String? _validateBreed(int? value) {
+    if (value == null) return 'Breed is required';
+    return null;
+  }
+
+  String? _validateAge(String? value) {
+    if (value == null || value.trim().isEmpty) return 'Age is required';
+    final age = int.tryParse(value.trim());
+    if (age == null) return 'Enter a valid number';
+    if (age < 0) return 'Age cannot be negative';
+    return null;
+  }
+
+  String? _validateGender(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Gender is required';
+    }
+    if (value.trim().length > 20) {
+      return 'Gender must be 20 characters or less';
+    }
+    final gender = value.trim().toLowerCase();
+    if (!['male', 'female', 'm', 'f'].contains(gender)) {
+      return 'Please enter Male, Female, M, or F';
+    }
+    return null;
+  }
+
+  String? _validateWeight(String? value) {
+    if (value == null || value.trim().isEmpty) return 'Weight is required';
+    final weight = double.tryParse(value.trim());
+    if (weight == null) return 'Enter a valid number';
+    if (weight < 0) return 'Weight cannot be negative';
+    return null;
+  }
+
+  String? _validateDateArrived(String? value) {
+    if (value == null || value.isEmpty) return 'Date arrived is required';
+    return null;
+  }
+
+  String? _validateStatus(int? value) {
+    if (value == null) return 'Status is required';
+    return null;
+  }
+
+  String? _validateDescription(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Description is required';
+    }
+
+    if (value.length > 1000) {
+      return 'Description must be 1000 characters or less';
+    }
+
+    return null;
+  }
+
+  String? _validateHealthStatus(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Health Status is required';
+    }
+
+    if (value.length > 500)
+      return 'Health status must be 500 characters or less';
+    return null;
+  }
+
+  String? _validateShelter(int? value) {
+    if (value == null) return 'Shelter is required';
+    return null;
+  }
+
+  String? _validateTemperment(int? value) {
+    if (value == null) return 'Temperment is required';
+    return null;
+  }
+
+  String? _validateColor(int? value) {
+    if (value == null) return 'Color is required';
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
@@ -393,14 +481,10 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   CustomTextField(
-                                    hintText: 'Enter animal name',
-                                    controller: _nameController,
-                                    labelText: 'Animal Name *',
-                                    validator: (value) =>
-                                        (value == null || value.isEmpty)
-                                            ? 'Please enter animal name'
-                                            : null,
-                                  ),
+                                      hintText: 'Enter animal name',
+                                      controller: _nameController,
+                                      labelText: 'Animal Name *',
+                                      validator: _validateName),
                                   const SizedBox(height: 15),
                                   _buildDropdown<Species>(
                                     labelText: 'Species *',
@@ -444,16 +528,19 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
                                   ),
                                   const SizedBox(height: 15),
                                   CustomTextField(
+                                      validator: _validateAge,
                                       hintText: 'e.g., 2 years',
                                       controller: _ageController,
                                       labelText: 'Animal Age'),
                                   const SizedBox(height: 15),
                                   CustomTextField(
+                                      validator: _validateGender,
                                       hintText: 'Male, Female',
                                       controller: _genderController,
                                       labelText: 'Animal Gender'),
                                   const SizedBox(height: 15),
                                   CustomTextField(
+                                      validator: _validateWeight,
                                       hintText: 'e.g., 15.5 kg',
                                       controller: _weightController,
                                       labelText: 'Animal Weight (kg)',
@@ -462,6 +549,7 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
                                               decimal: true)),
                                   const SizedBox(height: 15),
                                   CustomTextField(
+                                    validator: _validateDateArrived,
                                     controller: _dateArrivedController,
                                     labelText: 'Date Arrived *',
                                     hintText: 'Select arrival date',
@@ -469,10 +557,6 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
                                     onTap: () => _selectDateArrived(context),
                                     suffixIcon: Icon(Icons.calendar_today,
                                         color: Theme.of(context).primaryColor),
-                                    validator: (value) =>
-                                        (value == null || value.isEmpty)
-                                            ? 'Please select arrival date'
-                                            : null,
                                   ),
                                 ],
                               ),
@@ -487,59 +571,51 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   CustomTextField(
+                                      validator: _validateHealthStatus,
                                       hintText: 'e.g., Vaccinated',
                                       controller: _healthStatusController,
-                                      labelText: 'Health Status'),
+                                      labelText: 'Health Status *'),
                                   const SizedBox(height: 15),
                                   _buildDropdown<AnimalStatus>(
-                                    labelText: 'Status *',
-                                    hintText: 'Select Status',
-                                    selectedValueId: _selectedStatusId,
-                                    items: _statuses,
-                                    getItemName: (AnimalStatus item) =>
-                                        item.statusName,
-                                    getItemValue: (AnimalStatus item) =>
-                                        item.statusID,
-                                    isLoading: _isLoadingStatuses,
-                                    onChanged: (int? newValue) => setState(
-                                        () => _selectedStatusId = newValue),
-                                    validator: (value) => value == null
-                                        ? 'Please select a status'
-                                        : null,
-                                  ),
+                                      labelText: 'Status *',
+                                      hintText: 'Select Status',
+                                      selectedValueId: _selectedStatusId,
+                                      items: _statuses,
+                                      getItemName: (AnimalStatus item) =>
+                                          item.statusName,
+                                      getItemValue: (AnimalStatus item) =>
+                                          item.statusID,
+                                      isLoading: _isLoadingStatuses,
+                                      onChanged: (int? newValue) => setState(
+                                          () => _selectedStatusId = newValue),
+                                      validator: _validateStatus),
                                   const SizedBox(height: 15),
                                   _buildDropdown<Shelter>(
-                                    labelText: 'Shelter *',
-                                    hintText: 'Select Shelter',
-                                    selectedValueId: _selectedShelterId,
-                                    items: _shelters,
-                                    getItemName: (Shelter item) => item.name,
-                                    getItemValue: (Shelter item) =>
-                                        item.shelterID,
-                                    isLoading: _isLoadingShelters,
-                                    onChanged: (int? newValue) => setState(
-                                        () => _selectedShelterId = newValue),
-                                    validator: (value) => value == null
-                                        ? 'Please select a shelter'
-                                        : null,
-                                  ),
+                                      labelText: 'Shelter *',
+                                      hintText: 'Select Shelter',
+                                      selectedValueId: _selectedShelterId,
+                                      items: _shelters,
+                                      getItemName: (Shelter item) => item.name,
+                                      getItemValue: (Shelter item) =>
+                                          item.shelterID,
+                                      isLoading: _isLoadingShelters,
+                                      onChanged: (int? newValue) => setState(
+                                          () => _selectedShelterId = newValue),
+                                      validator: _validateShelter),
                                   const SizedBox(height: 15),
                                   _buildDropdown<ColorModel>(
-                                    labelText: 'Color *',
-                                    hintText: 'Select Color',
-                                    selectedValueId: _selectedColorId,
-                                    items: _colors,
-                                    getItemName: (ColorModel item) =>
-                                        item.colorName ?? 'Unknown Color',
-                                    getItemValue: (ColorModel item) =>
-                                        item.colorID ?? -1,
-                                    isLoading: _isLoadingColors,
-                                    onChanged: (int? newValue) => setState(
-                                        () => _selectedColorId = newValue),
-                                    validator: (value) => value == null
-                                        ? 'Please select a color'
-                                        : null,
-                                  ),
+                                      labelText: 'Color *',
+                                      hintText: 'Select Color',
+                                      selectedValueId: _selectedColorId,
+                                      items: _colors,
+                                      getItemName: (ColorModel item) =>
+                                          item.colorName ?? 'Unknown Color',
+                                      getItemValue: (ColorModel item) =>
+                                          item.colorID ?? -1,
+                                      isLoading: _isLoadingColors,
+                                      onChanged: (int? newValue) => setState(
+                                          () => _selectedColorId = newValue),
+                                      validator: _validateColor),
                                   const SizedBox(height: 15),
                                   _buildDropdown<Temperment>(
                                     labelText: 'Temperament *',
@@ -553,12 +629,11 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
                                     isLoading: _isLoadingTemperments,
                                     onChanged: (int? newValue) => setState(
                                         () => _selectedTempermentId = newValue),
-                                    validator: (value) => value == null
-                                        ? 'Please select a temperament'
-                                        : null,
+                                    validator: _validateTemperment,
                                   ),
                                   const SizedBox(height: 15),
                                   CustomTextField(
+                                    validator: _validateDescription,
                                     controller: _aboutController,
                                     labelText: 'Animal Description',
                                     hintText:

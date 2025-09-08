@@ -19,5 +19,6 @@ namespace BringMeHome.Services.Interfaces
         Task<PagedResult<AdoptionApplicationResponse>> GetAsync(int? userId, AdoptionApplicationSearchObject search);
         Task<AdoptionApplicationResponse> ApproveAsync(AdoptionApplicationRequest request);
         Task<AdoptionApplicationResponse> RejectAsync(AdoptionApplicationRequest request);
+        Task<int> GetApplicationCountAsync(int animalId);
     }
 }

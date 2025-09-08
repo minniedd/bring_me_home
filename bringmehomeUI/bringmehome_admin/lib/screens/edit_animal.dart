@@ -124,6 +124,86 @@ class _EditAnimalDataScreenState extends State<EditAnimalDataScreen> {
     super.dispose();
   }
 
+  String? _validateName(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Animal name is required';
+    }
+    if (value.trim().length > 100) {
+      return 'Name must be 100 characters or less';
+    }
+    return null;
+  }
+
+  String? _validateAge(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Age is required';
+    }
+    final age = int.tryParse(value.trim());
+    if (age == null) {
+      return 'Please enter a valid number';
+    }
+    if (age < 0) {
+      return 'Age cannot be negative';
+    }
+    if (age > 50) {
+      return 'Please enter a realistic age';
+    }
+    return null;
+  }
+
+  String? _validateGender(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Gender is required';
+    }
+    if (value.trim().length > 20) {
+      return 'Gender must be 20 characters or less';
+    }
+    final gender = value.trim().toLowerCase();
+    if (!['male', 'female', 'm', 'f'].contains(gender)) {
+      return 'Please enter Male, Female, M, or F';
+    }
+    return null;
+  }
+
+  String? _validateWeight(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Weight is required';
+    }
+    final weight = double.tryParse(value.trim());
+    if (weight == null) {
+      return 'Please enter a valid number';
+    }
+    if (weight <= 0) {
+      return 'Weight must be greater than 0';
+    }
+    if (weight > 1000) {
+      return 'Please enter a realistic weight';
+    }
+    return null;
+  }
+
+  String? _validateDescription(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Description is required';
+    }
+
+    if (value.length > 1000) {
+      return 'Description must be 1000 characters or less';
+    }
+
+    return null;
+  }
+
+  String? _validateHealthStatus(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Health status is required';
+    }
+    if (value.length > 500) {
+      return 'Health status must be 500 characters or less';
+    }
+    return null;
+  }
+
   Future<void> _loadSpecies() async {
     setState(() => _isLoadingSpecies = true);
     try {
@@ -266,12 +346,16 @@ class _EditAnimalDataScreenState extends State<EditAnimalDataScreen> {
     });
 
     Map<String, dynamic> updateRequestData = {
-      'name': _nameController.text,
-      'age': int.tryParse(_ageController.text),
-      'gender': _genderController.text,
-      'weight': double.tryParse(_weightController.text),
-      'description': _aboutController.text,
-      'healthStatus': _healthStatusController.text,
+      'name': _nameController.text.trim(),
+      'age': int.tryParse(_ageController.text.trim()),
+      'gender': _genderController.text.trim(),
+      'weight': double.tryParse(_weightController.text.trim()),
+      'description': _aboutController.text.trim().isEmpty
+          ? null
+          : _aboutController.text.trim(),
+      'healthStatus': _healthStatusController.text.trim().isEmpty
+          ? null
+          : _healthStatusController.text.trim(),
       'dateArrived': _dateArrivedController.text.isNotEmpty
           ? _dateArrivedController.text
           : null,
@@ -513,10 +597,7 @@ class _EditAnimalDataScreenState extends State<EditAnimalDataScreen> {
                                     hintText: 'Enter animal name',
                                     controller: _nameController,
                                     labelText: 'Animal Name *',
-                                    validator: (value) =>
-                                        (value == null || value.isEmpty)
-                                            ? 'Please enter animal name'
-                                            : null,
+                                    validator: _validateName,
                                   ),
                                   const SizedBox(height: 15),
                                   _buildDropdown<Species>(
@@ -561,22 +642,29 @@ class _EditAnimalDataScreenState extends State<EditAnimalDataScreen> {
                                   ),
                                   const SizedBox(height: 15),
                                   CustomTextField(
-                                      hintText: 'e.g., 2 years',
-                                      controller: _ageController,
-                                      labelText: 'Animal Age'),
+                                    hintText: 'e.g., 2',
+                                    controller: _ageController,
+                                    labelText: 'Animal Age *',
+                                    keyboardType: TextInputType.number,
+                                    validator: _validateAge,
+                                  ),
                                   const SizedBox(height: 15),
                                   CustomTextField(
-                                      hintText: 'Male, Female',
-                                      controller: _genderController,
-                                      labelText: 'Animal Gender'),
+                                    hintText: 'Male, Female, M, F',
+                                    controller: _genderController,
+                                    labelText: 'Animal Gender *',
+                                    validator: _validateGender,
+                                  ),
                                   const SizedBox(height: 15),
                                   CustomTextField(
-                                      hintText: 'e.g., 15.5 kg',
-                                      controller: _weightController,
-                                      labelText: 'Animal Weight (kg)',
-                                      keyboardType:
-                                          const TextInputType.numberWithOptions(
-                                              decimal: true)),
+                                    hintText: 'e.g., 15.5',
+                                    controller: _weightController,
+                                    labelText: 'Animal Weight (kg) *',
+                                    keyboardType:
+                                        const TextInputType.numberWithOptions(
+                                            decimal: true),
+                                    validator: _validateWeight,
+                                  ),
                                   const SizedBox(height: 15),
                                   CustomTextField(
                                     controller: _dateArrivedController,
@@ -604,9 +692,11 @@ class _EditAnimalDataScreenState extends State<EditAnimalDataScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   CustomTextField(
-                                      hintText: 'e.g., Vaccinated',
-                                      controller: _healthStatusController,
-                                      labelText: 'Health Status'),
+                                    hintText: 'e.g., Vaccinated, Healthy',
+                                    controller: _healthStatusController,
+                                    labelText: 'Health Status *',
+                                    validator: _validateHealthStatus,
+                                  ),
                                   const SizedBox(height: 15),
                                   _buildDropdown<AnimalStatus>(
                                     labelText: 'Status *',
@@ -653,9 +743,7 @@ class _EditAnimalDataScreenState extends State<EditAnimalDataScreen> {
                                     isLoading: _isLoadingColors,
                                     onChanged: (int? newValue) => setState(
                                         () => _selectedColorId = newValue),
-                                    validator: (value) => value == null
-                                        ? 'Please select a color'
-                                        : null,
+                                    validator: null,
                                   ),
                                   const SizedBox(height: 15),
                                   _buildDropdown<Temperment>(
@@ -670,17 +758,17 @@ class _EditAnimalDataScreenState extends State<EditAnimalDataScreen> {
                                     isLoading: _isLoadingTemperments,
                                     onChanged: (int? newValue) => setState(
                                         () => _selectedTempermentId = newValue),
-                                    validator: (value) => value == null
-                                        ? 'Please select a temperament'
-                                        : null,
+                                    validator: null,
                                   ),
                                   const SizedBox(height: 15),
                                   CustomTextField(
                                     controller: _aboutController,
-                                    labelText: 'Animal Description',
+                                    labelText:
+                                        'Animal Description (max 1000 chars)',
                                     hintText:
                                         'Enter more details about the animal...',
                                     maxLines: 4,
+                                    validator: _validateDescription,
                                   ),
                                   const SizedBox(height: 25),
                                   Row(

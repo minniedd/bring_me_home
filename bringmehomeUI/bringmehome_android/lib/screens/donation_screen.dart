@@ -28,6 +28,8 @@ class _DonationScreenState extends State<DonationScreen> {
   final TextEditingController _amountController = TextEditingController();
   bool _isLoading = false;
   double _totalAmount = 0.0;
+  String? _currentOrderId;
+  String? _currentAccessToken;
 
   @override
   void dispose() {
@@ -45,8 +47,7 @@ class _DonationScreenState extends State<DonationScreen> {
     final double? donationAmount = double.tryParse(amountText);
 
     if (donationAmount == null || donationAmount <= 0) {
-      _showSnackBar('Please enter a valid amount greater than 0.',
-          isError: true);
+      _showSnackBar('Please enter a valid amount greater than 0.', isError: true);
       return;
     }
     _totalAmount = donationAmount;
@@ -59,13 +60,22 @@ class _DonationScreenState extends State<DonationScreen> {
 
     try {
       final accessToken = await _getAccessToken();
-      final approvalUrl = await _createOrder(accessToken, _totalAmount);
+      final orderData = await _createOrder(accessToken, _totalAmount);
+      final approvalUrl = orderData['approvalUrl'];
+      final orderId = orderData['orderId'];
+
+      _currentOrderId = orderId;
+      _currentAccessToken = accessToken;
 
       if (!mounted) return;
 
-      _redirectToPayPal(approvalUrl);
+      if (approvalUrl != null) {
+        _redirectToPayPal(approvalUrl);
+      } else {
+        throw Exception('Approval URL is null.');
+      }
     } catch (e) {
-      print("Error during PayPal donation process: $e");
+      debugPrint("Error during PayPal donation process: $e");
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -90,20 +100,21 @@ class _DonationScreenState extends State<DonationScreen> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return data['access_token'];
+      return data['access_token'] as String;
     } else {
-      print('Failed to obtain PayPal access token: ${response.body}');
+      debugPrint('Failed to obtain PayPal access token: ${response.body}');
       throw Exception(
           'Failed to obtain PayPal access token. Please check your client credentials.');
     }
   }
 
-  Future<String> _createOrder(String accessToken, double total) async {
+  Future<Map<String, String>> _createOrder(String accessToken, double total) async {
     final response = await http.post(
       Uri.parse('$_paypalBaseUrl/v2/checkout/orders'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
+        'PayPal-Request-Id': DateTime.now().millisecondsSinceEpoch.toString(),
       },
       body: jsonEncode({
         'intent': 'CAPTURE',
@@ -121,38 +132,40 @@ class _DonationScreenState extends State<DonationScreen> {
           'return_url': _returnUrl,
           'cancel_url': _cancelUrl,
           'user_action': 'PAY_NOW',
+          'shipping_preference': 'NO_SHIPPING',
         }
       }),
     );
 
     if (response.statusCode == 201) {
       final data = jsonDecode(response.body);
-      final String? approvalUrl = data['links']?.firstWhere(
-          (link) => link['rel'] == 'approve',
-          orElse: () => null)?['href'];
-      if (approvalUrl != null) {
-        return approvalUrl;
+      final List<dynamic> links = data['links'] ?? [];
+      final String? approvalUrl = links.firstWhere(
+        (link) => link['rel'] == 'approve',
+        orElse: () => null,
+      )?['href'] as String?;
+      
+      final String orderId = data['id'] as String;
+      
+      if (approvalUrl != null && orderId.isNotEmpty) {
+        return {'approvalUrl': approvalUrl, 'orderId': orderId};
       } else {
-        throw Exception('Approve URL not found in PayPal order response.');
+        throw Exception('Approve URL or Order ID not found in PayPal order response.');
       }
     } else {
-      print('Failed to create PayPal order: ${response.body}');
-      throw Exception(
-          'Failed to create PayPal order (Status: ${response.statusCode})');
+      debugPrint('Failed to create PayPal order: ${response.body}');
+      throw Exception('Failed to create PayPal order (Status: ${response.statusCode})');
     }
   }
 
   void _redirectToPayPal(String approvalUrl) {
-    late final WebViewController controller;
-
-    controller = WebViewController()
+    final controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.white)
       ..setNavigationDelegate(
         NavigationDelegate(
-          onProgress: (int progress) {},
           onPageStarted: (String url) {
-            print('WebView: Page started loading: $url');
+            debugPrint('WebView: Page started loading: $url');
             if (mounted) {
               setState(() {
                 _isLoading = true;
@@ -160,7 +173,7 @@ class _DonationScreenState extends State<DonationScreen> {
             }
           },
           onPageFinished: (String url) {
-            print('WebView: Page finished loading: $url');
+            debugPrint('WebView: Page finished loading: $url');
             if (mounted) {
               setState(() {
                 _isLoading = false;
@@ -168,31 +181,26 @@ class _DonationScreenState extends State<DonationScreen> {
             }
           },
           onWebResourceError: (WebResourceError error) {
-            print('WebView: Error: ${error.description}');
+            debugPrint('WebView: Error: ${error.description}');
             if (mounted) {
               setState(() {
                 _isLoading = false;
               });
-
-              if (Navigator.canPop(context)) {
-                Navigator.pop(context);
-              }
-              _showSnackBar('WebView error: ${error.description}',
-                  isError: true);
+              _showSnackBar('WebView error: ${error.description}', isError: true);
             }
-          },
-          onUrlChange: (UrlChange change) {
-            final url = change.url ?? '';
-            print('WebView URL changed: $url');
-            _handleUrlChange(url);
           },
           onNavigationRequest: (NavigationRequest request) {
             final url = request.url;
-            print('WebView: Navigating to $url');
+            debugPrint('Navigation request to: $url');
 
-            if (_shouldHandleUrl(url)) {
-              print("Special URL detected: $url");
-              _handleUrl(url);
+            if (url.contains(_returnUrl)) {
+              _capturePayment();
+              return NavigationDecision.prevent;
+            } else if (url.contains(_cancelUrl)) {
+              if (mounted) {
+                Navigator.pop(context);
+                _showSnackBar('Donation cancelled.', isError: true);
+              }
               return NavigationDecision.prevent;
             }
             return NavigationDecision.navigate;
@@ -204,71 +212,65 @@ class _DonationScreenState extends State<DonationScreen> {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return Scaffold(
         appBar: AppBar(
-          title: Text(
-              _isLoading ? 'Connecting to PayPal...' : 'Complete Donation'),
+          title: const Text('Complete Donation'),
           leading: IconButton(
             icon: const Icon(Icons.close),
             onPressed: () {
-              setState(() {
-                _isLoading = false;
-              });
               Navigator.pop(context);
               _showSnackBar('Donation process aborted.', isError: true);
             },
           ),
         ),
-        body: Stack(
-          children: [
-            WebViewWidget(controller: controller),
-            if (_isLoading)
-              Container(
-                color: Colors.black26,
-                child: const Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                  ),
-                ),
-              ),
-          ],
-        ),
+        body: WebViewWidget(controller: controller),
       );
     }));
   }
 
-  bool _shouldHandleUrl(String url) {
-    return url.startsWith(_returnUrl) || url.startsWith(_cancelUrl);
-  }
-
-  void _handleUrl(String url) {
-    if (!mounted) return;
-
-    if (url.startsWith(_returnUrl)) {
-      print("Donation successful redirect detected.");
-
-      if (Navigator.canPop(context)) {
-        Navigator.pop(context);
-      }
-      setState(() {
-        _isLoading = false;
-      });
-      _showSnackBar('Donation successful! Thank you!', isError: false);
-      _amountController.clear();
-    } else if (url.startsWith(_cancelUrl)) {
-      print("Donation cancelled redirect detected.");
-
-      if (Navigator.canPop(context)) {
-        Navigator.pop(context);
-      }
-      setState(() {
-        _isLoading = false;
-      });
-      _showSnackBar('Donation cancelled.', isError: true);
+  Future<void> _capturePayment() async {
+    if (_currentOrderId == null || _currentAccessToken == null) {
+      _showSnackBar('Payment information missing.', isError: true);
+      return;
     }
-  }
 
-  void _handleUrlChange(String url) {
-    if (_shouldHandleUrl(url)) {
-      _handleUrl(url);
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final response = await http.post(
+        Uri.parse('$_paypalBaseUrl/v2/checkout/orders/$_currentOrderId/capture'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_currentAccessToken',
+        },
+      );
+
+      if (response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        if (data['status'] == 'COMPLETED') {
+          if (mounted) {
+            Navigator.pop(context);
+            _showSnackBar('Donation successful! Thank you!', isError: false);
+            _amountController.clear();
+          }
+        } else {
+          throw Exception('Payment not completed: ${data['status']}');
+        }
+      } else {
+        throw Exception('Failed to capture payment: ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('Error capturing payment: $e');
+      if (mounted) {
+        Navigator.pop(context);
+        _showSnackBar('Payment failed: ${e.toString()}', isError: true);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -303,7 +305,7 @@ class _DonationScreenState extends State<DonationScreen> {
                 ),
                 const SizedBox(height: 20.0),
                 Text(
-                  'Support $_brandName !',
+                  'Support $_brandName!',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 24.0,
@@ -314,11 +316,9 @@ class _DonationScreenState extends State<DonationScreen> {
                 const SizedBox(height: 20.0),
                 TextField(
                   controller: _amountController,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                        RegExp(r'^\d+\.?\d{0,2}')),
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
                   ],
                   decoration: InputDecoration(
                     hintText: 'e.g., 25.00',

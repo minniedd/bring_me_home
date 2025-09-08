@@ -123,19 +123,40 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                       padding: const EdgeInsets.only(bottom: 20.0),
                       child: TextField(
                         controller: _searchController,
+                        style: const TextStyle(
+                            color: Colors.white),
                         decoration: InputDecoration(
                           labelText: 'Search',
+                          labelStyle: const TextStyle(
+                              color: Colors.white),
+                          hintStyle: const TextStyle(
+                              color: Colors.white70),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                const BorderSide(color: Colors.white, width: 2),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                const BorderSide(color: Colors.white, width: 2),
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                const BorderSide(color: Colors.white, width: 2),
                           ),
-                          prefixIcon: Icon(
+
+                          prefixIcon: const Icon(
                             Icons.search,
-                            color: Colors.deepPurple.shade300,
+                            color: Colors.white,
                             size: 35,
                           ),
+
                           suffixIcon: _searchController.text.isNotEmpty
                               ? IconButton(
-                                  icon: const Icon(Icons.clear),
+                                  icon: const Icon(Icons.clear,
+                                      color: Colors.white),
                                   onPressed: () {
                                     _searchController.clear();
                                     _handleSearch('');

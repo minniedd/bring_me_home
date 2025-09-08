@@ -85,16 +85,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          'LOGIN',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 20),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          centerTitle: true,
+          title: Text(
+            'LOGIN',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 20),
+          ),
         ),
-      ),
-      body: Center(
-        child: Center(
+        body: Center(
           child: Container(
             constraints: const BoxConstraints(maxHeight: 670, minHeight: 670),
             child: SingleChildScrollView(
@@ -112,8 +114,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(
-                          left: 60, right: 10, bottom: 15),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 8),
                       child: TextFormField(
                         controller: _usernameController,
                         decoration: const InputDecoration(
@@ -129,7 +131,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 60, right: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 8),
                       child: TextFormField(
                         controller: _passwordController,
                         obscureText: !_showPassword,

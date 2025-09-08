@@ -46,10 +46,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
   }
 
-  bool _isValidPhoneNumber(String phone) {
-    return RegExp(r'^\+?(?:[0-9]|-){10,15}$').hasMatch(phone);
-  }
-
   Future<void> _performSignUp() async {
     setState(() => _errorMessage = null);
     //validation
@@ -85,8 +81,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       if (success) {
         // navigation
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Registration successful! Please login.')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Registration successful! Please login.')));
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const LoginScreen()),
         );
@@ -135,8 +131,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(
-                          left: 60, right: 10, bottom: 15),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 8),
                       child: TextFormField(
                         controller: _firstNameController,
                         decoration: const InputDecoration(
@@ -153,7 +149,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 60, right: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 8),
                       child: TextFormField(
                         controller: _lastNameController,
                         decoration: const InputDecoration(
@@ -169,13 +166,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(
-                          left: 60, right: 10, bottom: 15),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 8),
                       child: TextFormField(
                         controller: _emailController,
                         decoration: const InputDecoration(
                           border: UnderlineInputBorder(),
                           labelText: 'E-mail',
+                          hintText: 'e.g. example@example.com',
                         ),
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
@@ -191,8 +189,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(
-                          left: 60, right: 10, bottom: 15),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 8),
                       child: TextFormField(
                         controller: _usernameController,
                         decoration: const InputDecoration(
@@ -212,8 +210,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(
-                          left: 60, right: 10, bottom: 15),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 8),
                       child: TextFormField(
                         controller: _passwordController,
                         decoration: InputDecoration(
@@ -244,8 +242,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(
-                          left: 60, right: 10, bottom: 15),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 8),
                       child: TextFormField(
                         controller: _confirmPasswordController,
                         decoration: InputDecoration(
@@ -273,22 +271,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(
-                          left: 60, right: 10, bottom: 15),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 8),
                       child: TextFormField(
                         controller: _phoneNumberController,
                         decoration: const InputDecoration(
                           border: UnderlineInputBorder(),
                           labelText: 'Phone Number',
+                          hintText: 'e.g., 1234567890',
                         ),
                         keyboardType: TextInputType.phone,
                         textInputAction: TextInputAction.next,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter a phone number';
-                          }
-                          if (!_isValidPhoneNumber(value)) {
-                            return 'Please enter a valid phone number';
                           }
                           return null;
                         },

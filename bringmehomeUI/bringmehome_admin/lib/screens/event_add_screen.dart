@@ -51,6 +51,18 @@ class _EventAddScreenState extends State<EventAddScreen> {
       initialDate: _eventDate,
       firstDate: DateTime.now(),
       lastDate: DateTime(2101),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color.fromRGBO(149, 117, 205, 1),
+              onPrimary: Colors.white,
+            ),
+            dialogBackgroundColor: Colors.white,
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null && picked != _eventDate) {
       setState(() {
@@ -101,63 +113,100 @@ class _EventAddScreenState extends State<EventAddScreen> {
         backButton: true,
         titleText: 'ADD NEW EVENT',
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color.fromRGBO(149, 117, 205, 1)),
+              ))
             : _errorMessage != null
                 ? Center(child: Text(_errorMessage!))
                 : Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Form(
-                      key: _formKey,
-                      child: ListView(
-                        children: [
-                          _buildTextField(
-                            controller: _eventNameController,
-                            label: 'Event Name',
-                            validator: (value) =>
-                                value!.isEmpty ? 'Event Name cannot be empty' : null,
+                    child: Container(
+                      constraints:
+                          const BoxConstraints(maxHeight: 750, maxWidth: 1300),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 2,
+                              blurRadius: 7,
+                              offset: const Offset(0, 3),
+                            )
+                          ]),
+                      child: Padding(
+                        padding: const EdgeInsets.all(25),
+                        child: Form(
+                          key: _formKey,
+                          child: ListView(
+                            children: [
+                              _buildTextField(
+                                controller: _eventNameController,
+                                label: 'Event Name',
+                                icon: Icons.event,
+                                validator: (value) =>
+                                    value!.isEmpty ? 'Event Name cannot be empty' : null,
+                              ),
+                              const SizedBox(height: 20),
+                              _buildTextField(
+                                controller: _locationController,
+                                label: 'Location',
+                                icon: Icons.location_on,
+                                validator: (value) =>
+                                    value!.isEmpty ? 'Location cannot be empty' : null,
+                              ),
+                              const SizedBox(height: 20),
+                              _buildTextField(
+                                controller: _descriptionController,
+                                label: 'Description',
+                                icon: Icons.description,
+                                maxLines: 4,
+                                validator: (value) =>
+                                    value!.isEmpty ? 'Description cannot be empty' : null,
+                              ),
+                              const SizedBox(height: 20),
+                              Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: const Color.fromRGBO(149, 117, 205, 0.5),
+                                    width: 1.5,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: ListTile(
+                                  title: Text(
+                                    'Event Date: ${_eventDate.toLocal().toString().split(' ')[0]}',
+                                    style: const TextStyle(
+                                        color: Color.fromRGBO(82, 59, 121, 1),
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  trailing: const Icon(Icons.calendar_today,
+                                      color: Color.fromRGBO(149, 117, 205, 1)),
+                                  onTap: () => _selectDate(context),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              _buildShelterDropdown(),
+                              const SizedBox(height: 32),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      const Color.fromRGBO(149, 117, 205, 1),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
+                                  elevation: 3,
+                                  shadowColor: const Color.fromRGBO(149, 117, 205, 0.4),
+                                ),
+                                onPressed: _saveEvent,
+                                child: const Text('Add Event', 
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 16),
-                          _buildTextField(
-                            controller: _locationController,
-                            label: 'Location',
-                            validator: (value) =>
-                                value!.isEmpty ? 'Location cannot be empty' : null,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildTextField(
-                            controller: _descriptionController,
-                            label: 'Description',
-                            maxLines: 4,
-                            validator: (value) =>
-                                value!.isEmpty ? 'Description cannot be empty' : null,
-                          ),
-                          const SizedBox(height: 16),
-                          ListTile(
-                            title: Text(
-                              'Event Date: ${_eventDate.toLocal().toString().split(' ')[0]}',
-                              style: const TextStyle(
-                                  color: Color.fromRGBO(82, 59, 121, 1)),
-                            ),
-                            trailing: const Icon(Icons.calendar_today,
-                                color: Color.fromRGBO(149, 117, 205, 1)),
-                            onTap: () => _selectDate(context),
-                          ),
-                          const SizedBox(height: 16),
-                          _buildShelterDropdown(),
-                          const SizedBox(height: 32),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromRGBO(149, 117, 205, 1),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                            ),
-                            onPressed: _saveEvent,
-                            child: const Text('Add Event'),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
@@ -168,17 +217,32 @@ class _EventAddScreenState extends State<EventAddScreen> {
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
+    required IconData icon,
     int maxLines = 1,
     String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
+      style: const TextStyle(color: Color.fromRGBO(82, 59, 121, 1)),
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: const TextStyle(color: Color.fromRGBO(149, 117, 205, 0.7)),
+        prefixIcon: Icon(icon, color: const Color.fromRGBO(149, 117, 205, 1)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color.fromRGBO(149, 117, 205, 0.5)),
         ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color.fromRGBO(149, 117, 205, 0.5)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color.fromRGBO(149, 117, 205, 1), width: 1.5),
+        ),
+        filled: true,
+        fillColor: const Color.fromRGBO(249, 247, 252, 1),
       ),
       validator: validator,
     );
@@ -186,17 +250,33 @@ class _EventAddScreenState extends State<EventAddScreen> {
 
   Widget _buildShelterDropdown() {
     return DropdownButtonFormField<Shelter>(
+      dropdownColor: const Color.fromRGBO(249, 247, 252, 1),
+      style: const TextStyle(color: Color.fromRGBO(82, 59, 121, 1)),
       decoration: InputDecoration(
         labelText: 'Select Shelter',
+        labelStyle: const TextStyle(color: Color.fromRGBO(149, 117, 205, 0.7)),
+        prefixIcon: const Icon(Icons.pets, color: Color.fromRGBO(149, 117, 205, 1)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color.fromRGBO(149, 117, 205, 0.5)),
         ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color.fromRGBO(149, 117, 205, 0.5)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color.fromRGBO(149, 117, 205, 1), width: 1.5),
+        ),
+        filled: true,
+        fillColor: const Color.fromRGBO(249, 247, 252, 1),
       ),
       value: _selectedShelter,
       items: _shelters.map((shelter) {
         return DropdownMenuItem(
           value: shelter,
-          child: Text(shelter.name),
+          child: Text(shelter.name,
+              style: const TextStyle(color: Color.fromRGBO(82, 59, 121, 1))),
         );
       }).toList(),
       onChanged: (Shelter? newValue) {
@@ -205,6 +285,7 @@ class _EventAddScreenState extends State<EventAddScreen> {
         });
       },
       validator: (value) => value == null ? 'Please select a shelter' : null,
+      icon: const Icon(Icons.arrow_drop_down, color: Color.fromRGBO(149, 117, 205, 1)),
     );
   }
 }
